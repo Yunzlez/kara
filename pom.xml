@@ -81,7 +81,7 @@
                 <artifactId>spring-boot-maven-plugin</artifactId>
                 <configuration>
                     <fork>true</fork>
-                    <mainClass>be.zlz.springTemplate.Main</mainClass>
+                    <mainClass>be.zlz.zlzbin.Main</mainClass>
                 </configuration>
                 <executions>
                     <execution>

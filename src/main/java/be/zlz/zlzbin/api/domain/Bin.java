@@ -1,9 +1,7 @@
-package be.zlz.springTemplate.api.controller.domain;
+package be.zlz.zlzbin.api.domain;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import javax.persistence.*;
+import java.util.List;
 
 @Entity
 public class Bin {
@@ -14,11 +12,18 @@ public class Bin {
 
     private String name;
 
+    @OneToMany
+    private List<Request> requests;
+
     public Bin(String name) {
         this.name = name;
     }
 
     public Bin() {
+    }
+
+    public List<Request> getRequests() {
+        return requests;
     }
 
     public long getId() {

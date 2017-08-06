@@ -1,4 +1,4 @@
-package be.zlz.springTemplate;
+package be.zlz.zlzbin;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;

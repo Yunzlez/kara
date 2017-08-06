@@ -1,6 +1,6 @@
-package be.zlz.springTemplate.api.controller.Repositories;
+package be.zlz.zlzbin.api.repositories;
 
-import be.zlz.springTemplate.api.controller.domain.Bin;
+import be.zlz.zlzbin.api.domain.Bin;
 import org.springframework.data.repository.CrudRepository;
 
 public interface BinRepository extends CrudRepository<Bin, Long>{
