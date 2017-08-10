@@ -21,8 +21,8 @@ public class RequestController {
     @Autowired
     BinRepository binRepository;
 
-    @RequestMapping(value = "{uuid}", method = {RequestMethod.POST, RequestMethod.PUT, RequestMethod.DELETE, RequestMethod.PATCH})
-    public String handleRequest(HttpServletRequest servletRequest, HttpEntity<String> body, @RequestParam String uuid, @RequestHeader Map<String, String> headers){
+    @RequestMapping(value = "/bin/{uuid}", method = {RequestMethod.GET, RequestMethod.POST, RequestMethod.PUT, RequestMethod.DELETE, RequestMethod.PATCH})
+    public String handleRequest(HttpServletRequest servletRequest, HttpEntity<String> body,  @PathVariable String uuid, @RequestHeader Map<String, String> headers){
         Request request = new Request();
 
         request.setBin(binRepository.getByName(uuid));
@@ -30,9 +30,6 @@ public class RequestController {
             throw new ResourceNotFoundException("No bin with that name exists");
         }
 
-        for (Cookie cookie : servletRequest.getCookies()) {
-            request.getCookies().add(cookie);
-        }
         request.setHeaders(headers);
 
         request.setBody(body.getBody());

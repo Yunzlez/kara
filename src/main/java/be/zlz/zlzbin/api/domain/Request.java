@@ -1,12 +1,9 @@
 package be.zlz.zlzbin.api.domain;
 
-import javafx.util.Pair;
 import org.springframework.http.HttpMethod;
 
 import javax.persistence.*;
-import javax.servlet.http.Cookie;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashMap;
 import java.util.Map;
 
 @Entity
@@ -20,13 +17,15 @@ public class Request {
 
     private String body;
 
+    @ElementCollection(targetClass = String.class)
+    @MapKeyClass(String.class)
     private Map<String, String> headers;
-
-    private List<Cookie> cookies;
 
     private String protocol;
 
-    private List<Pair<String, String>> queryParams;
+    @ElementCollection(targetClass = String.class)
+    @MapKeyClass(String.class)
+    private Map<String, String> queryParams;
 
     @ManyToOne
     private Bin bin;
@@ -37,13 +36,11 @@ public class Request {
         this.protocol = protocol;
         this.headers = headers;
 
-        cookies = new ArrayList<>();
-        queryParams = new ArrayList<>();
+        queryParams = new HashMap<>();
     }
 
     public Request(){
-        cookies = new ArrayList<>();
-        queryParams = new ArrayList<>();
+        queryParams = new HashMap<>();
     }
 
     public long getId() {
@@ -58,11 +55,7 @@ public class Request {
         this.headers = headers;
     }
 
-    public List<Cookie> getCookies() {
-        return cookies;
-    }
-
-    public List<Pair<String, String>> getQueryParams() {
+    public Map<String, String> getQueryParams() {
         return queryParams;
     }
 
@@ -118,7 +111,6 @@ public class Request {
                 ", method=" + method +
                 ", body='" + body + '\'' +
                 ", headers=" + headers +
-                ", cookies=" + cookies +
                 ", protocol='" + protocol + '\'' +
                 ", queryParams=" + queryParams +
                 ", bin=" + bin +
