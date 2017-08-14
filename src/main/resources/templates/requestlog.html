@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <title th:text="${pageTitle}"></title>
+    <link rel="stylesheet" type="text/css" th:href="@{/css/semantic.min.css}" href="../public/css/semantic.min.css"/>
+    <link rel="stylesheet" type="text/css" th:href="@{/css/main.css}" href="../public/css/main.css"/>
+</head>
+<body>
+ <div class="ui container">
+     <h2 class="ui dividing header" th:text="'Bin ' + ${binName}"></h2>
+     <div class="ui styled fluid accordion">
+         <div th:each="request : ${requests}">
+             <div class="title">
+                 <i class="dropdown icon"></i>
+                 <span class="requesticon" th:classappend="${#strings.toLowerCase(request.method)}" th:text="${request.method}"></span><span th:text="${#strings.defaultString(request.body, 'No Body')}"></span>
+             </div>
+             <div class="content">
+                 <div th:if="${not request.headers.isEmpty()}">
+                     <h3>Headers</h3>
+                     <div class="ui divider"></div>
+                     <table>
+                         <tr>
+                             <th class="namecolumn">Name</th>
+                             <th class="valuecolumn">Value</th>
+                         </tr>
+                         <tr th:each="header : ${request.headers}">
+                             <td th:text="${header.key}"></td>
+                             <td th:text="${header.value}"></td>
+                         </tr>
+                     </table>
+                 </div>
+                 <div th:if="${not request.queryParams.isEmpty()}">
+                     <div class="ui divider"></div>
+                     <h3>Query Parameters</h3>
+                     <div class="ui divider"></div>
+                     <table>
+                         <tr>
+                             <th class="namecolumn">Name</th>
+                             <th class="valuecolumn">Value</th>
+                         </tr>
+                         <tr th:each="param : ${request.queryParams}">
+                             <td th:text="${param.key}"></td>
+                             <td th:text="${param.value}"></td>
+                         </tr>
+                     </table>
+                 </div>
+
+             </div>
+         </div>
+
+     </div>
+ </div>
+</body>
+<script
+        src="https://code.jquery.com/jquery-3.2.1.min.js"
+        integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="
+        crossorigin="anonymous"></script>
+<script th:src="@{/js/semantic.min.js}" src="../public/js/semantic.min.js"></script>
+<script th:src="@{/js/main.js}" src="../public/js/main.js"></script>
+</html>

@@ -73,6 +73,9 @@ public class Request {
 
     public void setMethod(String method) {
         switch (method){
+            case "GET":
+                this.method = HttpMethod.GET;
+                break;
             case "POST":
                 this.method = HttpMethod.POST;
                 break;
@@ -103,6 +106,12 @@ public class Request {
     public void setBin(Bin bin) {
         this.bin = bin;
     }
+
+    public void setQueryParams(Map<String, String> queryParams) {
+        this.queryParams = queryParams;
+    }
+
+
 
     @Override
     public String toString() {

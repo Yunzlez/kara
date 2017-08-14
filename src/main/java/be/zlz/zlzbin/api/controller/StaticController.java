@@ -9,7 +9,7 @@ import java.util.Map;
 public class StaticController {
 
     @GetMapping("/")
-    public String index(Map<String, String> model){
+    public String index(Map<String, Object> model){
         model.put("pageTitle", "index");
         model.put("content", "Hello, world");
 
