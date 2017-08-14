@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>{{pageTitle}}</title>
+    <link rel="stylesheet" type="text/css" href="css/semantic.min.css">
+    <link rel="stylesheet" type="text/css" href="css/main.css">
+</head>
+<body>
+ <div class="ui container">
+     <h2 class="ui dividing header">Bin {{binName}}</h2>
+     <div class="ui styled fluid accordion">
+         {{requests}}
+         <div class="title">
+             <i class="dropdown icon"></i>
+             {{request}}
+         </div>
+         <div class="content">
+             {{requestDetails}}
+         </div>
+         {{/requests}}
+     </div>
+ </div>
+</body>
+<script
+        src="https://code.jquery.com/jquery-3.2.1.min.js"
+        integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="
+        crossorigin="anonymous"></script>
+<script src="js/semantic.min.js"></script>
+<script src="js/main.js"></script>
+</html>

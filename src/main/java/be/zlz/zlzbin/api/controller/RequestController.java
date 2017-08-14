@@ -36,7 +36,7 @@ public class RequestController {
         request.setMethod(servletRequest.getMethod());
         request.setProtocol(servletRequest.getProtocol());
 
+        requestRepository.save(request);
         return request.toString();
-        //requestRepository.save(new Request());
     }
 }
