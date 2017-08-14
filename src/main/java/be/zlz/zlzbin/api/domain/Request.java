@@ -1,6 +1,5 @@
 package be.zlz.zlzbin.api.domain;
 
-import org.hibernate.validator.constraints.Length;
 import org.springframework.http.HttpMethod;
 
 import javax.persistence.*;
@@ -42,7 +41,7 @@ public class Request {
         queryParams = new HashMap<>();
     }
 
-    public Request(){
+    public Request() {
         queryParams = new HashMap<>();
     }
 
@@ -75,7 +74,7 @@ public class Request {
     }
 
     public void setMethod(String method) {
-        switch (method){
+        switch (method) {
             case "GET":
                 this.method = HttpMethod.GET;
                 break;
@@ -113,7 +112,6 @@ public class Request {
     public void setQueryParams(Map<String, String> queryParams) {
         this.queryParams = queryParams;
     }
-
 
 
     @Override

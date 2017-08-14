@@ -1,24 +1,24 @@
-.put{
+.put {
     background-color: #1a69a4;
 }
 
-.get{
+.get {
     background-color: #0ea432;
 }
 
-.delete{
+.delete {
     background-color: #b42700;
 }
 
-.patch{
+.patch {
     background-color: #ff8f00;
 }
 
-.post{
-   background-color: #184f7e;
+.post {
+    background-color: #184f7e;
 }
 
-.requesticon{
+.requesticon {
     font-weight: bold;
     color: white;
     height: 15px;
@@ -28,36 +28,36 @@
     margin-right: 5px;
 }
 
-.namecolumn{
+.namecolumn {
     width: 150px;
     text-align: left;
 }
 
-.valuecolumn{
+.valuecolumn {
     text-align: left;
 }
 
-.flexcontainer{
+.flexcontainer {
     display: flex;
     justify-content: space-between;
     flex-wrap: nowrap;
 }
 
-.flexitem{
+.flexitem {
 
 }
 
-.fullscreendiv{
+.fullscreendiv {
     height: 100vh;
 }
 
-.vcenter{
+.vcenter {
     position: relative;
-    top:50%;
+    top: 50%;
     transform: translateY(-50%);
 }
 
-.ellipsize{
+.ellipsize {
     text-overflow: ellipsis;
     white-space: nowrap;
     overflow: hidden;
@@ -67,18 +67,19 @@
 }
 
 @media (min-width: 992px) {
-    .ellipsize{
+    .ellipsize {
         width: 700px;
     }
 }
 
 @media (max-width: 991px) {
-    .ellipsize{
+    .ellipsize {
         width: 500px;
     }
 }
+
 @media (max-width: 656px) {
-    .ellipsize{
+    .ellipsize {
         width: 250px;
     }
 }

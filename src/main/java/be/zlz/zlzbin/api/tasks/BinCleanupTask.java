@@ -1,7 +1,6 @@
 package be.zlz.zlzbin.api.tasks;
 
 import be.zlz.zlzbin.api.domain.Bin;
-import be.zlz.zlzbin.api.domain.Request;
 import be.zlz.zlzbin.api.repositories.BinRepository;
 import be.zlz.zlzbin.api.repositories.RequestRepository;
 import org.slf4j.Logger;
@@ -13,7 +12,6 @@ import org.springframework.stereotype.Component;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.time.temporal.ChronoUnit;
-import java.time.temporal.TemporalUnit;
 import java.util.Date;
 import java.util.List;
 
@@ -28,7 +26,7 @@ public class BinCleanupTask {
     @Autowired
     private RequestRepository requestRepository;
 
-    public BinCleanupTask(){
+    public BinCleanupTask() {
         logger = LoggerFactory.getLogger(this.getClass());
     }
 
@@ -38,7 +36,7 @@ public class BinCleanupTask {
     }*/
 
     @Scheduled(cron = "0 0 * * * *")
-    public void cleanOldBins(){
+    public void cleanOldBins() {
         logger.info("Running cleanup task...");
         LocalDate lastweek = LocalDate.now().minus(1, ChronoUnit.WEEKS);
         List<Bin> toDelete = binRepository.getBinByCreationDateBefore(Date.from(lastweek.atStartOfDay(ZoneId.systemDefault()).toInstant()));

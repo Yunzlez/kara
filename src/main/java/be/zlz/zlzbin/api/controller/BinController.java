@@ -7,7 +7,9 @@ import be.zlz.zlzbin.api.repositories.RequestRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import java.util.List;
 import java.util.Map;
@@ -64,10 +66,10 @@ public class BinController {
         return "redirect:/";
     }
 
-    private void setCounts(List<Request> requests, Map<String, Object> model){
+    private void setCounts(List<Request> requests, Map<String, Object> model) {
         int get = 0, put = 0, patch = 0, delete = 0, post = 0;
-        for (Request req: requests) {
-            switch (req.getMethod()){
+        for (Request req : requests) {
+            switch (req.getMethod()) {
                 case GET:
                     get++;
                     break;
