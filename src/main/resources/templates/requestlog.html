@@ -51,12 +51,12 @@
         <div th:each="request : ${requests}">
             <div class="title">
                 <i class="dropdown icon"></i>
-                <!-- TODO: fix long bodies -->
                 <span class="requesticon" th:classappend="${#strings.toLowerCase(request.method)}"
                       th:text="${request.method}"></span><span class="ellipsize"
                                                                th:text="${#strings.defaultString(request.body, 'No Body')}"></span>
             </div>
             <div class="content">
+                <h4 th:text="${request.requestTime}"></h4>
                 <div th:if="${not #strings.isEmpty(request.body)}">
                     <h3>Body</h3>
                     <div class="ui divider"></div>

@@ -3,6 +3,7 @@ package be.zlz.zlzbin.api.domain;
 import org.springframework.http.HttpMethod;
 
 import javax.persistence.*;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -14,6 +15,9 @@ public class Request {
     private long id;
 
     private HttpMethod method;
+
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date requestTime;
 
     @Lob
     @Column(length = 1000, columnDefinition = "TEXT")
@@ -38,11 +42,15 @@ public class Request {
         this.protocol = protocol;
         this.headers = headers;
 
+        this.requestTime = new Date();
+
         queryParams = new HashMap<>();
     }
 
     public Request() {
         queryParams = new HashMap<>();
+
+        this.requestTime = new Date();
     }
 
     public long getId() {
@@ -113,6 +121,13 @@ public class Request {
         this.queryParams = queryParams;
     }
 
+    public Date getRequestTime() {
+        return requestTime;
+    }
+
+    public void setRequestTime(Date requestTime) {
+        this.requestTime = requestTime;
+    }
 
     @Override
     public String toString() {

@@ -57,6 +57,13 @@ public class BinController {
         return "requestlog";
     }
 
+    @GetMapping(value = "/bin/{uuid}/log/charts")
+    @ResponseBody
+    public String createCharts(@PathVariable String uuid, Map<String, Object> model) {
+        //todo implement
+        return "redirect:/";
+    }
+
     @GetMapping(value = "/bin/{uuid}/delete")
     @ResponseBody
     public String deleteBin(@PathVariable String uuid) {

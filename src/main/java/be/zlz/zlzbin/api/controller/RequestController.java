@@ -49,7 +49,7 @@ public class RequestController {
             logger.debug("Headers = " + headers);
         }
 
-        if (body.getBody().length() > 1000) {
+        if (body.getBody() != null && body.getBody().length() > 1000) {
             throw new BadRequestException("Body length is capped to 1000");
         }
         request.setBody(body.getBody());
