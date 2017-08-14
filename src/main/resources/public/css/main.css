@@ -62,7 +62,7 @@
     white-space: nowrap;
     overflow: hidden;
     display: inline-block;
-    height: 15px;
+    vertical-align: middle;
     max-width: 90%;
 }
 
