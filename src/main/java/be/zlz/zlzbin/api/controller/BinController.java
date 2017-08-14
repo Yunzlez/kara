@@ -22,27 +22,69 @@ public class BinController {
     private RequestRepository requestRepository;
 
     @GetMapping("/bin/create")
-    public String createBin(){
+    public String createBin() {
         String name = UUID.randomUUID().toString();
 
         Bin bin = new Bin(name);
         binRepository.save(bin);
 
-        return name;
+        return "redirect:/bin/" + name + "/log";
     }
 
+    //todo need a limit system & pagination system
     @GetMapping(value = "/bin/{uuid}/log", produces = "application/json")
     @ResponseBody
-    public List<Request> getLogForUuidAsJson(@PathVariable String uuid){
+    public List<Request> getLogForUuidAsJson(@PathVariable String uuid) {
         return requestRepository.getAllByBin(binRepository.getByName(uuid));
     }
 
     @GetMapping(value = "/bin/{uuid}/log", produces = "text/html")
-    public String getLogForUuidAsPage(@PathVariable String uuid, Map<String, Object> model){
-        model.put("pageTitle", "Bin "+ uuid);
+    public String getLogForUuidAsPage(@PathVariable String uuid, Map<String, Object> model) {
+        model.put("pageTitle", "Bin " + uuid);
         model.put("binName", uuid);
-        model.put("requests", requestRepository.getAllByBin(binRepository.getByName(uuid)));
+        List<Request> requests = requestRepository.getAllByBin(binRepository.getByName(uuid));
+        model.put("requests", requests);
+        model.put("requestCount", requests.size());
+        setCounts(requests, model);
 
         return "requestlog";
+    }
+
+    @GetMapping(value = "/bin/{uuid}/delete")
+    @ResponseBody
+    public String deleteBin(@PathVariable String uuid) {
+        //todo implement
+        //binRepository.delete(binRepository.getByName(uuid));
+        //requestRepository.deleteForBin(uuid);
+        return "redirect:/";
+    }
+
+    private void setCounts(List<Request> requests, Map<String, Object> model){
+        int get = 0, put = 0, patch = 0, delete = 0, post = 0;
+        for (Request req: requests) {
+            switch (req.getMethod()){
+                case GET:
+                    get++;
+                    break;
+                case PUT:
+                    put++;
+                    break;
+                case PATCH:
+                    patch++;
+                    break;
+                case POST:
+                    post++;
+                    break;
+                case DELETE:
+                    delete++;
+                    break;
+            }
+        }
+
+        model.put("getCount", get);
+        model.put("postCount", post);
+        model.put("patchCount", patch);
+        model.put("deleteCount", delete);
+        model.put("putCount", put);
     }
 }

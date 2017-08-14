@@ -36,3 +36,23 @@
 .valuecolumn{
     text-align: left;
 }
+
+.flexcontainer{
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: nowrap;
+}
+
+.flexitem{
+
+}
+
+.fullscreendiv{
+    height: 100vh;
+}
+
+.vcenter{
+    position: relative;
+    top:50%;
+    transform: translateY(-50%);
+}

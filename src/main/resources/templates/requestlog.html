@@ -9,10 +9,38 @@
 <body>
  <div class="ui container">
      <h2 class="ui dividing header" th:text="'Bin ' + ${binName}"></h2>
+     <div class="flexcontainer">
+         <div class="ui statistic flexitem">
+             <div class="value" th:text="${requestCount}"></div>
+             <div class="label">Requests</div>
+         </div>
+         <div class="ui statistic flexitem">
+             <div class="value" th:text="${getCount}"></div>
+             <div class="label">Get</div>
+         </div>
+         <div class="ui statistic flexitem">
+             <div class="value" th:text="${postCount}"></div>
+             <div class="label">Post</div>
+         </div>
+         <div class="ui statistic flexitem">
+             <div class="value" th:text="${deleteCount}"></div>
+             <div class="label">Delete</div>
+         </div>
+         <div class="ui statistic flexitem">
+             <div class="value" th:text="${putCount}"></div>
+             <div class="label">Put</div>
+         </div>
+         <div class="ui statistic flexitem">
+             <div class="value" th:text="${patchCount}"></div>
+             <div class="label">Patch</div>
+         </div>
+     </div>
+
      <div class="ui styled fluid accordion">
          <div th:each="request : ${requests}">
              <div class="title">
                  <i class="dropdown icon"></i>
+                 <!-- TODO: fix long bodies -->
                  <span class="requesticon" th:classappend="${#strings.toLowerCase(request.method)}" th:text="${request.method}"></span><span th:text="${#strings.defaultString(request.body, 'No Body')}"></span>
              </div>
              <div class="content">
