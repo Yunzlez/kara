@@ -1,9 +1,12 @@
 package be.zlz.zlzbin.api.controller;
 
+import be.zlz.zlzbin.api.Exceptions.BadRequestException;
 import be.zlz.zlzbin.api.Exceptions.ResourceNotFoundException;
 import be.zlz.zlzbin.api.domain.Request;
+import be.zlz.zlzbin.api.dto.ErrorDTO;
 import be.zlz.zlzbin.api.repositories.BinRepository;
 import be.zlz.zlzbin.api.repositories.RequestRepository;
+import org.hibernate.exception.ConstraintViolationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -45,6 +48,9 @@ public class RequestController {
         headers.remove("cookie"); //Cookie header is useless and breaks localhost because no dev app ever clears cookies and the header is a bazillion chars
         logger.debug("Headers = " + headers.toString());
 
+        if(body.getBody().length() > 1000){
+            throw new BadRequestException("Body length is capped to 1000");
+        }
         request.setBody(body.getBody());
         request.setMethod(servletRequest.getMethod());
         logger.debug("Method = " + servletRequest.getMethod());
@@ -54,7 +60,14 @@ public class RequestController {
         logger.debug(servletRequest.getQueryString());
         request.setQueryParams(extractQueryParams(servletRequest.getQueryString()));
 
-        requestRepository.save(request);
+        try{
+            requestRepository.save(request);
+        }
+        catch (ConstraintViolationException cve){
+            logger.warn("Constraint violation:", cve);
+            throw new BadRequestException(cve.getMessage());
+        }
+
         return request;
     }
 

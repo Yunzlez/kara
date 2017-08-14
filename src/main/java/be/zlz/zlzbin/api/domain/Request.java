@@ -1,5 +1,6 @@
 package be.zlz.zlzbin.api.domain;
 
+import org.hibernate.validator.constraints.Length;
 import org.springframework.http.HttpMethod;
 
 import javax.persistence.*;
@@ -15,6 +16,8 @@ public class Request {
 
     private HttpMethod method;
 
+    @Lob
+    @Column(length = 1000, columnDefinition = "TEXT")
     private String body;
 
     @ElementCollection(targetClass = String.class)

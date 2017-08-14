@@ -56,3 +56,30 @@
     top:50%;
     transform: translateY(-50%);
 }
+
+.ellipsize{
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    overflow: hidden;
+    display: inline-block;
+    height: 15px;
+    max-width: 90%;
+}
+
+@media (min-width: 992px) {
+    .ellipsize{
+        width: 700px;
+    }
+}
+
+@media (max-width: 991px) {
+    .ellipsize{
+        width: 500px;
+    }
+}
+@media (max-width: 656px) {
+    .ellipsize{
+        width: 250px;
+    }
+}
+
