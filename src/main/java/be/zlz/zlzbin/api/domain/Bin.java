@@ -1,6 +1,7 @@
 package be.zlz.zlzbin.api.domain;
 
 import javax.persistence.*;
+import java.util.Date;
 import java.util.List;
 
 @Entity
@@ -12,14 +13,19 @@ public class Bin {
 
     private String name;
 
+    @Temporal(TemporalType.DATE)
+    private Date creationDate;
+
     @OneToMany
     private List<Request> requests;
 
     public Bin(String name) {
         this.name = name;
+        this.creationDate = new Date();
     }
 
     public Bin() {
+        this.creationDate = new Date();
     }
 
     public List<Request> getRequests() {
@@ -36,5 +42,13 @@ public class Bin {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public Date getCreationDate() {
+        return creationDate;
+    }
+
+    public void setCreationDate(Date creationDate) {
+        this.creationDate = creationDate;
     }
 }

@@ -8,4 +8,6 @@ import java.util.List;
 
 public interface RequestRepository extends CrudRepository<Request, Long> {
     public List<Request> getAllByBin(Bin bin);
+
+    public void deleteAllByBin(Bin bin);
 }

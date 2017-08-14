@@ -8,7 +8,16 @@
 </head>
 <body>
  <div class="ui container">
+     <div class="spaced"></div>
      <h2 class="ui dividing header" th:text="'Bin ' + ${binName}"></h2>
+     <div class="spaced"></div>
+     <div class="ui icon message">
+         <i class="external icon"></i>
+         <div class="content">
+             <div class="header">Request URL</div>
+             <p><a th:text="${requestUrl}" th:href="${requestUrl}"></a></p>
+         </div>
+     </div>
      <div class="flexcontainer">
          <div class="ui statistic flexitem">
              <div class="value" th:text="${requestCount}"></div>

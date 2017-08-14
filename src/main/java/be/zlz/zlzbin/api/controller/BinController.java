@@ -5,6 +5,7 @@ import be.zlz.zlzbin.api.domain.Request;
 import be.zlz.zlzbin.api.repositories.BinRepository;
 import be.zlz.zlzbin.api.repositories.RequestRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
@@ -20,6 +21,9 @@ public class BinController {
 
     @Autowired
     private RequestRepository requestRepository;
+
+    @Value("${base.url}")
+    private String baseUrl;
 
     @GetMapping("/bin/create")
     public String createBin() {
@@ -45,6 +49,7 @@ public class BinController {
         List<Request> requests = requestRepository.getAllByBin(binRepository.getByName(uuid));
         model.put("requests", requests);
         model.put("requestCount", requests.size());
+        model.put("requestUrl", baseUrl + "/bin/" + uuid);
         setCounts(requests, model);
 
         return "requestlog";

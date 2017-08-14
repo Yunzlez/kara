@@ -33,7 +33,7 @@ public class RequestController {
     }
 
     @RequestMapping(value = "/bin/{uuid}", method = {RequestMethod.GET, RequestMethod.POST, RequestMethod.PUT, RequestMethod.DELETE, RequestMethod.PATCH})
-    public String handleRequest(HttpServletRequest servletRequest, HttpEntity<String> body,  @PathVariable String uuid, @RequestHeader Map<String, String> headers){
+    public Request handleRequest(HttpServletRequest servletRequest, HttpEntity<String> body,  @PathVariable String uuid, @RequestHeader Map<String, String> headers){
         Request request = new Request();
 
         request.setBin(binRepository.getByName(uuid));
@@ -55,7 +55,7 @@ public class RequestController {
         request.setQueryParams(extractQueryParams(servletRequest.getQueryString()));
 
         requestRepository.save(request);
-        return request.toString();
+        return request;
     }
 
     private Map<String, String> extractQueryParams(String queryString){
