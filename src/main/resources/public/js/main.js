@@ -1,5 +1,5 @@
 $('.ui.accordion').accordion();
 
 $("#createbin").click(function () {
-    window.location.href = "/create2";
+    window.location.href = "/create";
 });
