@@ -61,13 +61,15 @@ public class BinController {
     @ResponseBody
     public String deleteBin(@PathVariable String uuid) {
         //todo implement
-        //binRepository.delete(binRepository.getByName(uuid));
-        //requestRepository.deleteForBin(uuid);
         return "redirect:/";
     }
 
     private void setCounts(List<Request> requests, Map<String, Object> model) {
-        int get = 0, put = 0, patch = 0, delete = 0, post = 0;
+        int get = 0;
+        int put = 0;
+        int patch = 0;
+        int delete = 0;
+        int post = 0;
         for (Request req : requests) {
             switch (req.getMethod()) {
                 case GET:
@@ -84,6 +86,8 @@ public class BinController {
                     break;
                 case DELETE:
                     delete++;
+                    break;
+                default:
                     break;
             }
         }

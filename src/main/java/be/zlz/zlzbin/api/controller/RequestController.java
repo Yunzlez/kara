@@ -1,7 +1,7 @@
 package be.zlz.zlzbin.api.controller;
 
-import be.zlz.zlzbin.api.Exceptions.BadRequestException;
-import be.zlz.zlzbin.api.Exceptions.ResourceNotFoundException;
+import be.zlz.zlzbin.api.exceptions.BadRequestException;
+import be.zlz.zlzbin.api.exceptions.ResourceNotFoundException;
 import be.zlz.zlzbin.api.domain.Request;
 import be.zlz.zlzbin.api.repositories.BinRepository;
 import be.zlz.zlzbin.api.repositories.RequestRepository;
@@ -44,7 +44,10 @@ public class RequestController {
 
         request.setHeaders(headers);
         headers.remove("cookie"); //Cookie header is useless and breaks localhost because no dev app ever clears cookies and the header is a bazillion chars
-        logger.debug("Headers = " + headers.toString());
+
+        if(logger.isDebugEnabled()){
+            logger.debug("Headers = " + headers);
+        }
 
         if (body.getBody().length() > 1000) {
             throw new BadRequestException("Body length is capped to 1000");

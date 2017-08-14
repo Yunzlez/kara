@@ -1,4 +1,4 @@
-package be.zlz.zlzbin.api.Exceptions;
+package be.zlz.zlzbin.api.exceptions;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ResponseStatus;

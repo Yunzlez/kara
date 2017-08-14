@@ -30,11 +30,6 @@ public class BinCleanupTask {
         logger = LoggerFactory.getLogger(this.getClass());
     }
 
-/*    @Scheduled(cron = "*//*5 * * * * *")
-    public void testScheduling(){
-        logger.debug("Task has run!");
-    }*/
-
     @Scheduled(cron = "0 0 * * * *")
     public void cleanOldBins() {
         logger.info("Running cleanup task...");
