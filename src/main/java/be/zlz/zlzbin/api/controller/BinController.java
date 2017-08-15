@@ -4,6 +4,8 @@ import be.zlz.zlzbin.api.domain.Bin;
 import be.zlz.zlzbin.api.domain.Request;
 import be.zlz.zlzbin.api.repositories.BinRepository;
 import be.zlz.zlzbin.api.repositories.RequestRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
@@ -27,6 +29,12 @@ public class BinController {
     @Value("${base.url}")
     private String baseUrl;
 
+    private Logger logger;
+
+    public BinController(){
+        logger = LoggerFactory.getLogger(this.getClass());
+    }
+
     @GetMapping("/bin/create")
     public String createBin() {
         String name = UUID.randomUUID().toString();
@@ -34,7 +42,9 @@ public class BinController {
         Bin bin = new Bin(name);
         binRepository.save(bin);
 
-        return "redirect:/bin/" + name + "/log";
+        logger.debug("BaseURL = " + baseUrl);
+
+        return "redirect:"+ baseUrl + "/bin/" + name + "/log";
     }
 
     //todo need a limit system & pagination system
@@ -51,6 +61,9 @@ public class BinController {
         List<Request> requests = requestRepository.getAllByBin(binRepository.getByName(uuid));
         model.put("requests", requests);
         model.put("requestCount", requests.size());
+        logger.debug("Creating request URL: " + baseUrl + "/bin/" + uuid);
+        logger.debug("baseUrl = " + baseUrl);
+        logger.debug("uuid = " + uuid);
         model.put("requestUrl", baseUrl + "/bin/" + uuid);
         setCounts(requests, model);
 
