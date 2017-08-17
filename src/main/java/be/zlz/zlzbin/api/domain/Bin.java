@@ -19,6 +19,8 @@ public class Bin {
     @OneToMany
     private List<Request> requests;
 
+    private Reply reply;
+
     public Bin(String name) {
         this.name = name;
         this.creationDate = new Date();
@@ -50,5 +52,13 @@ public class Bin {
 
     public void setCreationDate(Date creationDate) {
         this.creationDate = creationDate;
+    }
+
+    public Reply getReply() {
+        return reply;
+    }
+
+    public void setReply(Reply reply) {
+        this.reply = reply;
     }
 }

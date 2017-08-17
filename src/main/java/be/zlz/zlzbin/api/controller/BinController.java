@@ -70,6 +70,14 @@ public class BinController {
         return "requestlog";
     }
 
+    @GetMapping(value = "/bin/{uuid}/log/settings", produces = "application/json")
+    @ResponseBody
+    public String binSetup(@PathVariable String uuid, Map<String, Object> model) {
+        model.put("binSettings",binRepository.getByName(uuid));
+
+        return "settings";
+    }
+
     @GetMapping(value = "/bin/{uuid}/log/charts")
     @ResponseBody
     public String createCharts(@PathVariable String uuid, Map<String, Object> model) {
