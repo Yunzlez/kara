@@ -66,6 +66,21 @@
     max-width: 90%;
 }
 
+.header-bar{
+    display: inline-block;
+    margin-bottom: 5px;
+}
+
+#settingsbtn{
+    float: right;
+    margin-top: 22px;
+}
+
+#title{
+    float: left;
+    width: 90%;
+}
+
 @media (min-width: 992px) {
     .ellipsize {
         width: 700px;
@@ -84,3 +99,12 @@
     }
 }
 
+/*fix stupid number arrows*/
+input[type='number'] {
+    -moz-appearance:textfield;
+}
+
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+}
