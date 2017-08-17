@@ -2,6 +2,7 @@
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8"/>
+    <!--/*@thymesVar id="pageTitle" type="String"*/-->
     <title th:text="${pageTitle}"></title>
     <link rel="stylesheet" type="text/css" th:href="@{/css/semantic.min.css}" href="../public/css/semantic.min.css"/>
     <link rel="stylesheet" type="text/css" th:href="@{/css/main.css}" href="../public/css/main.css"/>
@@ -11,37 +12,45 @@
 <body>
 <div class="ui container">
     <div class="spaced"></div>
+    <!--/*@thymesVar id="binName" type="String"*/-->
     <h2 class="ui dividing header" th:text="'Bin ' + ${binName}"></h2>
     <div class="spaced"></div>
     <div class="ui icon message">
         <i class="external icon"></i>
         <div class="content">
             <div class="header">Request URL</div>
-            <p><a th:text="${requestUrl}" th:href="${requestUrl}"></a></p>
+            <p><!--/*@thymesVar id="requestUrl" type="String"*/-->
+            <a th:text="${requestUrl}" th:href="${requestUrl}"></a></p>
         </div>
     </div>
     <div class="flexcontainer">
         <div class="ui statistic flexitem">
+            <!--/*@thymesVar id="requestCount" type="Integer"*/-->
             <div class="value" th:text="${requestCount}"></div>
             <div class="label">Requests</div>
         </div>
         <div class="ui statistic flexitem">
+            <!--/*@thymesVar id="getCount" type="Integer"*/-->
             <div class="value" th:text="${getCount}"></div>
             <div class="label">Get</div>
         </div>
         <div class="ui statistic flexitem">
+            <!--/*@thymesVar id="postCount" type="Integer"*/-->
             <div class="value" th:text="${postCount}"></div>
             <div class="label">Post</div>
         </div>
         <div class="ui statistic flexitem">
+            <!--/*@thymesVar id="deleteCount" type="Integer"*/-->
             <div class="value" th:text="${deleteCount}"></div>
             <div class="label">Delete</div>
         </div>
         <div class="ui statistic flexitem">
+            <!--/*@thymesVar id="putCount" type="Integer"*/-->
             <div class="value" th:text="${putCount}"></div>
             <div class="label">Put</div>
         </div>
         <div class="ui statistic flexitem">
+            <!--/*@thymesVar id="patchCount" type="Integer"*/-->
             <div class="value" th:text="${patchCount}"></div>
             <div class="label">Patch</div>
         </div>
