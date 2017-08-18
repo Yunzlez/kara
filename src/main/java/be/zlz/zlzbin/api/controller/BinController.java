@@ -3,6 +3,7 @@ package be.zlz.zlzbin.api.controller;
 import be.zlz.zlzbin.api.domain.Bin;
 import be.zlz.zlzbin.api.domain.Request;
 import be.zlz.zlzbin.api.dto.ReplyDTO;
+import be.zlz.zlzbin.api.exceptions.ResourceNotFoundException;
 import be.zlz.zlzbin.api.repositories.BinRepository;
 import be.zlz.zlzbin.api.repositories.RequestRepository;
 import be.zlz.zlzbin.api.services.ReplyService;
@@ -61,7 +62,10 @@ public class BinController {
     }
 
     @GetMapping(value = "/bin/{uuid}/log", produces = "text/html")
-    public String getLogForUuidAsPage(@PathVariable String uuid, Map<String, Object> model, @PathVariable(required = false) boolean success) {
+    public String getLogForUuidAsPage(@PathVariable String uuid, Map<String, Object> model) {
+        if(binRepository.getByName(uuid) == null){
+            throw new ResourceNotFoundException("Could not find bin with name " + uuid);
+        }
         model.put("pageTitle", "Bin " + uuid);
         model.put("binName", uuid);
         List<Request> requests = requestRepository.getAllByBin(binRepository.getByName(uuid));
@@ -73,23 +77,25 @@ public class BinController {
         model.put("requestUrl", baseUrl + "/bin/" + uuid);
         setCounts(requests, model);
 
-        if(success){
-            model.put("saveSuccessful", true);
-        }
-
         return "requestlog";
     }
 
     @GetMapping(value = "/bin/{uuid}/log/settings", produces = "application/json")
-    @ResponseBody
     public String getBinSetup(@PathVariable String uuid, Map<String, Object> model) {
-        model.put("binSettings",binRepository.getByName(uuid).getReply());
+        Bin bin = binRepository.getByName(uuid);
+
+        logger.debug("bin " + bin + "with uuid " + uuid);
+        if(bin.getReply() != null){
+            model.put("reply",bin.getReply());
+        }
+        else {
+            model.put("reply", new ReplyDTO());
+        }
 
         return "settings";
     }
 
     @PostMapping(value = "/bin/{uuid}/log/settings", produces = "application/json")
-    @ResponseBody
     public String saveBinSetup(@PathVariable String uuid, @ModelAttribute ReplyDTO reply) {
         Bin bin = binRepository.getByName(uuid);
         ReplyBuilder replyBuilder = new ReplyBuilder();
@@ -102,7 +108,7 @@ public class BinController {
 
         binRepository.save(bin);
 
-        return "/bin/" +  uuid  + "/log?success=true";
+        return "redirect:/bin/" +  uuid  + "/log";
     }
 
     @GetMapping(value = "/bin/{uuid}/log/charts")
@@ -146,7 +152,6 @@ public class BinController {
                     break;
             }
         }
-
         model.put("getCount", get);
         model.put("postCount", post);
         model.put("patchCount", patch);

@@ -2,10 +2,7 @@ package be.zlz.zlzbin.api.domain;
 
 import org.springframework.http.HttpStatus;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import javax.persistence.*;
 import java.util.Map;
 
 @Entity
@@ -21,9 +18,16 @@ public class Reply {
 
     private String body;
 
+    @ElementCollection(targetClass = String.class)
+    @MapKeyClass(String.class)
     private Map<String, String> cookies;
 
+    @ElementCollection(targetClass = String.class)
+    @MapKeyClass(String.class)
     private Map<String, String> headers;
+
+    public Reply() {
+    }
 
     public Reply(HttpStatus code, String mimeType, String body, Map<String, String> cookies, Map<String, String> headers) {
         this.code = code;

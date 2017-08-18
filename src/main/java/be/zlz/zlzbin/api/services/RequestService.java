@@ -43,10 +43,12 @@ public class RequestService {
 
         Bin bin = binRepository.getByName(uuid);
 
-        if (request.getBin() == null) {
+        if (bin == null) {
             throw new ResourceNotFoundException("No bin with that name exists");
         }
 
+        request.setBin(bin);
+        
         request.setHeaders(headers);
         headers.remove("cookie"); //Cookie header is useless and breaks localhost because no dev app ever clears cookies and the header is a bazillion chars
 

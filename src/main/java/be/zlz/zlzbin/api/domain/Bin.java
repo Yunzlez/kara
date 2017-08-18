@@ -1,5 +1,7 @@
 package be.zlz.zlzbin.api.domain;
 
+import org.hibernate.annotations.Cascade;
+
 import javax.persistence.*;
 import java.util.Date;
 import java.util.List;
@@ -19,6 +21,7 @@ public class Bin {
     @OneToMany
     private List<Request> requests;
 
+    @OneToOne(cascade = CascadeType.ALL)
     private Reply reply;
 
     public Bin(String name) {
