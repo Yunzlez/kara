@@ -8,20 +8,36 @@ $("#settingsbtn").click(function () {
     window.location.href += "/settings";
 });
 
-$("#requestcode").change(function () {
-    console.log("changed!");
-    var rCode= $("#requestcode").val();
-    if(rCode == ""){
-        $("#requestdesc").hide();
-    }
-    else {
-        var reqdesc = $("#requestdesc");
-        reqdesc.show();
-        reqdesc.val(code_defs.find(function (code) {
-            return code.code === rCode;
-        }));
-    }
+$(document).ready(function () {
+    $("#requestdesc").hide();
+
+
+    $("#requestcode").change(function () {
+        console.log("changed!");
+        var rCode= $("#requestcode").val();
+        if(rCode == ""){
+            $("#requestdesc").hide();
+        }
+        else {
+            var reqdesc = $("#requestdesc");
+            reqdesc.show();
+
+            var codedef;
+            code_defs.forEach(function (def) {
+               if(def.code === rCode){
+                   codedef = def;
+               }
+            });
+            console.log(codedef);
+            reqdesc.val(codedef.phrase);
+/*            reqdesc.val(code_defs.find(function (code) {
+                return code.code === rCode;
+            }));*/
+        }
+    });
 });
+
+
 
 var code_defs = [
     {

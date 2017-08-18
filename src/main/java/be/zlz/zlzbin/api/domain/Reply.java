@@ -2,9 +2,18 @@ package be.zlz.zlzbin.api.domain;
 
 import org.springframework.http.HttpStatus;
 
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
 import java.util.Map;
 
+@Entity
 public class Reply {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private long id;
 
     private HttpStatus code;
 
@@ -62,5 +71,9 @@ public class Reply {
 
     public void setHeaders(Map<String, String> headers) {
         this.headers = headers;
+    }
+
+    public long getId() {
+        return id;
     }
 }

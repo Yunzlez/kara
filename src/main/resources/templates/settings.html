@@ -8,18 +8,29 @@
 </head>
 <body>
     <div class="ui container">
+        <h1 th:text="'Bin ' + ${binName}+ ' settings'">Bin Settings</h1>
         <form action="/settings" method="post">
             <div class="ui labeled input">
                 <div class="ui label">
-                    HTTP Code
+                    Return Code
                 </div>
                 <div class="inline field">
                     <input type="number" max="599" id="requestcode" maxlength="3" minlength="3" >
-                    <div class="ui left pointing label hidden" id="requestdesc">
+                    <div class="ui left pointing label" id="requestdesc">
                         NOT_FOUND
                     </div>
                 </div>
 
+            </div>
+            <div class="ui labeled input">
+                <div class="ui label">Content-Type</div>
+                <input>
+            </div>
+            <div class="ui labeled input">
+                <div></div>
+                <textarea>
+
+                </textarea>
             </div>
         </form>
     </div>
