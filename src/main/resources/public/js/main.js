@@ -8,6 +8,11 @@ $("#settingsbtn").click(function () {
     window.location.href += "/settings";
 });
 
+$("#canceledit").click(function () {
+    var loc = window.location.href;
+    window.location.href = window.location.href.substr(0, loc.lastIndexOf("/"));
+});
+
 $(document).ready(function () {
     $("#requestdesc").hide();
 
@@ -37,7 +42,13 @@ $(document).ready(function () {
     });
 });
 
-
+$('.message .close')
+    .on('click', function() {
+        $(this)
+            .closest('.message')
+            .transition('fade')
+        ;
+    });
 
 var code_defs = [
     {

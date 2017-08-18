@@ -1,12 +1,10 @@
 package be.zlz.zlzbin.api.dto;
 
-import org.springframework.http.HttpStatus;
-
 import java.util.Map;
 
-public class replyDTO {
+public class ReplyDTO {
 
-    private HttpStatus code;
+    private int code;
 
     private String mimeType;
 
@@ -16,10 +14,10 @@ public class replyDTO {
 
     private Map<String, String> headers;
 
-    public replyDTO() {
+    public ReplyDTO() {
     }
 
-    public replyDTO(HttpStatus code, String mimeType, String body) {
+    public ReplyDTO(int code, String mimeType, String body) {
         this.code = code;
         this.mimeType = mimeType;
         this.body = body;
@@ -33,11 +31,11 @@ public class replyDTO {
         return headers;
     }
 
-    public HttpStatus getCode() {
+    public int getCode() {
         return code;
     }
 
-    public void setCode(HttpStatus code) {
+    public void setCode(int code) {
         this.code = code;
     }
 

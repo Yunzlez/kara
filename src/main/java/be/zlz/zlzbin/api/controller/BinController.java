@@ -1,20 +1,20 @@
 package be.zlz.zlzbin.api.controller;
 
 import be.zlz.zlzbin.api.domain.Bin;
-import be.zlz.zlzbin.api.domain.Reply;
 import be.zlz.zlzbin.api.domain.Request;
+import be.zlz.zlzbin.api.dto.ReplyDTO;
 import be.zlz.zlzbin.api.repositories.BinRepository;
 import be.zlz.zlzbin.api.repositories.RequestRepository;
+import be.zlz.zlzbin.api.services.ReplyService;
+import be.zlz.zlzbin.api.util.ReplyBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Map;
@@ -28,6 +28,9 @@ public class BinController {
 
     @Autowired
     private RequestRepository requestRepository;
+
+    @Autowired
+    private ReplyService replyService;
 
     @Value("${base.url}")
     private String baseUrl;
@@ -58,7 +61,7 @@ public class BinController {
     }
 
     @GetMapping(value = "/bin/{uuid}/log", produces = "text/html")
-    public String getLogForUuidAsPage(@PathVariable String uuid, Map<String, Object> model) {
+    public String getLogForUuidAsPage(@PathVariable String uuid, Map<String, Object> model, @PathVariable(required = false) boolean success) {
         model.put("pageTitle", "Bin " + uuid);
         model.put("binName", uuid);
         List<Request> requests = requestRepository.getAllByBin(binRepository.getByName(uuid));
@@ -70,24 +73,36 @@ public class BinController {
         model.put("requestUrl", baseUrl + "/bin/" + uuid);
         setCounts(requests, model);
 
+        if(success){
+            model.put("saveSuccessful", true);
+        }
+
         return "requestlog";
     }
 
     @GetMapping(value = "/bin/{uuid}/log/settings", produces = "application/json")
     @ResponseBody
     public String getBinSetup(@PathVariable String uuid, Map<String, Object> model) {
-        model.put("binSettings",binRepository.getByName(uuid));
+        model.put("binSettings",binRepository.getByName(uuid).getReply());
 
         return "settings";
     }
 
     @PostMapping(value = "/bin/{uuid}/log/settings", produces = "application/json")
     @ResponseBody
-    public String saveBinSetup(@PathVariable String uuid, Model model) {
-        //use DTO
-        //model.addAttribute("reply", new Reply());
+    public String saveBinSetup(@PathVariable String uuid, @ModelAttribute ReplyDTO reply) {
+        Bin bin = binRepository.getByName(uuid);
+        ReplyBuilder replyBuilder = new ReplyBuilder();
+        bin.setReply(
+                replyBuilder.setCode(HttpStatus.valueOf(reply.getCode()))
+                        .setMimeType(reply.getMimeType())
+                        .setBody(reply.getBody())
+                        .build()
+        );
 
-        return "/bin/" +  uuid  + "/log";
+        binRepository.save(bin);
+
+        return "/bin/" +  uuid  + "/log?success=true";
     }
 
     @GetMapping(value = "/bin/{uuid}/log/charts")

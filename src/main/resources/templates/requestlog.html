@@ -12,10 +12,14 @@
 <body>
 <div class="ui container">
     <div class="spaced"></div>
+    <div th:if="${saveSuccessful}" class="ui success message" id="top-message">
+        <i class="close icon"></i>
+        <div class="header">Success</div>
+        <p>Your settings have been applied successfully</p>
+    </div>
     <!--/*@thymesVar id="binName" type="String"*/-->
     <h2 class="ui dividing header header-bar" id="title" th:text="'Bin ' + ${binName}">Bin name</h2>
     <div class="ui button blue header-bar" id="settingsbtn"><i class="ui icon settings"></i></div>
-    <div class="spaced"></div>
     <div class="ui icon message">
         <i class="external icon"></i>
         <div class="content">

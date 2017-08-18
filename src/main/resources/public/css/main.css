@@ -68,7 +68,11 @@
 
 .header-bar{
     display: inline-block;
-    margin-bottom: 5px;
+    margin-top: 0;
+}
+
+#top-message{
+    margin-bottom: 0;
 }
 
 #settingsbtn{
