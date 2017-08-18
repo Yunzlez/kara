@@ -1,5 +1,6 @@
 package be.zlz.zlzbin.api.dto;
 
+import java.util.List;
 import java.util.Map;
 
 public class ReplyDTO {
@@ -10,9 +11,14 @@ public class ReplyDTO {
 
     private String body;
 
-    private Map<String, String> cookies;
+    //lists to make thymeleaf binding easier
+    private List<String> headerNames;
 
-    private Map<String, String> headers;
+    private List<String> headerValues;
+
+    private List<String> cookieNames;
+
+    private List<String> cookieValues;
 
     public ReplyDTO() {
     }
@@ -23,12 +29,36 @@ public class ReplyDTO {
         this.body = body;
     }
 
-    public Map<String, String> getCookies() {
-        return cookies;
+    public List<String> getHeaderNames() {
+        return headerNames;
     }
 
-    public Map<String, String> getHeaders() {
-        return headers;
+    public void setHeaderNames(List<String> headerNames) {
+        this.headerNames = headerNames;
+    }
+
+    public List<String> getHeaderValues() {
+        return headerValues;
+    }
+
+    public void setHeaderValues(List<String> headerValues) {
+        this.headerValues = headerValues;
+    }
+
+    public List<String> getCookieNames() {
+        return cookieNames;
+    }
+
+    public void setCookieNames(List<String> cookieNames) {
+        this.cookieNames = cookieNames;
+    }
+
+    public List<String> getCookieValues() {
+        return cookieValues;
+    }
+
+    public void setCookieValues(List<String> cookieValues) {
+        this.cookieValues = cookieValues;
     }
 
     public int getCode() {

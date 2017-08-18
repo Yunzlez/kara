@@ -38,7 +38,7 @@ public class BinCleanupTask {
 
         toDelete.forEach(bin -> {
             long id = bin.getId();
-            logger.debug("Found bin " + id + " with name " + bin.getName() + " and creationdate " + bin.getCreationDate().toString());
+            logger.info("Found bin " + id + " with name " + bin.getName() + " and creationdate " + bin.getCreationDate().toString() + ". Deleting...");
             requestRepository.deleteAllByBin(bin);
             binRepository.delete(bin);
         });
