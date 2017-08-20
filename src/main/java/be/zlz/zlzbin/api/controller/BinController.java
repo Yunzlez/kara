@@ -83,6 +83,9 @@ public class BinController {
     public String getBinSetup(@PathVariable String uuid, Map<String, Object> model) {
         Bin bin = binRepository.getByName(uuid);
 
+        model.put("pageTitle", "Bin " + uuid + " settings");
+        model.put("binName", uuid);
+
         logger.debug("bin " + bin + "with uuid " + uuid);
         if(bin.getReply() != null){
             model.put("reply",bin.getReply());
