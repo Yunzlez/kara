@@ -9,7 +9,7 @@
 <body>
 <div class="ui container">
     <h1 th:text="'Bin ' + ${binName}+ ' settings'">Bin Settings</h1>
-    <h3>Custom reply</h3>
+    <h3 class="ui dividing header">Custom reply</h3>
     <form th:action="@{settings}" th:object="${reply}" method="post">
         <div class="ui form">
             <div class="ui labeled fluid input">
@@ -31,6 +31,32 @@
             </div>
             <br/>
             <br/>
+            <h4 class="ui horizontal divider header">
+                Headers
+            </h4>
+            <div class="headers">
+                <div class="field">
+                    <div class="three fields">
+                        <div class="field">
+                            <input type="text" placeholder="Name"/>
+                        </div>
+                        <div class="field">
+                            <input type="text" placeholder="Value"/>
+                        </div>
+                        <div class="two buttons">
+                            <div class="ui red button">
+                                <i class="remove icon"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <h4 class="ui horizontal divider header">
+                Cookies
+            </h4>
+            <div class="cookies">
+
+            </div>
             <div class="field">
                 <label>Body</label>
                 <textarea rows="5" th:field="*{body}">
