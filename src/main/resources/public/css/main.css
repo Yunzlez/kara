@@ -71,6 +71,10 @@
     margin-top: 0;
 }
 
+#requestdesc:hover{
+    cursor: pointer;
+}
+
 #top-message{
     margin-bottom: 0;
 }

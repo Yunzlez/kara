@@ -25,7 +25,6 @@ $(document).ready(function () {
         }
         else {
             var reqdesc = $("#requestdesc");
-            reqdesc.show();
 
             var codedef;
             code_defs.forEach(function (def) {
@@ -33,11 +32,13 @@ $(document).ready(function () {
                    codedef = def;
                }
             });
-            console.log(codedef);
-            reqdesc.val(codedef.phrase);
-/*            reqdesc.val(code_defs.find(function (code) {
-                return code.code === rCode;
-            }));*/
+            if(codedef){
+                reqdesc.html(codedef.phrase);
+                reqdesc.show();
+            }
+            else {
+                reqdesc.hide();
+            }
         }
     });
 });
