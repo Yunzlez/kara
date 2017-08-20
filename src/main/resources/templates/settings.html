@@ -7,40 +7,40 @@
     <link rel="stylesheet" type="text/css" th:href="@{/css/main.css}" href="../public/css/main.css"/>
 </head>
 <body>
-    <div class="ui container">
-        <h1 th:text="'Bin ' + ${binName}+ ' settings'">Bin Settings</h1>
-        <h3>Custom reply</h3>
-        <form th:action="@{settings}" th:object="${reply}" method="post">
-            <div class="ui form">
-                <div class="ui labeled fluid input">
-                    <div class="ui label">
-                        Return Code
+<div class="ui container">
+    <h1 th:text="'Bin ' + ${binName}+ ' settings'">Bin Settings</h1>
+    <h3>Custom reply</h3>
+    <form th:action="@{settings}" th:object="${reply}" method="post">
+        <div class="ui form">
+            <div class="ui labeled fluid input">
+                <div class="ui label">
+                    Return Code
+                </div>
+                <div class="inline field">
+                    <input th:field="*{code}" type="number" max="599" id="requestcode" maxlength="3" minlength="3"/>
+                    <div class="ui left pointing label" id="requestdesc">
+                        NOT_FOUND
                     </div>
-                    <div class="inline field">
-                        <input th:field="*{code}" type="number" max="599" id="requestcode" maxlength="3" minlength="3"/>
-                        <div class="ui left pointing label" id="requestdesc">
-                            NOT_FOUND
-                        </div>
-                    </div>
+                </div>
 
-                </div>
-                <br/>
-                <div class="ui labeled input">
-                    <div class="ui label">Content-Type</div>
-                    <input th:field="*{mimeType}"/>
-                </div>
-                <br/>
-                <br/>
-                <div class="field">
-                    <label>Body</label>
-                    <textarea rows="5" th:field="*{body}">
-                    </textarea>
-                </div>
-                <button class="ui green submit button" type="submit">Save</button>
-                <div class="ui red button" id="canceledit">Cancel</div>
             </div>
-        </form>
-    </div>
+            <br/>
+            <div class="ui labeled input">
+                <div class="ui label">Content-Type</div>
+                <input th:field="*{mimeType}"/>
+            </div>
+            <br/>
+            <br/>
+            <div class="field">
+                <label>Body</label>
+                <textarea rows="5" th:field="*{body}">
+                    </textarea>
+            </div>
+            <button class="ui green submit button" type="submit">Save</button>
+            <div class="ui red button" id="canceledit">Cancel</div>
+        </div>
+    </form>
+</div>
 </body>
 <script
         src="https://code.jquery.com/jquery-3.2.1.min.js"

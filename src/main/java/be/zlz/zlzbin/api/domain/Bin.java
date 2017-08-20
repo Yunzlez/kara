@@ -1,7 +1,5 @@
 package be.zlz.zlzbin.api.domain;
 
-import org.hibernate.annotations.Cascade;
-
 import javax.persistence.*;
 import java.util.Date;
 import java.util.List;
