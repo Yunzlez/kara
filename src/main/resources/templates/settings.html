@@ -44,19 +44,44 @@
                             <input type="text" placeholder="Value"/>
                         </div>
                         <div class="two buttons">
-                            <div class="ui red button">
+                            <div class="ui red button removebtn">
                                 <i class="remove icon"></i>
+                                Remove
                             </div>
                         </div>
                     </div>
+                </div>
+                <div class="ui button green" id="addHeader">
+                    <i class="icon plus"></i>
+                    Add
                 </div>
             </div>
             <h4 class="ui horizontal divider header">
                 Cookies
             </h4>
             <div class="cookies">
-
+                <div class="field">
+                    <div class="three fields">
+                        <div class="field">
+                            <input type="text" placeholder="Name"/>
+                        </div>
+                        <div class="field">
+                            <input type="text" placeholder="Value"/>
+                        </div>
+                        <div class="two buttons">
+                            <div class="ui red button removebtn">
+                                <i class="remove icon"></i>
+                                Remove
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="ui button green" id="addHeader">
+                    <i class="icon plus"></i>
+                    Add
+                </div>
             </div>
+            <div class="ui horizontal divider"></div>
             <div class="field">
                 <label>Body</label>
                 <textarea rows="5" th:field="*{body}">
