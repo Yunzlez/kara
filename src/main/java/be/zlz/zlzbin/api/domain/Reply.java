@@ -33,15 +33,19 @@ public class Reply {
     @Expose
     private Map<String, String> headers;
 
+    @Expose(serialize = false)
+    private boolean custom = false;
+
     public Reply() {
     }
 
-    public Reply(HttpStatus code, String mimeType, String body, Map<String, String> cookies, Map<String, String> headers) {
+    public Reply(HttpStatus code, String mimeType, String body, Map<String, String> cookies, Map<String, String> headers, boolean custom) {
         this.code = code;
         this.mimeType = mimeType;
         this.body = body;
         this.cookies = cookies;
         this.headers = headers;
+        this.custom = custom;
     }
 
     public HttpStatus getCode() {
@@ -86,5 +90,13 @@ public class Reply {
 
     public long getId() {
         return id;
+    }
+
+    public boolean isCustom() {
+        return custom;
+    }
+
+    public void setCustom(boolean custom) {
+        this.custom = custom;
     }
 }

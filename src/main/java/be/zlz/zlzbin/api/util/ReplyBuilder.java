@@ -1,6 +1,7 @@
 package be.zlz.zlzbin.api.util;
 
 import be.zlz.zlzbin.api.domain.Reply;
+import com.sun.org.apache.regexp.internal.RE;
 import org.springframework.http.HttpStatus;
 
 import java.util.HashMap;
@@ -17,6 +18,8 @@ public class ReplyBuilder {
     private Map<String, String> cookies;
 
     private Map<String, String> headers;
+
+    private boolean custom = false;
 
     public ReplyBuilder(){
         cookies = new HashMap<>();
@@ -38,6 +41,11 @@ public class ReplyBuilder {
         return this;
     }
 
+    public ReplyBuilder setCustom(boolean custom){
+        this.custom = custom;
+        return this;
+    }
+
     public ReplyBuilder addCookie(String name, String value){
         cookies.put(name, value);
         return this;
@@ -54,6 +62,6 @@ public class ReplyBuilder {
     }
 
     public Reply build(){
-        return new Reply(code, mimeType, body, cookies, headers);
+        return new Reply(code, mimeType, body, cookies, headers, custom);
     }
 }

@@ -105,6 +105,7 @@ public class BinController {
                 replyBuilder.setCode(HttpStatus.valueOf(reply.getCode()))
                         .setMimeType(reply.getMimeType())
                         .setBody(reply.getBody())
+                        .setCustom(true)
                         .build()
         );
 

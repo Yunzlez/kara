@@ -17,6 +17,7 @@ public class ReplyService {
                 .setCode(HttpStatus.OK)
                 .setMimeType("application/json")
                 .addAllHeaders(request.getHeaders())
+                .setCustom(false)
                 .build();
     }
 }

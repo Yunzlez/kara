@@ -49,8 +49,16 @@ public class RequestController {
         reply.getHeaders().remove("content-type"); //set using another header
         reply.getHeaders().remove("content-length"); //calculated
 
+        String jsonReply;
+
+        if (reply.isCustom()){
+            jsonReply = reply.getBody();
+        }
+        else {
+            jsonReply = gson.toJson(reply);
+        }
+
         //calculate the content-length. java string is UTF-16 so convert to UTF8 and count
-        String jsonReply = gson.toJson(reply);
         byte[] stringbytes = jsonReply.getBytes(StandardCharsets.UTF_8);
         httpHeaders.setContentLength(stringbytes.length);
 
