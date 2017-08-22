@@ -43,9 +43,11 @@ public class RequestController {
         httpHeaders.setContentType(MediaType.parseMediaType(reply.getMimeType()));
         logger.debug("Set content-type header to " + httpHeaders.getContentType());
 
-        //calculate the content-length. java string is UTF-16 so convert to UTF8 and count
-        byte[] stringbytes = reply.getBody().getBytes(StandardCharsets.UTF_8);
-        httpHeaders.setContentLength(stringbytes.length);
+        if(reply.getBody() != null){
+            //calculate the content-length. java string is UTF-16 so convert to UTF8 and count
+            byte[] stringbytes = reply.getBody().getBytes(StandardCharsets.UTF_8);
+            httpHeaders.setContentLength(stringbytes.length);
+        }
 
         reply.getHeaders().remove("content-type"); //set using another header
         reply.getHeaders().remove("content-length"); //calculated
