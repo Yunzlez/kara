@@ -56,7 +56,7 @@ public class RequestController {
 
         reply.getHeaders().forEach(httpHeaders::add);
 
-        return new ResponseEntity<>(gson.toJson(reply), httpHeaders, reply.getCode());
+        return new ResponseEntity<>(jsonReply, httpHeaders, reply.getCode());
     }
 
 
