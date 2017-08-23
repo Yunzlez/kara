@@ -8,6 +8,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.time.ZoneId;
@@ -16,6 +18,7 @@ import java.util.Date;
 import java.util.List;
 
 @Component
+@Transactional(propagation = Propagation.REQUIRES_NEW)
 public class BinCleanupTask {
 
     private Logger logger;
@@ -36,12 +39,18 @@ public class BinCleanupTask {
         LocalDate lastweek = LocalDate.now().minus(1, ChronoUnit.WEEKS);
         List<Bin> toDelete = binRepository.getBinByCreationDateBefore(Date.from(lastweek.atStartOfDay(ZoneId.systemDefault()).toInstant()));
 
-        toDelete.forEach(bin -> {
-            long id = bin.getId();
-            logger.info("Found bin " + id + " with name " + bin.getName() + " and creationdate " + bin.getCreationDate().toString() + ". Deleting...");
-            requestRepository.deleteAllByBin(bin);
-            binRepository.delete(bin);
-        });
+        if(toDelete != null){
+            toDelete.forEach(bin -> {
+                long id = bin.getId();
+                logger.info("Found bin " + id + " with name " + bin.getName() + " and creationdate " + bin.getCreationDate().toString() + ". Deleting...");
+                requestRepository.deleteAllByBin(bin);
+                binRepository.delete(bin);
+            });
+        }
+        else{
+            logger.info("No expired bins");
+        }
+
         logger.info("Cleanup completed");
     }
 }
