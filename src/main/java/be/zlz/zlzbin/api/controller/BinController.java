@@ -57,7 +57,10 @@ public class BinController {
     @GetMapping(value = "/bin/{uuid}/log", produces = "application/json")
     @ResponseBody
     public List<Request> getLogForUuidAsJson(@PathVariable String uuid) {
-        return requestRepository.getAllByBin(binRepository.getByName(uuid));
+        if(binRepository.getByName(uuid) == null){
+            throw new ResourceNotFoundException("Could not find bin with name " + uuid);
+        }
+        return requestRepository.getAllByBinOrderByRequestTimeAsc(binRepository.getByName(uuid));
     }
 
     @GetMapping(value = "/bin/{uuid}/log", produces = "text/html")
@@ -67,7 +70,7 @@ public class BinController {
         }
         model.put("pageTitle", "Bin " + uuid);
         model.put("binName", uuid);
-        List<Request> requests = requestRepository.getAllByBin(binRepository.getByName(uuid));
+        List<Request> requests = requestRepository.getAllByBinOrderByRequestTimeAsc(binRepository.getByName(uuid));
         model.put("requests", requests);
         model.put("requestCount", requests.size());
         logger.debug("Creating request URL: " + baseUrl + "/bin/" + uuid);
