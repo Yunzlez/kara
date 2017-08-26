@@ -15,6 +15,7 @@ import org.springframework.http.HttpEntity;
 import org.springframework.stereotype.Service;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -74,6 +75,9 @@ public class RequestService {
             logger.warn("Constraint violation:", cve);
             throw new BadRequestException(cve.getMessage());
         }
+
+        bin.setLastRequest(new Date());
+        binRepository.save(bin);
 
         if(bin.getReply() !=null){
             return bin.getReply();

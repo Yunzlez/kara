@@ -16,6 +16,9 @@ public class Bin {
     @Temporal(TemporalType.DATE)
     private Date creationDate;
 
+    @Temporal(TemporalType.DATE)
+    private Date lastRequest;
+
     @OneToMany
     private List<Request> requests;
 
@@ -61,5 +64,13 @@ public class Bin {
 
     public void setReply(Reply reply) {
         this.reply = reply;
+    }
+
+    public Date getLastRequest() {
+        return lastRequest;
+    }
+
+    public void setLastRequest(Date lastRequest) {
+        this.lastRequest = lastRequest;
     }
 }

@@ -7,7 +7,9 @@ import java.util.Date;
 import java.util.List;
 
 public interface BinRepository extends CrudRepository<Bin, Long> {
-    public Bin getByName(String name);
+    Bin getByName(String name);
 
-    public List<Bin> getBinByCreationDateBefore(Date date);
+    List<Bin> getBinByCreationDateBefore(Date date);
+
+    List<Bin> getBinByLastRequestBefore(Date date);
 }
