@@ -41,7 +41,26 @@ $(document).ready(function () {
             }
         }
     });
+
+    var toPrettyfy = document.getElementsByClassName("pretty");
+    for(var i = 0; i < toPrettyfy.length; i++){
+        if(tmp = safeParse(toPrettyfy[i].innerHTML))
+        toPrettyfy[i].innerHTML = JSON.stringify(tmp, null, 4);
+    }
+
+    hljs.initHighlightingOnLoad();
 });
+
+function safeParse(json) {
+    var parsed;
+    try {
+        parsed = JSON.parse(json);
+    } catch (e){
+        //whatever
+    }
+
+    return parsed;
+}
 
 $('.message .close')
     .on('click', function() {
