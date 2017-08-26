@@ -28,6 +28,7 @@ public class Bin {
     public Bin(String name) {
         this.name = name;
         this.creationDate = new Date();
+        this.lastRequest = this.creationDate;
     }
 
     public Bin() {
