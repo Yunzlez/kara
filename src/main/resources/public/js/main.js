@@ -48,7 +48,10 @@ $(document).ready(function () {
         toPrettyfy[i].innerHTML = JSON.stringify(tmp, null, 4);
     }
 
-    hljs.initHighlightingOnLoad();
+    //hljs.initHighlightingOnLoad();
+    $('pre code').each(function(i, block) {
+        hljs.highlightBlock(block);
+    });
 });
 
 function safeParse(json) {
