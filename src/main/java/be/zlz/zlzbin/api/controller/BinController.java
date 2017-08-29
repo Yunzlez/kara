@@ -104,6 +104,7 @@ public class BinController {
     public String saveBinSetup(@PathVariable String uuid, @ModelAttribute ReplyDTO reply) {
         Bin bin = binRepository.getByName(uuid);
         ReplyBuilder replyBuilder = new ReplyBuilder();
+        //todo: VALIDATE
         bin.setReply(
                 replyBuilder.setCode(HttpStatus.valueOf(reply.getCode()))
                         .setMimeType(reply.getMimeType())
