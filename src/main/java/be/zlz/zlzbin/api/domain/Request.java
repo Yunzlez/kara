@@ -25,6 +25,7 @@ public class Request {
 
     @ElementCollection(targetClass = String.class)
     @MapKeyClass(String.class)
+    @Column(name="headers", length = 1000, columnDefinition = "TEXT")
     private Map<String, String> headers;
 
     private String protocol;
