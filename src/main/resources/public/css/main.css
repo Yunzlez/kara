@@ -84,14 +84,26 @@
     margin-top: 22px;
 }
 
+#emptybtn{
+    float: right;
+    margin-top: 22px;
+}
+
 #title{
     float: left;
-    width: 90%;
+    width: 80%;
 }
 
 @media (min-width: 992px) {
     .ellipsize {
         width: 700px;
+    }
+}
+
+@media (max-width: 700px) {
+    #title{
+        float: left;
+        width: 65%;
     }
 }
 

@@ -13,6 +13,13 @@ $("#canceledit").click(function () {
     window.location.href = window.location.href.substr(0, loc.lastIndexOf("/"));
 });
 
+$("#emptybtn").click(function () {
+    if(window.confirm("Are you sure you want to clear this bin?")){
+        var loc = window.location.href;
+        window.location.href = window.location.href.substr(0, loc.lastIndexOf("/")) + "/delete";
+    }
+});
+
 $(document).ready(function () {
     $("#requestdesc").hide();
 

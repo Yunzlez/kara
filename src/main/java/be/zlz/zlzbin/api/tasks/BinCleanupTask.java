@@ -3,6 +3,7 @@ package be.zlz.zlzbin.api.tasks;
 import be.zlz.zlzbin.api.domain.Bin;
 import be.zlz.zlzbin.api.repositories.BinRepository;
 import be.zlz.zlzbin.api.repositories.RequestRepository;
+import be.zlz.zlzbin.api.services.BinService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,6 +30,9 @@ public class BinCleanupTask {
     @Autowired
     private RequestRepository requestRepository;
 
+    @Autowired
+    private BinService binService;
+
     public BinCleanupTask() {
         logger = LoggerFactory.getLogger(this.getClass());
     }
@@ -41,10 +45,8 @@ public class BinCleanupTask {
 
         if(toDelete != null){
             toDelete.forEach(bin -> {
-                long id = bin.getId();
-                logger.info("Found bin " + id + " with name " + bin.getName() + " and creationdate " + bin.getCreationDate().toString() + ". Deleting...");
-                requestRepository.deleteAllByBin(bin);
-                binRepository.delete(bin);
+                logger.info("Found bin " + bin.getId() + " with name " + bin.getName() + " and creationdate " + bin.getCreationDate().toString() + ". Deleting...");
+                binService.deleteBin(bin);
             });
         }
         else{

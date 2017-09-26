@@ -6,6 +6,7 @@ import be.zlz.zlzbin.api.dto.ReplyDTO;
 import be.zlz.zlzbin.api.exceptions.ResourceNotFoundException;
 import be.zlz.zlzbin.api.repositories.BinRepository;
 import be.zlz.zlzbin.api.repositories.RequestRepository;
+import be.zlz.zlzbin.api.services.BinService;
 import be.zlz.zlzbin.api.services.ReplyService;
 import be.zlz.zlzbin.api.util.ReplyBuilder;
 import org.slf4j.Logger;
@@ -32,6 +33,9 @@ public class BinController {
     @Autowired
     private ReplyService replyService;
 
+    @Autowired
+    private BinService binService;
+
     @Value("${base.url}")
     private String baseUrl;
 
@@ -47,7 +51,7 @@ public class BinController {
 
         Bin bin = new Bin(name);
         binRepository.save(bin);
-
+        logger.info("created bin with UUID {}", name);
         logger.debug("BaseURL = " + baseUrl);
 
         return "redirect:"+ baseUrl + "/bin/" + name + "/log";
@@ -126,10 +130,9 @@ public class BinController {
     }
 
     @GetMapping(value = "/bin/{uuid}/delete")
-    @ResponseBody
     public String deleteBin(@PathVariable String uuid) {
-        //todo implement
-        return "redirect:/";
+        binService.clearBin(uuid);
+        return "redirect:/bin/" + uuid + "/log";
     }
 
     private void setCounts(List<Request> requests, Map<String, Object> model) {
