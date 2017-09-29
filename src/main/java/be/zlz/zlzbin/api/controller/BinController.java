@@ -2,7 +2,7 @@ package be.zlz.zlzbin.api.controller;
 
 import be.zlz.zlzbin.api.domain.Bin;
 import be.zlz.zlzbin.api.domain.Request;
-import be.zlz.zlzbin.api.dto.ReplyDTO;
+import be.zlz.zlzbin.api.dto.SettingDTO;
 import be.zlz.zlzbin.api.exceptions.ResourceNotFoundException;
 import be.zlz.zlzbin.api.repositories.BinRepository;
 import be.zlz.zlzbin.api.repositories.RequestRepository;
@@ -15,10 +15,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
 
 @Controller
@@ -94,32 +96,47 @@ public class BinController {
         model.put("binName", uuid);
 
         logger.debug("bin " + bin + "with uuid " + uuid);
+
+        SettingDTO settings;
         if(bin.getReply() != null){
-            model.put("reply",bin.getReply());
+            settings = new SettingDTO(bin.getReply());
         }
         else {
-            model.put("reply", new ReplyDTO());
+            settings = new SettingDTO();
         }
+        settings.setCustomName(bin.getName());
+        settings.setPermanent(bin.isPermanent());
+        model.put("reply", settings);
 
         return "settings";
     }
 
     @PostMapping(value = "/bin/{uuid}/log/settings", produces = "application/json")
-    public String saveBinSetup(@PathVariable String uuid, @ModelAttribute ReplyDTO reply) {
+    public String saveBinSetup(@PathVariable String uuid, @ModelAttribute SettingDTO settings, BindingResult bindingResult) {
         Bin bin = binRepository.getByName(uuid);
         ReplyBuilder replyBuilder = new ReplyBuilder();
-        //todo: VALIDATE
-        bin.setReply(
-                replyBuilder.setCode(HttpStatus.valueOf(reply.getCode()))
-                        .setMimeType(reply.getMimeType())
-                        .setBody(reply.getBody())
-                        .setCustom(true)
-                        .build()
-        );
+        if(!(settings.getCode() == null || settings.getMimeType() == null || settings.getBody() == null)){
+            bin.setReply(
+                    replyBuilder.setCode(HttpStatus.valueOf(settings.getCode()))
+                            .setMimeType(settings.getMimeType())
+                            .setBody(settings.getBody())
+                            .setCustom(true)
+                            .build()
+            );
+        }
+        String redirect = uuid;
+        if(settings.getCustomName() != null){
+            bin.setName(settings.getCustomName());
+            redirect = settings.getCustomName();
+        }
+        if(!bin.isPermanent() && settings.isPermanent()){
+            binService.clearBin(uuid);
+        }
+        bin.setPermanent(settings.isPermanent());
 
         binRepository.save(bin);
 
-        return "redirect:/bin/" +  uuid  + "/log";
+        return "redirect:/bin/" +  redirect  + "/log";
     }
 
     @GetMapping(value = "/bin/{uuid}/log/charts")

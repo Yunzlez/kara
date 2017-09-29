@@ -25,10 +25,15 @@ public class Bin {
     @OneToOne(cascade = CascadeType.ALL)
     private Reply reply;
 
+    private boolean permanent;
+
+    private int requestCount;
+
     public Bin(String name) {
         this.name = name;
         this.creationDate = new Date();
         this.lastRequest = this.creationDate;
+        this.requestCount = 0;
     }
 
     public Bin() {
@@ -73,5 +78,21 @@ public class Bin {
 
     public void setLastRequest(Date lastRequest) {
         this.lastRequest = lastRequest;
+    }
+
+    public boolean isPermanent() {
+        return permanent;
+    }
+
+    public void setPermanent(boolean permanent) {
+        this.permanent = permanent;
+    }
+
+    public int getRequestCount() {
+        return requestCount;
+    }
+
+    public void setRequestCount(int requestCount) {
+        this.requestCount = requestCount;
     }
 }

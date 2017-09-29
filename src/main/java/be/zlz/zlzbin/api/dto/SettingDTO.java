@@ -1,10 +1,12 @@
 package be.zlz.zlzbin.api.dto;
 
+import be.zlz.zlzbin.api.domain.Reply;
+
 import java.util.List;
 
-public class ReplyDTO {
+public class SettingDTO {
 
-    private int code;
+    private Integer code;
 
     private String mimeType;
 
@@ -19,13 +21,26 @@ public class ReplyDTO {
 
     private List<String> cookieValues;
 
-    public ReplyDTO() {
+    private String customName;
+
+    private boolean isPermanent;
+
+    public SettingDTO() {
     }
 
-    public ReplyDTO(int code, String mimeType, String body) {
+    public SettingDTO(Reply reply){
+        this.code = reply.getCode().value();
+        this.body = reply.getBody();
+        this.mimeType = reply.getMimeType();
+        isPermanent = false;
+    }
+
+    public SettingDTO(int code, String mimeType, String body, String customName, boolean isPermanent) {
         this.code = code;
         this.mimeType = mimeType;
         this.body = body;
+        this.customName = customName;
+        this.isPermanent = isPermanent;
     }
 
     public List<String> getHeaderNames() {
@@ -60,7 +75,7 @@ public class ReplyDTO {
         this.cookieValues = cookieValues;
     }
 
-    public int getCode() {
+    public Integer getCode() {
         return code;
     }
 
@@ -82,5 +97,21 @@ public class ReplyDTO {
 
     public void setBody(String body) {
         this.body = body;
+    }
+
+    public String getCustomName() {
+        return customName;
+    }
+
+    public void setCustomName(String customName) {
+        this.customName = customName;
+    }
+
+    public boolean isPermanent() {
+        return isPermanent;
+    }
+
+    public void setPermanent(boolean permanent) {
+        isPermanent = permanent;
     }
 }

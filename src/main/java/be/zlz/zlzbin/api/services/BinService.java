@@ -27,7 +27,9 @@ public class BinService {
     public void clearBin(String uuid){
         Bin bin = binRepository.getByName(uuid);
         if(bin != null){
+            bin.setRequestCount(0);
             requestRepository.deleteAllByBin(bin);
+            binRepository.save(bin);
         }
     }
 }

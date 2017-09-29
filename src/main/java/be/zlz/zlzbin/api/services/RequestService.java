@@ -11,6 +11,7 @@ import org.hibernate.exception.ConstraintViolationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.stereotype.Service;
 
@@ -31,6 +32,9 @@ public class RequestService {
 
     private Logger logger;
 
+    @Value("${permanent.bin.max.count}")
+    private int maxRequestsForPermanentBin;
+
     @Autowired
     public RequestService(BinRepository binRepository, RequestRepository requestRepository, ReplyService replyService){
         logger = LoggerFactory.getLogger(this.getClass());
@@ -46,6 +50,9 @@ public class RequestService {
 
         if (bin == null) {
             throw new ResourceNotFoundException("No bin with that name exists");
+        }
+        if(bin.getRequestCount() >= maxRequestsForPermanentBin){
+            throw new BadRequestException("You reached the limit for this bin. Permanent bins have a limit of " + maxRequestsForPermanentBin + " requests.");
         }
 
         request.setBin(bin);
@@ -77,6 +84,7 @@ public class RequestService {
         }
 
         bin.setLastRequest(new Date());
+        bin.setRequestCount(bin.getRequestCount()+1);
         binRepository.save(bin);
 
         if(bin.getReply() !=null){

@@ -12,6 +12,25 @@
     <h3 class="ui dividing header">Custom reply</h3>
     <form th:action="@{settings}" th:object="${reply}" method="post">
         <div class="ui form">
+            <div class="field">
+                <div class="ui labeled fluid input">
+                    <div class="ui label">
+                        Bin name
+                    </div>
+                    <div class="inline field">
+                        <input th:field="*{customName}" type="text"/>
+                    </div>
+                </div>
+            </div>
+            <div class="field">
+                <div class="ui checkbox">
+                    <input type="checkbox" th:field="*{permanent}"/>
+                    <label>Make this bin permanent</label>
+                </div>
+            </div>
+            <h4 class="ui horizontal divider header">
+                Custom reply
+            </h4>
             <div class="ui labeled fluid input">
                 <div class="ui label">
                     Return Code
@@ -76,7 +95,7 @@
                         </div>
                     </div>
                 </div>
-                <div class="ui button green" id="addHeader">
+                <div class="ui button green" id="addCookier">
                     <i class="icon plus"></i>
                     Add
                 </div>

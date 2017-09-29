@@ -41,7 +41,7 @@ public class BinCleanupTask {
     public void cleanOldBins() {
         logger.info("Running cleanup task...");
         LocalDate lastweek = LocalDate.now().minus(1, ChronoUnit.WEEKS);
-        List<Bin> toDelete = binRepository.getBinByCreationDateBefore(Date.from(lastweek.atStartOfDay(ZoneId.systemDefault()).toInstant()));
+        List<Bin> toDelete = binRepository.getBinByLastRequestBeforeAndPermanentIsFalse(Date.from(lastweek.atStartOfDay(ZoneId.systemDefault()).toInstant()));
 
         if(toDelete != null){
             toDelete.forEach(bin -> {
