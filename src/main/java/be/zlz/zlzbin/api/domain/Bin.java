@@ -11,6 +11,7 @@ public class Bin {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
 
+    @Column(unique = true)
     private String name;
 
     @Temporal(TemporalType.DATE)
