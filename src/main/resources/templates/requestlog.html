@@ -10,6 +10,7 @@
           href="../public/css/solarized-dark.css"/>
 </head>
 <body>
+<!--/*@thymesVar id="currentPage" type="org.springframework.data.domain.Page"*/-->
 <div class="ui container">
     <div class="spaced"></div>
     <div th:if="${saveSuccessful}" class="ui success message" id="top-message">
@@ -66,11 +67,18 @@
 
     <div class="flex-menu-container" th:if="${pageCount} > 1">
         <div class="ui pagination menu flex-menu-item">
-            <a th:each="i:${#numbers.sequence(0,pageCount-1)}" th:classappend="${currentPage} == ${i} ? active"
-               class="item"
-               th:href="@{''(page=${i}, limit=${currentLimit})}">
-                <span th:text="${i}"></span>
-            </a>
+            <div th:hidden="${currentPage.number} == 0" class="item">
+                <a th:if="!${currentPage.first}"
+                   th:href="@{''(page=${currentPage.number} - 1 , limit=${currentLimit})}">&lt;&lt;</a>
+            </div>
+            <div class="item">
+                <span th:text="${currentPage.number} + 1"></span><span>/</span><span
+                    th:text="${currentPage.totalPages}"></span>
+            </div>
+            <div th:hidden="${currentPage.number} +1 > ${currentPage.totalPages}" class="item">
+                <a th:if="!${currentPage.last}" th:href="@{''(page=${currentPage.number} + 1 , limit=${currentLimit})}">&gt;&gt;
+                </a>
+            </div>
         </div>
     </div>
 
@@ -128,14 +136,20 @@
 
     </div>
     <div class="spacer"></div>
-    <!--todo fix for large no of pages-->
     <div class="flex-menu-container" th:if="${pageCount} > 1">
         <div class="ui pagination menu flex-menu-item">
-            <a th:each="i:${#numbers.sequence(0,pageCount-1)}" th:classappend="${currentPage} == ${i} ? active"
-               class="item"
-               th:href="@{''(page=${i}, limit=${currentLimit})}">
-                <span th:text="${i}"></span>
-            </a>
+            <div th:hidden="${currentPage.number} == 0" class="item">
+                <a th:if="!${currentPage.first} +1 "
+                   th:href="@{''(page=${currentPage.number} , limit=${currentLimit})}">&lt;&lt;</a>
+            </div>
+            <div class="item">
+                <span th:text="${currentPage.number}"></span><span>/</span><span
+                    th:text="${currentPage.totalPages}-1"></span>
+            </div>
+            <div th:hidden="${currentPage.number} +1 > ${currentPage.totalPages}" class="item">
+                <a th:if="!${currentPage.last}" th:href="@{''(page=${currentPage.number} + 1 , limit=${currentLimit})}">&gt;&gt;
+                </a>
+            </div>
         </div>
     </div>
 </div>

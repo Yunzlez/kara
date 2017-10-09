@@ -23,7 +23,6 @@ import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
-import javax.validation.Valid;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -93,7 +92,7 @@ public class BinController {
         model.put("requests", requests);
         model.put("requestCount", current.getTotalElements());
         model.put("pageCount", current.getTotalPages());
-        model.put("currentPage", page);
+        model.put("currentPage", current);
         model.put("currentLimit", limit);
         logger.debug("Creating request URL: " + baseUrl + "/bin/" + uuid);
         logger.debug("baseUrl = " + baseUrl);
