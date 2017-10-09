@@ -1,12 +1,17 @@
 package be.zlz.zlzbin.api.services;
 
 import be.zlz.zlzbin.api.domain.Bin;
+import be.zlz.zlzbin.api.domain.BinaryRequest;
 import be.zlz.zlzbin.api.domain.Reply;
 import be.zlz.zlzbin.api.domain.Request;
 import be.zlz.zlzbin.api.exceptions.BadRequestException;
 import be.zlz.zlzbin.api.exceptions.ResourceNotFoundException;
 import be.zlz.zlzbin.api.repositories.BinRepository;
+import be.zlz.zlzbin.api.repositories.BinaryrequestRepository;
 import be.zlz.zlzbin.api.repositories.RequestRepository;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.dataformat.smile.SmileFactory;
 import org.hibernate.exception.ConstraintViolationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -30,17 +35,25 @@ public class RequestService {
 
     private ReplyService replyService;
 
+    private final BinaryrequestRepository binaryrequestRepository;
+
     private Logger logger;
+
+    private static ObjectMapper smileMapper = new ObjectMapper(new SmileFactory());
+
+    @Value("${store.request.binary}")
+    private boolean storeBinaryRequests;
 
     @Value("${permanent.bin.max.count}")
     private int maxRequestsForPermanentBin;
 
     @Autowired
-    public RequestService(BinRepository binRepository, RequestRepository requestRepository, ReplyService replyService){
+    public RequestService(BinRepository binRepository, RequestRepository requestRepository, ReplyService replyService, BinaryrequestRepository binaryrequestRepository){
         logger = LoggerFactory.getLogger(this.getClass());
         this.binRepository = binRepository;
         this.requestRepository = requestRepository;
         this.replyService = replyService;
+        this.binaryrequestRepository = binaryrequestRepository;
     }
 
     public Reply createRequest(HttpServletRequest servletRequest, HttpEntity<String> body, String uuid, Map<String, String> headers){
@@ -76,12 +89,25 @@ public class RequestService {
         logger.debug(servletRequest.getQueryString());
         request.setQueryParams(extractQueryParams(servletRequest.getQueryString()));
 
-        try {
-            requestRepository.save(request);
-        } catch (ConstraintViolationException cve) {
-            logger.warn("Constraint violation:", cve);
-            throw new BadRequestException(cve.getMessage());
+        if(storeBinaryRequests){
+            BinaryRequest binaryRequest = new BinaryRequest();
+            binaryRequest.setBin(bin);
+            try {
+                binaryRequest.setBinaryRequest(smileMapper.writeValueAsBytes(request));
+                binaryrequestRepository.save(binaryRequest);
+            } catch (JsonProcessingException e) {
+                throw new BadRequestException("could not store binary request", e);
+            }
         }
+        else {
+            try {
+                requestRepository.save(request);
+            } catch (ConstraintViolationException cve) {
+                logger.warn("Constraint violation:", cve);
+                throw new BadRequestException(cve.getMessage());
+            }
+        }
+
 
         bin.setLastRequest(new Date());
         bin.setRequestCount(bin.getRequestCount()+1);

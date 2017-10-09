@@ -23,6 +23,9 @@ public class Bin {
     @OneToMany
     private List<Request> requests;
 
+    @OneToMany
+    private List<BinaryRequest> binaryRequests;
+
     @OneToOne(cascade = CascadeType.ALL)
     private Reply reply;
 
@@ -56,6 +59,10 @@ public class Bin {
 
     public List<Request> getRequests() {
         return requests;
+    }
+
+    public List<BinaryRequest> getBinaryRequests() {
+        return binaryRequests;
     }
 
     public long getId() {
