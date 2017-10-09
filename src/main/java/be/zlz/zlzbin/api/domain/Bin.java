@@ -20,10 +20,10 @@ public class Bin {
     @Temporal(TemporalType.DATE)
     private Date lastRequest;
 
-    @OneToMany
+    @OneToMany(mappedBy = "bin")
     private List<Request> requests;
 
-    @OneToMany
+    @OneToMany(mappedBy = "bin")
     private List<BinaryRequest> binaryRequests;
 
     @OneToOne(cascade = CascadeType.ALL)
