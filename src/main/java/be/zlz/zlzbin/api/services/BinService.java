@@ -28,6 +28,7 @@ public class BinService {
         Bin bin = binRepository.getByName(uuid);
         if(bin != null){
             bin.setRequestCount(0);
+            bin.getRequestMetric().getCounts().clear();
             requestRepository.deleteAllByBin(bin);
             binRepository.save(bin);
         }

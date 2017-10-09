@@ -26,7 +26,7 @@
         <div class="content">
             <div class="header">Request URL</div>
             <p><!--/*@thymesVar id="requestUrl" type="String"*/-->
-            <a th:text="${requestUrl}" th:href="${requestUrl}"></a></p>
+                <a th:text="${requestUrl}" th:href="${requestUrl}"></a></p>
         </div>
     </div>
     <div class="flexcontainer">
@@ -61,6 +61,20 @@
             <div class="label">Patch</div>
         </div>
     </div>
+
+    <div class="spacer"></div>
+
+    <div class="flex-menu-container" th:if="${pageCount} > 1">
+        <div class="ui pagination menu flex-menu-item">
+            <a th:each="i:${#numbers.sequence(0,pageCount-1)}" th:classappend="${currentPage} == ${i} ? active"
+               class="item"
+               th:href="@{''(page=${i}, limit=${currentLimit})}">
+                <span th:text="${i}"></span>
+            </a>
+        </div>
+    </div>
+
+    <div class="spacer"></div>
 
     <div class="ui styled fluid accordion">
         <div th:each="request : ${requests}">
@@ -112,6 +126,17 @@
             </div>
         </div>
 
+    </div>
+    <div class="spacer"></div>
+    <!--todo fix for large no of pages-->
+    <div class="flex-menu-container" th:if="${pageCount} > 1">
+        <div class="ui pagination menu flex-menu-item">
+            <a th:each="i:${#numbers.sequence(0,pageCount-1)}" th:classappend="${currentPage} == ${i} ? active"
+               class="item"
+               th:href="@{''(page=${i}, limit=${currentLimit})}">
+                <span th:text="${i}"></span>
+            </a>
+        </div>
     </div>
 </div>
 </body>

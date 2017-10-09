@@ -18,6 +18,12 @@
     background-color: #184f7e;
 }
 
+.spacer{
+    height:20px;
+    width: 100%;
+    display: block;
+}
+
 .requesticon {
     font-weight: bold;
     color: white;
@@ -45,6 +51,11 @@
 
 .flexitem {
 
+}
+
+.flex-menu-container{
+    display: flex;
+    justify-content: center;
 }
 
 .fullscreendiv {

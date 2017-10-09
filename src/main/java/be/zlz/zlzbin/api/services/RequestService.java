@@ -85,8 +85,8 @@ public class RequestService {
 
         bin.setLastRequest(new Date());
         bin.setRequestCount(bin.getRequestCount()+1);
+        updateMetrics(bin, request);
         binRepository.save(bin);
-
         if(bin.getReply() !=null){
             return bin.getReply();
         }
@@ -108,6 +108,16 @@ public class RequestService {
         }
 
         return ret;
+    }
+
+    private void updateMetrics(Bin bin, Request req){
+        if(bin.getRequestMetric().getCounts().containsKey(req.getMethod().name())){
+            int cnt = bin.getRequestMetric().getCounts().get(req.getMethod().name());
+            bin.getRequestMetric().getCounts().put(req.getMethod().name(), cnt+1);
+        }
+        else{
+            bin.getRequestMetric().getCounts().put(req.getMethod().name(), 1);
+        }
     }
 
 }

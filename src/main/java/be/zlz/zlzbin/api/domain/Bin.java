@@ -26,6 +26,9 @@ public class Bin {
     @OneToOne(cascade = CascadeType.ALL)
     private Reply reply;
 
+    @OneToOne(cascade = CascadeType.ALL)
+    private RequestMetric requestMetric;
+
     private boolean permanent;
 
     private int requestCount;
@@ -34,11 +37,21 @@ public class Bin {
         this.name = name;
         this.creationDate = new Date();
         this.lastRequest = this.creationDate;
+        this.requestMetric = new RequestMetric(this);
         this.requestCount = 0;
     }
 
     public Bin() {
         this.creationDate = new Date();
+        this.requestMetric = new RequestMetric(this);
+    }
+
+    public RequestMetric getRequestMetric() {
+        return requestMetric;
+    }
+
+    public void setRequestMetric(RequestMetric requestMetric) {
+        this.requestMetric = requestMetric;
     }
 
     public List<Request> getRequests() {
