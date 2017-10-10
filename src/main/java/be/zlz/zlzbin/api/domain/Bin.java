@@ -1,5 +1,7 @@
 package be.zlz.zlzbin.api.domain;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import javax.persistence.*;
 import java.util.Date;
 import java.util.List;
@@ -27,6 +29,7 @@ public class Bin {
     private Reply reply;
 
     @OneToOne(cascade = CascadeType.ALL)
+    @JsonIgnore
     private RequestMetric requestMetric;
 
     private boolean permanent;
