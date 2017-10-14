@@ -1,5 +1,6 @@
 package be.zlz.zlzbin.api.domain;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.springframework.http.HttpMethod;
 
 import javax.persistence.*;
@@ -35,6 +36,7 @@ public class Request {
     private Map<String, String> queryParams;
 
     @ManyToOne
+    @JsonIgnore
     private Bin bin;
 
     public Request(HttpMethod method, String body, String protocol, Map<String, String> headers) {
