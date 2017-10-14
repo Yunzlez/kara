@@ -179,11 +179,56 @@ public class BinController {
 
     private void setRequestCounts(Bin bin, Map<String, Object> model){
         RequestMetric metric = bin.getRequestMetric();
+        if(metric == null){
+            doMigration(bin);
+            logger.info("doing migration for {}", bin.getName());
+            metric = bin.getRequestMetric();
+        }
 
         model.put("getCount", metric.getCounts().getOrDefault(HttpMethod.GET.name(), 0));
         model.put("postCount", metric.getCounts().getOrDefault(HttpMethod.POST.name(), 0));
         model.put("patchCount", metric.getCounts().getOrDefault(HttpMethod.PATCH.name(), 0));
         model.put("deleteCount", metric.getCounts().getOrDefault(HttpMethod.DELETE.name(), 0));
         model.put("putCount", metric.getCounts().getOrDefault(HttpMethod.PUT.name(), 0));
+    }
+
+    private void doMigration(Bin bin){
+        RequestMetric metric = new RequestMetric();
+        metric.setBin(bin);
+        bin.setRequestMetric(metric);
+        Page<Request> requests = requestRepository.getByBinOrderByRequestTimeDesc(bin, new PageRequest(0,10000));
+        int get = 0;
+        int put = 0;
+        int patch = 0;
+        int delete = 0;
+        int post = 0;
+        for (Request req : requests.getContent()) {
+            switch (req.getMethod()) {
+                case GET:
+                    get++;
+                    break;
+                case PUT:
+                    put++;
+                    break;
+                case PATCH:
+                    patch++;
+                    break;
+                case POST:
+                    post++;
+                    break;
+                case DELETE:
+                    delete++;
+                    break;
+                default:
+                    break;
+            }
+        }
+        metric.getCounts().put(HttpMethod.GET.name(), get);
+        metric.getCounts().put(HttpMethod.PUT.name(), put);
+        metric.getCounts().put(HttpMethod.PATCH.name(), patch);
+        metric.getCounts().put(HttpMethod.POST.name(), post);
+        metric.getCounts().put(HttpMethod.DELETE.name(), delete);
+
+        binRepository.save(bin);
     }
 }
