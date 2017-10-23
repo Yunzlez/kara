@@ -47,6 +47,9 @@ public class RequestService {
     @Value("${permanent.bin.max.count}")
     private int maxRequestsForPermanentBin;
 
+    @Value("${bin.max.count}")
+    private int maxRequests;
+
     @Autowired
     public RequestService(BinRepository binRepository, RequestRepository requestRepository, ReplyService replyService, BinaryrequestRepository binaryrequestRepository){
         logger = LoggerFactory.getLogger(this.getClass());
@@ -61,12 +64,7 @@ public class RequestService {
 
         Bin bin = binRepository.getByName(uuid);
 
-        if (bin == null) {
-            throw new ResourceNotFoundException("No bin with that name exists");
-        }
-        if(bin.getRequestCount() >= maxRequestsForPermanentBin){
-            throw new BadRequestException("You reached the limit for this bin. Permanent bins have a limit of " + maxRequestsForPermanentBin + " requests.");
-        }
+        validateRequest(body, bin);
 
         request.setBin(bin);
 
@@ -77,9 +75,6 @@ public class RequestService {
             logger.debug("Headers = " + headers);
         }
 
-        if (body.getBody() != null && body.getBody().length() > 1000) {
-            throw new BadRequestException("Body length is capped to 1000");
-        }
         request.setBody(body.getBody());
         request.setMethod(servletRequest.getMethod());
         logger.debug("Method = " + servletRequest.getMethod());
@@ -89,6 +84,34 @@ public class RequestService {
         logger.debug(servletRequest.getQueryString());
         request.setQueryParams(extractQueryParams(servletRequest.getQueryString()));
 
+        storeRequest(request, bin);
+
+        bin.setLastRequest(new Date());
+        bin.setRequestCount(bin.getRequestCount()+1);
+        updateMetrics(bin, request);
+        binRepository.save(bin);
+        if(bin.getReply() !=null){
+            return bin.getReply();
+        }
+        else return replyService.fromRequest(request);
+    }
+
+    private void validateRequest(HttpEntity<String> body, Bin bin) {
+        if (bin == null) {
+            throw new ResourceNotFoundException("No bin with that name exists");
+        }
+        if(bin.getRequestCount() >= maxRequestsForPermanentBin && bin.isPermanent()){
+            throw new BadRequestException("You reached the limit for this bin. Permanent bins have a limit of " + maxRequestsForPermanentBin + " requests.");
+        }
+        else if(bin.getRequestCount() >= maxRequests){
+            throw new BadRequestException("You reached the limit for this bin. Bins have a limit of " + maxRequests + " requests.");
+        }
+        if (body.getBody() != null && body.getBody().length() > 1000) {
+            throw new BadRequestException("Body length is capped to 1000");
+        }
+    }
+
+    private void storeRequest(Request request, Bin bin) {
         if(storeBinaryRequests){
             BinaryRequest binaryRequest = new BinaryRequest();
             binaryRequest.setBin(bin);
@@ -107,16 +130,6 @@ public class RequestService {
                 throw new BadRequestException(cve.getMessage());
             }
         }
-
-
-        bin.setLastRequest(new Date());
-        bin.setRequestCount(bin.getRequestCount()+1);
-        updateMetrics(bin, request);
-        binRepository.save(bin);
-        if(bin.getReply() !=null){
-            return bin.getReply();
-        }
-        else return replyService.fromRequest(request);
     }
 
     private Map<String, String> extractQueryParams(String queryString) {
