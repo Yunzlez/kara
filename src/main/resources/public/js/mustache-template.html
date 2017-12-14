@@ -1,0 +1,45 @@
+<div class="title">
+    <i class="dropdown icon"></i>
+    <span class="requesticon {{method}}">{{method}}</span>
+    <span class="ellipsize">{{body}}</span>
+</div>
+<div class="content">
+    <h4 th:text="${request.requestTime}"></h4>
+    <div th:if="${not #strings.isEmpty(request.body)}">
+        <h3>Body</h3>
+        <div class="ui divider"></div>
+        <pre>
+                         <code class="pretty" th:text="${request.body}"></code>
+                     </pre>
+    </div>
+    <div th:if="${not request.headers.isEmpty()}">
+        <h3>Headers</h3>
+        <div class="ui divider"></div>
+        <table>
+            <tr>
+                <th class="namecolumn">Name</th>
+                <th class="valuecolumn">Value</th>
+            </tr>
+            <tr th:each="header : ${request.headers}">
+                <td th:text="${header.key}"></td>
+                <td th:text="${header.value}"></td>
+            </tr>
+        </table>
+    </div>
+    <div th:if="${not request.queryParams.isEmpty()}">
+        <div class="ui divider"></div>
+        <h3>Query Parameters</h3>
+        <div class="ui divider"></div>
+        <table>
+            <tr>
+                <th class="namecolumn">Name</th>
+                <th class="valuecolumn">Value</th>
+            </tr>
+            <tr th:each="param : ${request.queryParams}">
+                <td th:text="${param.key}"></td>
+                <td th:text="${param.value}"></td>
+            </tr>
+        </table>
+    </div>
+
+</div>
