@@ -1,45 +1,62 @@
-<div class="title">
-    <i class="dropdown icon"></i>
-    <span class="requesticon {{method}}">{{method}}</span>
-    <span class="ellipsize">{{body}}</span>
-</div>
-<div class="content">
-    <h4 th:text="${request.requestTime}"></h4>
-    <div th:if="${not #strings.isEmpty(request.body)}">
-        <h3>Body</h3>
-        <div class="ui divider"></div>
-        <pre>
-                         <code class="pretty" th:text="${request.body}"></code>
-                     </pre>
+<div>
+    <div class="title">
+        <i class="dropdown icon"></i>
+        <span class="requesticon {{method}}">{{method}}</span>
+        {{#body}}
+        <span class="ellipsize">{{body}}</span>
+        {{/body}}
+        {{^body}}
+        <span class="ellipsize">No body</span>
+        {{/body}}
     </div>
-    <div th:if="${not request.headers.isEmpty()}">
-        <h3>Headers</h3>
-        <div class="ui divider"></div>
-        <table>
-            <tr>
-                <th class="namecolumn">Name</th>
-                <th class="valuecolumn">Value</th>
-            </tr>
-            <tr th:each="header : ${request.headers}">
-                <td th:text="${header.key}"></td>
-                <td th:text="${header.value}"></td>
-            </tr>
-        </table>
-    </div>
-    <div th:if="${not request.queryParams.isEmpty()}">
-        <div class="ui divider"></div>
-        <h3>Query Parameters</h3>
-        <div class="ui divider"></div>
-        <table>
-            <tr>
-                <th class="namecolumn">Name</th>
-                <th class="valuecolumn">Value</th>
-            </tr>
-            <tr th:each="param : ${request.queryParams}">
-                <td th:text="${param.key}"></td>
-                <td th:text="${param.value}"></td>
-            </tr>
-        </table>
-    </div>
+    <div class="content">
+        <h4>{{requestTime}}</h4>
+        {{#body}}
+        <div>
+            <h3>Body</h3>
+            <div class="ui divider"></div>
+            <pre>
+            <code class="pretty">{{body}}</code>
+        </pre>
+        </div>
+        {{/body}}
+        {{#headers.length}}
+        <div>
+            <h3>Headers</h3>
+            <div class="ui divider"></div>
+            <table>
+                <tr>
+                    <th class="namecolumn">Name</th>
+                    <th class="valuecolumn">Value</th>
+                </tr>
+                {{#headers}}
+                <tr>
+                    <td>{{key}}</td>
+                    <td>{{value}}</td>
+                </tr>
+                {{/headers}}
+            </table>
+        </div>
+        {{/headers.length}}
+        {{#queryParams.length}}
+        <div>
+            <div class="ui divider"></div>
+            <h3>Query Parameters</h3>
+            <div class="ui divider"></div>
+            <table>
+                <tr>
+                    <th class="namecolumn">Name</th>
+                    <th class="valuecolumn">Value</th>
+                </tr>
+                {{#queryParams}}
+                <tr>
+                    <td>{{key}}</td>
+                    <td>{{value}}</td>
+                </tr>
+                {{/queryParams}}
+            </table>
+        </div>
+        {{/queryParams.length}}
 
+    </div>
 </div>
