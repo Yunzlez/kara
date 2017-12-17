@@ -1,0 +1,62 @@
+<div>
+    <div class="title">
+        <i class="dropdown icon"></i>
+        <span class="requesticon {{methodLower}}">{{method}}</span>
+        {{#body}}
+        <span class="ellipsize">{{body}}</span>
+        {{/body}}
+        {{^body}}
+        <span class="ellipsize">No body</span>
+        {{/body}}
+    </div>
+    <div class="content">
+        <h4>{{requestTime}}</h4>
+        {{#body}}
+        <div>
+            <h3>Body</h3>
+            <div class="ui divider"></div>
+            <pre>
+            <code class="pretty">{{body}}</code>
+        </pre>
+        </div>
+        {{/body}}
+        {{#headers.length}}
+        <div>
+            <h3>Headers</h3>
+            <div class="ui divider"></div>
+            <table>
+                <tr>
+                    <th class="namecolumn">Name</th>
+                    <th class="valuecolumn">Value</th>
+                </tr>
+                {{#headers}}
+                <tr>
+                    <td>{{key}}</td>
+                    <td>{{value}}</td>
+                </tr>
+                {{/headers}}
+            </table>
+        </div>
+        {{/headers.length}}
+        {{#queryParams.length}}
+        <div>
+            <div class="ui divider"></div>
+            <h3>Query Parameters</h3>
+            <div class="ui divider"></div>
+            <table>
+                <tr>
+                    <th class="namecolumn">Name</th>
+                    <th class="valuecolumn">Value</th>
+                </tr>
+                {{#queryParams}}
+                <tr>
+                    <td>{{key}}</td>
+                    <td>{{value}}</td>
+                </tr>
+                {{/queryParams}}
+            </table>
+        </div>
+        {{/queryParams.length}}
+
+    </div>
+</div>
