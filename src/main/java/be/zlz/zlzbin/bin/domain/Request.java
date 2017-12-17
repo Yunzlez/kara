@@ -1,6 +1,8 @@
 package be.zlz.zlzbin.bin.domain;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonValue;
 import org.springframework.http.HttpMethod;
 
 import javax.persistence.*;

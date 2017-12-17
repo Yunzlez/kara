@@ -5,7 +5,6 @@ function connect() {
     stompClient.connect({}, function (frame) {
         setConnected(true);
         console.log('Connected: ' + frame);
-        //todo current bin name in uri
         stompClient.subscribe('/topic/newrequests/' + window.location.pathname.split('/')[2], function (messageOutput) {
             showMessageOutput(JSON.parse(messageOutput.body));
         });
@@ -13,65 +12,72 @@ function connect() {
 }
 
 function setConnected(connected) {
-    console.log('connected:' + connected);
     ws_connected_bin = true;
 }
 
 function showMessageOutput(messageOutput) {
-    //todo update page here, update counters
     //https://github.com/janl/mustache.js
+    messageOutput.methodLower = messageOutput.method.toLowerCase();
     if (messageOutput.hasOwnProperty("headers") && messageOutput.headers !== null) {
         messageOutput.headers = flatten(messageOutput.headers, "headers");
     }
     if (messageOutput.hasOwnProperty("queryParams") && messageOutput.queryParams !== null) {
         messageOutput.headers = flatten(messageOutput.queryParams, "queryParams");
     }
+
     console.log(messageOutput);
     $.get('/js/mustache-template.html', function (template) {
         var rendered = Mustache.render(template, messageOutput);
-        $("#").prependTo(rendered);
+        $("#reqLog").prepend(rendered);
     });
-    //todo update numbers
+    addCount(messageOutput.method);
+
+    //todo optimize
+    $('pre code').first(function(i, block) {
+        hljs.highlightBlock(block);
+    });
 }
 
 function flatten(object, propname) {
-    console.log("Flattening " + propname);
     var headersKV = [];
     for (var k in object) {
-        console.log(k);
         if (object.hasOwnProperty(k)) {
             var obj = {};
             obj.key = k;
             obj.value = object[k];
-            console.log(obj);
             headersKV.push(obj);
-        } else {
-            console.log("Nope")
         }
     }
     return headersKV;
 }
 
 function addCount(type) {
+    addOne("#requestCount");
     switch (type) {
         case "GET":
+            addOne("#getCount");
             break;
         case "POST":
+            addOne("#postCount");
             break;
         case "PUT":
+            addOne("#putCount");
             break;
         case "PATCH":
+            addOne("#patchCount");
             break;
         case "DELETE":
+            addOne("#deleteCount");
             break;
     }
 }
 
 function addOne(id) {
-    $(id)
+    console.log("Adding 1 to " + id);
+    var num = +$(id).text() + 1;
+    $(id).text(num);
 }
 
-document.onload = function () {
+window.onload = function () {
     connect();
-    //todo fix
 };
