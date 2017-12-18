@@ -33,7 +33,7 @@ function showMessageOutput(messageOutput) {
     addCount(messageOutput.method);
 
     //todo optimize
-    $('pre code').first(function(i, block) {
+    $('pre code').each(function(i, block) {
         hljs.highlightBlock(block);
     });
 }
