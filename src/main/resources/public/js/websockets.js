@@ -22,7 +22,7 @@ function showMessageOutput(messageOutput) {
         messageOutput.headers = flatten(messageOutput.headers, "headers");
     }
     if (messageOutput.hasOwnProperty("queryParams") && messageOutput.queryParams !== null) {
-        messageOutput.headers = flatten(messageOutput.queryParams, "queryParams");
+        messageOutput.queryParams = flatten(messageOutput.queryParams, "queryParams");
     }
 
     console.log(messageOutput);
