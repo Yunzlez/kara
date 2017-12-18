@@ -124,9 +124,9 @@
                             <th class="namecolumn">Name</th>
                             <th class="valuecolumn">Value</th>
                         </tr>
-                        <tr th:each="param : ${request.queryParams}">
-                            <td th:text="${param.key}"></td>
-                            <td th:text="${param.value}"></td>
+                        <tr th:each="qParam : ${request.queryParams}">
+                            <td th:text="${qParam.key}"></td>
+                            <td th:text="${qParam.value}"></td>
                         </tr>
                     </table>
                 </div>
