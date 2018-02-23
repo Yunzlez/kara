@@ -12,6 +12,8 @@ import be.zlz.zlzbin.bin.repositories.RequestRepository;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.smile.SmileFactory;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import org.hibernate.exception.ConstraintViolationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -19,9 +21,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.util.Pair;
 import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.nio.charset.StandardCharsets;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -40,6 +48,8 @@ public class RequestService {
 
     private Logger logger;
 
+    private Gson gson;
+
     private static ObjectMapper smileMapper = new ObjectMapper(new SmileFactory());
 
     @Value("${store.request.binary}")
@@ -52,15 +62,16 @@ public class RequestService {
     private int maxRequests;
 
     @Autowired
-    public RequestService(BinRepository binRepository, RequestRepository requestRepository, ReplyService replyService, BinaryrequestRepository binaryrequestRepository){
+    public RequestService(BinRepository binRepository, RequestRepository requestRepository, ReplyService replyService, BinaryrequestRepository binaryrequestRepository) {
         logger = LoggerFactory.getLogger(this.getClass());
         this.binRepository = binRepository;
         this.requestRepository = requestRepository;
         this.replyService = replyService;
         this.binaryrequestRepository = binaryrequestRepository;
+        gson = new GsonBuilder().serializeNulls().excludeFieldsWithoutExposeAnnotation().create();
     }
 
-    public Pair<Reply, Request> createRequest(HttpServletRequest servletRequest, HttpEntity<String> body, String uuid, Map<String, String> headers){
+    public Pair<Reply, Request> createRequest(HttpServletRequest servletRequest, HttpEntity<String> body, String uuid, Map<String, String> headers) {
         Request request = new Request();
 
         Bin bin = binRepository.getByName(uuid);
@@ -72,7 +83,7 @@ public class RequestService {
         request.setHeaders(headers);
         headers.remove("cookie"); //Cookie header is useless and breaks localhost because no dev app ever clears cookies and the header is a bazillion chars
 
-        if(logger.isDebugEnabled()){
+        if (logger.isDebugEnabled()) {
             logger.debug("Headers = " + headers);
         }
 
@@ -88,23 +99,21 @@ public class RequestService {
         storeRequest(request, bin);
 
         bin.setLastRequest(new Date());
-        bin.setRequestCount(bin.getRequestCount()+1);
+        bin.setRequestCount(bin.getRequestCount() + 1);
         updateMetrics(bin, request);
         binRepository.save(bin);
-        if(bin.getReply() !=null){
+        if (bin.getReply() != null) {
             return Pair.of(bin.getReply(), request);
-        }
-        else return Pair.of(replyService.fromRequest(request), request);
+        } else return Pair.of(replyService.fromRequest(request), request);
     }
 
     private void validateRequest(HttpEntity<String> body, Bin bin) {
         if (bin == null) {
             throw new ResourceNotFoundException("No bin with that name exists");
         }
-        if(bin.getRequestCount() >= maxRequestsForPermanentBin && bin.isPermanent()){
+        if (bin.getRequestCount() >= maxRequestsForPermanentBin && bin.isPermanent()) {
             throw new BadRequestException("You reached the limit for this bin. Permanent bins have a limit of " + maxRequestsForPermanentBin + " requests.");
-        }
-        else if(bin.getRequestCount() >= maxRequests){
+        } else if (bin.getRequestCount() >= maxRequests) {
             throw new BadRequestException("You reached the limit for this bin. Bins have a limit of " + maxRequests + " requests.");
         }
         if (body.getBody() != null && body.getBody().length() > 1000) {
@@ -113,7 +122,7 @@ public class RequestService {
     }
 
     private void storeRequest(Request request, Bin bin) {
-        if(storeBinaryRequests){
+        if (storeBinaryRequests) {
             BinaryRequest binaryRequest = new BinaryRequest();
             binaryRequest.setBin(bin);
             try {
@@ -122,8 +131,7 @@ public class RequestService {
             } catch (JsonProcessingException e) {
                 throw new BadRequestException("could not store binary request", e);
             }
-        }
-        else {
+        } else {
             try {
                 requestRepository.save(request);
             } catch (ConstraintViolationException cve) {
@@ -150,14 +158,40 @@ public class RequestService {
         return ret;
     }
 
-    private void updateMetrics(Bin bin, Request req){
-        if(bin.getRequestMetric().getCounts().containsKey(req.getMethod().name())){
+    private void updateMetrics(Bin bin, Request req) {
+        if (bin.getRequestMetric().getCounts().containsKey(req.getMethod().name())) {
             int cnt = bin.getRequestMetric().getCounts().get(req.getMethod().name());
-            bin.getRequestMetric().getCounts().put(req.getMethod().name(), cnt+1);
-        }
-        else{
+            bin.getRequestMetric().getCounts().put(req.getMethod().name(), cnt + 1);
+        } else {
             bin.getRequestMetric().getCounts().put(req.getMethod().name(), 1);
         }
     }
 
+    public ResponseEntity<String> buildResponse(Reply reply, HttpServletResponse response) {
+        reply.getCookies().forEach((k, v) -> response.addCookie(new Cookie(k, v)));
+        logger.debug("Added cookies");
+
+        HttpHeaders httpHeaders = new HttpHeaders();
+        httpHeaders.setContentType(MediaType.parseMediaType(reply.getMimeType()));
+        logger.debug("Set content-type header to " + httpHeaders.getContentType());
+
+        reply.getHeaders().remove("content-type"); //set using another header
+        reply.getHeaders().remove("content-length"); //calculated
+
+        String jsonReply;
+
+        if (reply.isCustom()) {
+            jsonReply = reply.getBody();
+        } else {
+            jsonReply = gson.toJson(reply);
+        }
+
+        //calculate the content-length. java string is UTF-16 so convert to UTF8 and count
+        byte[] stringbytes = jsonReply.getBytes(StandardCharsets.UTF_8);
+        httpHeaders.setContentLength(stringbytes.length);
+
+        reply.getHeaders().forEach(httpHeaders::add);
+
+        return new ResponseEntity<>(jsonReply, httpHeaders, reply.getCode());
+    }
 }

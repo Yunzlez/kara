@@ -8,17 +8,13 @@ import be.zlz.zlzbin.bin.exceptions.ResourceNotFoundException;
 import be.zlz.zlzbin.bin.repositories.BinRepository;
 import be.zlz.zlzbin.bin.repositories.RequestRepository;
 import be.zlz.zlzbin.bin.services.BinService;
-import be.zlz.zlzbin.bin.services.ReplyService;
-import be.zlz.zlzbin.bin.util.ReplyBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpMethod;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
@@ -27,31 +23,28 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
+import static be.zlz.zlzbin.bin.services.BinService.NOT_FOUND_MESSAGE;
+
 @Controller
 public class BinController {
 
-    @Autowired
-    private BinRepository binRepository;
+    private final BinRepository binRepository;
 
-    @Autowired
-    private RequestRepository requestRepository;
+    private final RequestRepository requestRepository;
 
-    @Autowired
-    private ReplyService replyService;
-
-    @Autowired
-    private BinService binService;
+    private final BinService binService;
 
     @Value("${base.url}")
     private String baseUrl;
 
-    @Value("${max.page.size}")
-    private int maxPageSize;
-
     private Logger logger;
 
-    public BinController(){
+    @Autowired
+    public BinController(BinRepository binRepository, RequestRepository requestRepository, BinService binService) {
         logger = LoggerFactory.getLogger(this.getClass());
+        this.binRepository = binRepository;
+        this.requestRepository = requestRepository;
+        this.binService = binService;
     }
 
     @GetMapping("/bin/create")
@@ -63,30 +56,30 @@ public class BinController {
         logger.info("created bin with UUID {}", name);
         logger.debug("BaseURL = " + baseUrl);
 
-        return "redirect:"+ baseUrl + "/bin/" + name + "/log";
+        return "redirect:" + baseUrl + "/bin/" + name + "/log";
     }
 
     //todo need a limit system & pagination system
     @GetMapping(value = "/bin/{uuid}/log", produces = "application/json")
     @ResponseBody
     public List<Request> getLogForUuidAsJson(@PathVariable String uuid, @RequestParam(name = "page", required = false) Integer page, @RequestParam(name = "limit", required = false) Integer limit) {
-        if(binRepository.getByName(uuid) == null){
+        if (binRepository.getByName(uuid) == null) {
             throw new ResourceNotFoundException("Could not find bin with name " + uuid);
         }
-        Page<Request> current = requestRepository.getByBinOrderByRequestTimeDesc(binRepository.getByName(uuid), getPageable(page, limit));
+        Page<Request> current = binService.getOrderedRequests(uuid, page, limit);
         return current.getContent();
     }
 
     @GetMapping(value = "/bin/{uuid}/log", produces = "text/html")
     public String getLogForUuidAsPage(@PathVariable String uuid, Map<String, Object> model, @RequestParam(name = "page", required = false) Integer page, @RequestParam(name = "limit", required = false) Integer limit) {
         Bin bin = binRepository.getByName(uuid);
-        if(bin == null){
-            throw new ResourceNotFoundException("Could not find bin with name " + uuid);
+        if (bin == null) {
+            throw new ResourceNotFoundException(NOT_FOUND_MESSAGE + uuid);
         }
         model.put("pageTitle", "Bin " + uuid);
         model.put("binName", uuid);
 
-        Page<Request> current = requestRepository.getByBinOrderByRequestTimeDesc(binRepository.getByName(uuid), getPageable(page, limit));
+        Page<Request> current = binService.getOrderedRequests(uuid, page, limit);
         List<Request> requests = current.getContent();
 
         model.put("requests", requests);
@@ -105,53 +98,17 @@ public class BinController {
 
     @GetMapping(value = "/bin/{uuid}/log/settings", produces = "application/json")
     public String getBinSetup(@PathVariable String uuid, Map<String, Object> model) {
-        Bin bin = binRepository.getByName(uuid);
-
         model.put("pageTitle", "Bin " + uuid + " settings");
         model.put("binName", uuid);
-
-        logger.debug("bin " + bin + "with uuid " + uuid);
-
-        SettingDTO settings;
-        if(bin.getReply() != null){
-            settings = new SettingDTO(bin.getReply());
-        }
-        else {
-            settings = new SettingDTO();
-        }
-        settings.setCustomName(bin.getName());
-        settings.setPermanent(bin.isPermanent());
-        model.put("reply", settings);
+        model.put("reply", binService.getSettings(uuid));
 
         return "settings";
     }
 
     @PostMapping(value = "/bin/{uuid}/log/settings", produces = "application/json")
     public String saveBinSetup(@PathVariable String uuid, @ModelAttribute SettingDTO settings, BindingResult bindingResult) {
-        Bin bin = binRepository.getByName(uuid);
-        ReplyBuilder replyBuilder = new ReplyBuilder();
-        if(!(settings.getCode() == null || settings.getMimeType() == null || settings.getBody() == null)){
-            bin.setReply(
-                    replyBuilder.setCode(HttpStatus.valueOf(settings.getCode()))
-                            .setMimeType(settings.getMimeType())
-                            .setBody(settings.getBody())
-                            .setCustom(true)
-                            .build()
-            );
-        }
-        String redirect = uuid;
-        if(settings.getCustomName() != null){
-            bin.setName(settings.getCustomName());
-            redirect = settings.getCustomName();
-        }
-        if(!bin.isPermanent() && settings.isPermanent()){
-            binService.clearBin(uuid);
-        }
-        bin.setPermanent(settings.isPermanent());
-
-        binRepository.save(bin);
-
-        return "redirect:/bin/" +  redirect  + "/log";
+        String newName = binService.updateSettings(uuid, settings);
+        return "redirect:/bin/" + newName + "/log";
     }
 
     @GetMapping(value = "/bin/{uuid}/log/charts")
@@ -167,19 +124,9 @@ public class BinController {
         return "redirect:/bin/" + uuid + "/log";
     }
 
-    private Pageable getPageable(Integer page, Integer size){
-        if(size == null || size > maxPageSize || size == 0){
-            size = maxPageSize;
-        }
-        if(page == null){
-            page = 0;
-        }
-        return new PageRequest(page, size);
-    }
-
-    private void setRequestCounts(Bin bin, Map<String, Object> model){
+    private void setRequestCounts(Bin bin, Map<String, Object> model) {
         RequestMetric metric = bin.getRequestMetric();
-        if(metric == null){
+        if (metric == null) {
             doMigration(bin);
             logger.info("doing migration for {}", bin.getName());
             metric = bin.getRequestMetric();
@@ -193,11 +140,11 @@ public class BinController {
     }
 
     @Deprecated
-    private void doMigration(Bin bin){
+    private void doMigration(Bin bin) {
         RequestMetric metric = new RequestMetric();
         metric.setBin(bin);
         bin.setRequestMetric(metric);
-        Page<Request> requests = requestRepository.getByBinOrderByRequestTimeDesc(bin, new PageRequest(0,10000));
+        Page<Request> requests = requestRepository.getByBinOrderByRequestTimeDesc(bin, new PageRequest(0, 10000));
         int get = 0;
         int put = 0;
         int patch = 0;
