@@ -27,7 +27,8 @@
         <div class="content">
             <div class="header">Request URL</div>
             <p><!--/*@thymesVar id="requestUrl" type="String"*/-->
-                <a th:text="${requestUrl}" th:href="${requestUrl}"></a></p>
+                <b>HTTP:</b> <a th:text="${requestUrl}" th:href="${requestUrl}"></a></p>
+            <p><b>MQTT:</b> <a href="tcp://zlz.be:1883">tcp://zlz.be:1883</a> - Topic /bin/<span th:text="${binName}"></span> </p>
         </div>
     </div>
     <div class="flexcontainer">
@@ -60,6 +61,10 @@
             <!--/*@thymesVar id="patchCount" type="Integer"*/-->
             <div class="value" id="patchCount" th:text="${patchCount}"></div>
             <div class="label">Patch</div>
+        </div>
+        <div class="ui statistic flexitem">
+            <div class="value" id="mqttCount" th:text="${mqttCount}"></div>
+            <div class="label">Mqtt</div>
         </div>
     </div>
 

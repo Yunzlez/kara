@@ -137,6 +137,7 @@ public class BinController {
         model.put("patchCount", metric.getCounts().getOrDefault(HttpMethod.PATCH.name(), 0));
         model.put("deleteCount", metric.getCounts().getOrDefault(HttpMethod.DELETE.name(), 0));
         model.put("putCount", metric.getCounts().getOrDefault(HttpMethod.PUT.name(), 0));
+        model.put("mqttCount", metric.getCounts().getOrDefault("MQTT", 0));
     }
 
     @Deprecated

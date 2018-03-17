@@ -107,6 +107,32 @@ public class RequestService {
         } else return Pair.of(replyService.fromRequest(request), request);
     }
 
+    public Request createRequest(Map<String, String> headers, String body, String binName){
+        Request request = new Request();
+        request.setMqtt(true);
+        request.setBody(body);
+        request.setHeaders(headers);
+        request.setRequestTime(new Date());
+        request.setProtocol("MQTT");
+
+        Bin bin = binRepository.getByName(binName);
+
+        if(bin == null){
+            logger.info("Got message for unknown bin {}", binName);
+            return null;
+        }
+
+        request.setBin(bin);
+
+        bin.setLastRequest(new Date());
+        bin.setRequestCount(bin.getRequestCount() + 1);
+        updateMetrics(bin, request);
+
+        binRepository.save(bin);
+
+        return requestRepository.save(request);
+    }
+
     private void validateRequest(HttpEntity<String> body, Bin bin) {
         if (bin == null) {
             throw new ResourceNotFoundException("No bin with that name exists");
@@ -159,11 +185,18 @@ public class RequestService {
     }
 
     private void updateMetrics(Bin bin, Request req) {
-        if (bin.getRequestMetric().getCounts().containsKey(req.getMethod().name())) {
-            int cnt = bin.getRequestMetric().getCounts().get(req.getMethod().name());
-            bin.getRequestMetric().getCounts().put(req.getMethod().name(), cnt + 1);
+        String name;
+        if(req.isMqtt()){
+            name = "MQTT";
         } else {
-            bin.getRequestMetric().getCounts().put(req.getMethod().name(), 1);
+            name = req.getMethod().name();
+        }
+
+        if (bin.getRequestMetric().getCounts().containsKey(name)) {
+            int cnt = bin.getRequestMetric().getCounts().get(name);
+            bin.getRequestMetric().getCounts().put(name, cnt + 1);
+        } else {
+            bin.getRequestMetric().getCounts().put(name, 1);
         }
     }
 
