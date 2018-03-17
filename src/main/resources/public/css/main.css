@@ -18,6 +18,10 @@
     background-color: #184f7e;
 }
 
+.mqtt {
+    background-color: #00b5ad;
+}
+
 .spacer{
     height:20px;
     width: 100%;

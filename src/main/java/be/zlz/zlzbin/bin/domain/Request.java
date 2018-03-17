@@ -41,6 +41,8 @@ public class Request {
     @JsonIgnore
     private Bin bin;
 
+    private boolean mqtt;
+
     //todo builder
     public Request(HttpMethod method, String body, String protocol, Map<String, String> headers) {
         this.method = method;
@@ -133,6 +135,14 @@ public class Request {
 
     public void setRequestTime(Date requestTime) {
         this.requestTime = requestTime;
+    }
+
+    public boolean isMqtt() {
+        return mqtt;
+    }
+
+    public void setMqtt(boolean mqtt) {
+        this.mqtt = mqtt;
     }
 
     @Override

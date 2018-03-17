@@ -49,6 +49,14 @@
                 <input th:field="*{mimeType}"/>
             </div>
             <br/>
+            <div class="ui horizontal divider"></div>
+            <div class="field">
+                <label>Body</label>
+                <textarea rows="5" th:field="*{body}">
+                    </textarea>
+            </div>
+            <button class="ui green submit button" type="submit">Save</button>
+            <div class="ui red button" id="canceledit">Cancel</div>
             <br/>
             <h4 class="ui horizontal divider header">
                 Headers
@@ -100,14 +108,6 @@
                     Add
                 </div>
             </div>
-            <div class="ui horizontal divider"></div>
-            <div class="field">
-                <label>Body</label>
-                <textarea rows="5" th:field="*{body}">
-                    </textarea>
-            </div>
-            <button class="ui green submit button" type="submit">Save</button>
-            <div class="ui red button" id="canceledit">Cancel</div>
         </div>
     </form>
 </div>

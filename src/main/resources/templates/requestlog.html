@@ -88,9 +88,12 @@
         <div th:each="request : ${requests}">
             <div class="title">
                 <i class="dropdown icon"></i>
-                <span class="requesticon" th:classappend="${#strings.toLowerCase(request.method)}"
-                      th:text="${request.method}"></span><span class="ellipsize"
-                                                               th:text="${#strings.defaultString(request.body, 'No Body')}"></span>
+                <span class="requesticon" th:if="${not request.mqtt}"
+                      th:classappend="${#strings.toLowerCase(request.method)}" th:text="${request.method}"></span>
+                <!--If MQTT-->
+                <span class="requesticon" th:if="${request.mqtt}"
+                      th:classappend="mqtt" th:text="MQTT"></span>
+                <span class="ellipsize" th:text="${#strings.defaultString(request.body, 'No Body')}"></span>
             </div>
             <div class="content">
                 <h4 th:text="${request.requestTime}"></h4>

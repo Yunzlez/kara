@@ -62,7 +62,7 @@ public class BinController {
     //todo need a limit system & pagination system
     @GetMapping(value = "/bin/{uuid}/log", produces = "application/json")
     @ResponseBody
-    public List<Request> getLogForUuidAsJson(@PathVariable String uuid, @RequestParam(name = "page", required = false) Integer page, @RequestParam(name = "limit", required = false) Integer limit) {
+    public List<Request> getLogForUuidAsJson(@PathVariable String uuid, @RequestParam(name = "page", required = false, defaultValue = "0") Integer page, @RequestParam(name = "limit", required = false, defaultValue = "10") Integer limit) {
         if (binRepository.getByName(uuid) == null) {
             throw new ResourceNotFoundException("Could not find bin with name " + uuid);
         }
@@ -71,7 +71,7 @@ public class BinController {
     }
 
     @GetMapping(value = "/bin/{uuid}/log", produces = "text/html")
-    public String getLogForUuidAsPage(@PathVariable String uuid, Map<String, Object> model, @RequestParam(name = "page", required = false) Integer page, @RequestParam(name = "limit", required = false) Integer limit) {
+    public String getLogForUuidAsPage(@PathVariable String uuid, Map<String, Object> model, @RequestParam(name = "page", required = false, defaultValue = "0") Integer page, @RequestParam(name = "limit", required = false, defaultValue = "10") Integer limit) {
         Bin bin = binRepository.getByName(uuid);
         if (bin == null) {
             throw new ResourceNotFoundException(NOT_FOUND_MESSAGE + uuid);
