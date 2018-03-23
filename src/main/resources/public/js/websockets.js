@@ -17,7 +17,11 @@ function setConnected(connected) {
 
 function showMessageOutput(messageOutput) {
     //https://github.com/janl/mustache.js
+    if(!messageOutput.method){
+        messageOutput.method = "MQTT";//if it's not set by backend, it's MQTT
+    }
     messageOutput.methodLower = messageOutput.method.toLowerCase();
+
     if (messageOutput.hasOwnProperty("headers") && messageOutput.headers !== null) {
         messageOutput.headers = flatten(messageOutput.headers, "headers");
     }
@@ -68,6 +72,9 @@ function addCount(type) {
             break;
         case "DELETE":
             addOne("#deleteCount");
+            break;
+        case "MQTT":
+            addOne("#mqttCount");
             break;
     }
 }

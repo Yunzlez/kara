@@ -14,7 +14,7 @@ public class RequestMetric {
     @OneToOne
     private Bin bin;
 
-    @ElementCollection(targetClass = Integer.class)
+    @ElementCollection(targetClass = Integer.class, fetch = FetchType.EAGER)
     @MapKeyClass(String.class)
     private Map<String, Integer> counts;
 
