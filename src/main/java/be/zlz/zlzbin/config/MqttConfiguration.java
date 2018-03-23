@@ -2,6 +2,7 @@ package be.zlz.zlzbin.config;
 
 import be.zlz.zlzbin.bin.tasks.MqttMessageHandlerService;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.integration.annotation.ServiceActivator;
@@ -15,6 +16,14 @@ import org.springframework.messaging.MessageHandler;
 @Configuration
 public class MqttConfiguration {
 
+    @Value("${mqtt.url}")
+    private String mqttUrl;
+
+    @Value("${mqtt.clientid}")
+    private String clientId;
+
+    private String topicName = "/bin/+";
+
     @Bean
     @Qualifier("MQTT")
     public MessageChannel mqttInputChannel() {
@@ -24,8 +33,7 @@ public class MqttConfiguration {
     @Bean
     public MessageProducer inbound() {
         MqttPahoMessageDrivenChannelAdapter adapter =
-                new MqttPahoMessageDrivenChannelAdapter("tcp://zlz.be:1883", "testClient",
-                        "/bin/+");
+                new MqttPahoMessageDrivenChannelAdapter(mqttUrl, clientId, topicName);
         adapter.setCompletionTimeout(5000);
         adapter.setConverter(new DefaultPahoMessageConverter());
         adapter.setQos(1);
