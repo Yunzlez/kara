@@ -2,12 +2,15 @@ package be.zlz.zlzbin.bin.controller;
 
 import be.zlz.zlzbin.bin.domain.Reply;
 import be.zlz.zlzbin.bin.domain.Request;
+import be.zlz.zlzbin.bin.dto.ErrorDTO;
+import be.zlz.zlzbin.bin.services.DelayService;
 import be.zlz.zlzbin.bin.services.RequestService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.util.Pair;
 import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.handler.annotation.DestinationVariable;
 import org.springframework.messaging.simp.SimpMessageSendingOperations;
@@ -22,18 +25,27 @@ import java.util.Map;
 public class RequestController {
 
     private RequestService requestService;
-    private Logger logger;
+
     private SimpMessageSendingOperations messagingTemplate;
 
+    private DelayService delayService;
+
+    private Logger logger;
+
     @Autowired
-    public RequestController(RequestService requestService, SimpMessageSendingOperations messagingTemplate) {
+    public RequestController(RequestService requestService, SimpMessageSendingOperations messagingTemplate, DelayService delayService) {
         this.requestService = requestService;
         logger = LoggerFactory.getLogger(this.getClass());
         this.messagingTemplate = messagingTemplate;
+
     }
 
     @RequestMapping(value = "/bin/{uuid}", method = {RequestMethod.GET, RequestMethod.POST, RequestMethod.PUT, RequestMethod.DELETE, RequestMethod.PATCH})
-    public ResponseEntity<String> handleRequest(HttpServletRequest servletRequest, HttpServletResponse response, HttpEntity<String> body, @PathVariable String uuid, @RequestHeader Map<String, String> headers) {
+    public ResponseEntity<String> handleRequest(HttpServletRequest servletRequest,
+                                                HttpServletResponse response,
+                                                HttpEntity<String> body,
+                                                @PathVariable String uuid,
+                                                @RequestHeader Map<String, String> headers) {
         Pair<Reply, Request> replyRequestPair = requestService.createRequest(servletRequest, body, uuid, headers);
         newRequest(replyRequestPair.getSecond(), uuid);
         return requestService.buildResponse(replyRequestPair.getFirst(), response);

@@ -87,6 +87,7 @@ public class BinController {
         model.put("pageCount", current.getTotalPages());
         model.put("currentPage", current);
         model.put("currentLimit", limit);
+        model.put("binSize", binService.getSize(bin));
         logger.debug("Creating request URL: " + baseUrl + "/bin/" + uuid);
         logger.debug("baseUrl = " + baseUrl);
         logger.debug("uuid = " + uuid);
