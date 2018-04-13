@@ -27,10 +27,12 @@ public class DelayService {
         }
         try {
             LOG.debug("Delaying for {}ms", ms);
-            delaySemaphore.tryAcquire(50, TimeUnit.MILLISECONDS);
-            LOG.debug("Semaphore is at {} permits", delaySemaphore.availablePermits());
-            Thread.sleep(realDelay);
-            return true;
+            if(delaySemaphore.tryAcquire(50, TimeUnit.MILLISECONDS)){
+                LOG.debug("Semaphore is at {} permits", delaySemaphore.availablePermits());
+                Thread.sleep(realDelay);
+                return true;
+            }
+            return false;
         } catch (InterruptedException e) {
             return false;
         } finally {
