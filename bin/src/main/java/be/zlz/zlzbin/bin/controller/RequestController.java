@@ -61,8 +61,17 @@ public class RequestController {
                                                        @RequestHeader Map<String, String> headers,
                                                        @PathVariable int ms
     ) {
-        delayService.delay(ms);
-        return handleRequest(servletRequest, response, body, uuid, headers);
+        try{
+            if(!delayService.delay(ms)){
+                return new ResponseEntity<String>(
+                        "Cannot delay response at this time, please try again later",
+                        HttpStatus.SERVICE_UNAVAILABLE
+                );
+            }
+            return handleRequest(servletRequest, response, body, uuid, headers);
+        } catch (IllegalArgumentException e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+        }
     }
 
     @SubscribeMapping("/topic/newrequests/{binName}")
