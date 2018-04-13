@@ -37,6 +37,7 @@ public class RequestController {
         this.requestService = requestService;
         logger = LoggerFactory.getLogger(this.getClass());
         this.messagingTemplate = messagingTemplate;
+        this.delayService = delayService;
 
     }
 
@@ -45,10 +46,23 @@ public class RequestController {
                                                 HttpServletResponse response,
                                                 HttpEntity<String> body,
                                                 @PathVariable String uuid,
-                                                @RequestHeader Map<String, String> headers) {
+                                                @RequestHeader Map<String, String> headers
+    ) {
         Pair<Reply, Request> replyRequestPair = requestService.createRequest(servletRequest, body, uuid, headers);
         newRequest(replyRequestPair.getSecond(), uuid);
         return requestService.buildResponse(replyRequestPair.getFirst(), response);
+    }
+
+    @RequestMapping(value = "/bin/{uuid}/delay/{ms}", method = {RequestMethod.GET, RequestMethod.POST, RequestMethod.PUT, RequestMethod.DELETE, RequestMethod.PATCH})
+    public ResponseEntity<String> handleRequestDelayed(HttpServletRequest servletRequest,
+                                                       HttpServletResponse response,
+                                                       HttpEntity<String> body,
+                                                       @PathVariable String uuid,
+                                                       @RequestHeader Map<String, String> headers,
+                                                       @PathVariable int ms
+    ) {
+        delayService.delay(ms);
+        return handleRequest(servletRequest, response, body, uuid, headers);
     }
 
     @SubscribeMapping("/topic/newrequests/{binName}")
