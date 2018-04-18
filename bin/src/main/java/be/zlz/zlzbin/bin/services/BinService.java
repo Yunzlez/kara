@@ -52,6 +52,7 @@ public class BinService {
         return String.valueOf(autoScale(val));
     }
 
+    @Transactional
     public String updateSettings(String name, SettingDTO settings) {
         Bin bin = binRepository.getByName(name);
         ReplyBuilder replyBuilder = new ReplyBuilder();
