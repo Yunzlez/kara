@@ -11,9 +11,6 @@ import org.springframework.web.socket.config.annotation.StompEndpointRegistry;
 @EnableWebSocketMessageBroker
 public class WebsocketConfig extends AbstractWebSocketMessageBrokerConfigurer {
 
-    @Value("${base.url}")
-    private String baseUrl;
-
     @Override
     public void configureMessageBroker(MessageBrokerRegistry registry) {
         registry.enableSimpleBroker("/topic");

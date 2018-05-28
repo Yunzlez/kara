@@ -19,6 +19,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -54,9 +55,8 @@ public class BinController {
         Bin bin = new Bin(name);
         binRepository.save(bin);
         logger.info("created bin with UUID {}", name);
-        logger.debug("BaseURL = " + baseUrl);
 
-        return "redirect:" + baseUrl + "/bin/" + name + "/log";
+        return "redirect:/bin/" + name + "/log";
     }
 
     //todo need a limit system & pagination system
@@ -71,7 +71,11 @@ public class BinController {
     }
 
     @GetMapping(value = "/bin/{uuid}/log", produces = "text/html")
-    public String getLogForUuidAsPage(@PathVariable String uuid, Map<String, Object> model, @RequestParam(name = "page", required = false, defaultValue = "0") Integer page, @RequestParam(name = "limit", required = false, defaultValue = "10") Integer limit) {
+    public String getLogForUuidAsPage(@PathVariable String uuid,
+                                      Map<String, Object> model,
+                                      @RequestParam(name = "page", required = false, defaultValue = "0") Integer page,
+                                      @RequestParam(name = "limit", required = false, defaultValue = "10") Integer limit,
+                                      HttpServletRequest request) {
         Bin bin = binRepository.getByName(uuid);
         if (bin == null) {
             throw new ResourceNotFoundException(NOT_FOUND_MESSAGE + uuid);
@@ -87,10 +91,12 @@ public class BinController {
         model.put("pageCount", current.getTotalPages());
         model.put("currentPage", current);
         model.put("currentLimit", limit);
-        logger.debug("Creating request URL: " + baseUrl + "/bin/" + uuid);
-        logger.debug("baseUrl = " + baseUrl);
-        logger.debug("uuid = " + uuid);
-        model.put("requestUrl", baseUrl + "/bin/" + uuid);
+        logger.error("blop");
+        if(request.getServerPort() != 80 && request.getServerPort() != 443){
+            model.put("requestUrl", request.getServerName() + ":" + request.getLocalPort() + "/bin/" + uuid);
+        } else {
+            model.put("requestUrl",request.getServerName() + "/bin/" + uuid);
+        }
         setRequestCounts(bin, model);
 
         return "requestlog";
