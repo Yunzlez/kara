@@ -18,6 +18,8 @@ import org.springframework.http.HttpMethod;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.util.DefaultUriBuilderFactory;
+import org.springframework.web.util.UriBuilder;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.List;
@@ -91,15 +93,22 @@ public class BinController {
         model.put("pageCount", current.getTotalPages());
         model.put("currentPage", current);
         model.put("currentLimit", limit);
-        logger.error("blop");
-        if(request.getServerPort() != 80 && request.getServerPort() != 443){
-            model.put("requestUrl", request.getServerName() + ":" + request.getLocalPort() + "/bin/" + uuid);
-        } else {
-            model.put("requestUrl",request.getServerName() + "/bin/" + uuid);
-        }
+        model.put("requestUrl", buildRequestUrl(request, uuid));
         setRequestCounts(bin, model);
 
         return "requestlog";
+    }
+
+    private String buildRequestUrl(HttpServletRequest request, String uuid) {
+        UriBuilder builder = new DefaultUriBuilderFactory().builder()
+                .scheme(request.getScheme())
+                .host(request.getServerName());
+
+        if (request.getServerPort() != 80 && request.getServerPort() != 443) {
+            builder.port(request.getServerPort());
+        }
+        builder.path("/bin/" + uuid);
+        return builder.build().toASCIIString();
     }
 
     @GetMapping(value = "/bin/{uuid}/log/settings", produces = "application/json")
