@@ -37,9 +37,6 @@ public class BinController {
 
     private final BinService binService;
 
-    @Value("${base.url}")
-    private String baseUrl;
-
     private Logger logger;
 
     @Autowired
