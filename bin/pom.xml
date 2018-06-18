@@ -11,6 +11,14 @@
 
     <artifactId>kara-bin</artifactId>
 
+    <dependencies>
+        <dependency>
+            <groupId>io.dropwizard.metrics</groupId>
+            <artifactId>metrics-core</artifactId>
+            <version>4.0.2</version>
+        </dependency>
+    </dependencies>
+
     <build>
         <plugins>
             <plugin>
@@ -27,7 +35,7 @@
                 <artifactId>spring-boot-maven-plugin</artifactId>
                 <configuration>
                     <fork>true</fork>
-                    <mainClass>be.zlz.zlzbin.Main</mainClass>
+                    <mainClass>be.zlz.kara.bin.Main</mainClass>
                 </configuration>
                 <executions>
                     <execution>

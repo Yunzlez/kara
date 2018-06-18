@@ -1,8 +1,8 @@
-package be.zlz.zlzbin.bin.dto;
+package be.zlz.kara.bin.dto;
 
-import be.zlz.zlzbin.bin.domain.Bin;
-import be.zlz.zlzbin.bin.domain.Request;
-import be.zlz.zlzbin.bin.services.SolrService;
+import be.zlz.kara.bin.domain.Bin;
+import be.zlz.kara.bin.domain.Request;
+import be.zlz.kara.bin.services.SolrService;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.http.HttpMethod;
