@@ -10,6 +10,7 @@
     <modules>
         <module>bin</module>
         <module>harwriter</module>
+        <module>openapi-model</module>
     </modules>
     <packaging>pom</packaging>
 

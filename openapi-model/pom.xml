@@ -9,7 +9,7 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>harwriter</artifactId>
+    <artifactId>openapi-model</artifactId>
     <version>1.0.0</version>
 
 
