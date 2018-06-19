@@ -25,6 +25,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
@@ -192,12 +193,14 @@ public class RequestService {
             name = req.getMethod().name();
         }
 
-        if (bin.getRequestMetric().getCounts().containsKey(name)) {
+/*        if (bin.getRequestMetric().getCounts().containsKey(name)) {
             int cnt = bin.getRequestMetric().getCounts().get(name);
             bin.getRequestMetric().getCounts().put(name, cnt + 1);
         } else {
             bin.getRequestMetric().getCounts().put(name, 1);
-        }
+        }*/
+
+        binRepository.updateMetric(bin.getRequestMetric().getId(), name);
     }
 
     public ResponseEntity<String> buildResponse(Reply reply, HttpServletResponse response) {
