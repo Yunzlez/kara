@@ -143,8 +143,8 @@ public class RequestService {
         } else if (bin.getRequestCount() >= maxRequests) {
             throw new BadRequestException("You reached the limit for this bin. Bins have a limit of " + maxRequests + " requests.");
         }
-        if (body.getBody() != null && body.getBody().length() > 1000) {
-            throw new BadRequestException("Body length is capped to 1000");
+        if (body.getBody() != null && body.getBody().length() > 100000) {
+            throw new BadRequestException("Body length is capped to 100000");
         }
     }
 
