@@ -1,6 +1,6 @@
-package be.zlz.zlzbin.bin.controller;
+package be.zlz.kara.bin.controller;
 
-import be.zlz.zlzbin.bin.exceptions.ResourceNotFoundException;
+import be.zlz.kara.bin.exceptions.ResourceNotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;

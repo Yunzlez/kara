@@ -1,7 +1,7 @@
-package be.zlz.zlzbin.bin.controller;
+package be.zlz.kara.bin.controller;
 
-import be.zlz.zlzbin.bin.dto.ErrorDTO;
-import be.zlz.zlzbin.bin.services.DelayService;
+import be.zlz.kara.bin.dto.ErrorDTO;
+import be.zlz.kara.bin.services.DelayService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

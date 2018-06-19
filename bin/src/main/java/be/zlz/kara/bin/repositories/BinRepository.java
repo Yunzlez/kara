@@ -4,6 +4,7 @@ import be.zlz.kara.bin.domain.Bin;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
+import org.springframework.data.repository.query.Param;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Date;
@@ -21,4 +22,7 @@ public interface BinRepository extends CrudRepository<Bin, Long> {
     void updateMetric(long requestMetricId, String key);
 
     List<Bin> getBinByLastRequestBefore(Date date);
+
+    @Query(value = "select sum(row_size) from (select ifnull(length(body), 0) as row_size from zlzbin.request where bin_id=:id ) as `size`;", nativeQuery = true)
+    Long getBinSizeInBytes(@Param("id") Long id);
 }
