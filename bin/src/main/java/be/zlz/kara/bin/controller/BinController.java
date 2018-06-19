@@ -91,6 +91,7 @@ public class BinController {
         model.put("currentPage", current);
         model.put("currentLimit", limit);
         model.put("requestUrl", buildRequestUrl(request, uuid));
+        model.put("binSize", binService.getSize(bin));
         setRequestCounts(bin, model);
 
         return "requestlog";

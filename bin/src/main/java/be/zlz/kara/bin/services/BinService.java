@@ -44,6 +44,15 @@ public class BinService {
         binRepository.delete(bin);
     }
 
+    public String getSize(Bin bin){
+        Long val = binRepository.getBinSizeInBytes(bin.getId());
+        if(val == null){
+            val = 0L;
+        }
+        return String.valueOf(autoScale(val));
+    }
+
+    @Transactional
     public String updateSettings(String name, SettingDTO settings) {
         Bin bin = binRepository.getByName(name);
         ReplyBuilder replyBuilder = new ReplyBuilder();
@@ -111,5 +120,16 @@ public class BinService {
         settings.setCustomName(bin.getName());
         settings.setPermanent(bin.isPermanent());
         return settings;
+    }
+
+    private String autoScale(long bytes) {
+        String[] prefix = {"B", "KB", "MB", "GB", "TB", "PB", "EB"};
+        double val = bytes;
+        int cnt = 0;
+        while (val > 1024) {
+            val = val / 1024.0;
+            cnt++;
+        }
+        return cnt <= prefix.length - 1 ? Math.round(val * 100.0) / 100.0 + prefix[cnt] : String.valueOf(bytes);
     }
 }

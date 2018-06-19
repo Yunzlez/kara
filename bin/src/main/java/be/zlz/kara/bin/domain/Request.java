@@ -21,7 +21,7 @@ public class Request {
     private Date requestTime;
 
     @Lob
-    @Column(length = 1000, columnDefinition = "TEXT")
+    @Column(length = 100000, columnDefinition = "TEXT")
     private String body;
 
     @ElementCollection(targetClass = String.class)
