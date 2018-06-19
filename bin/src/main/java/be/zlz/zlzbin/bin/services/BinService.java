@@ -40,7 +40,7 @@ public class BinService {
 
     public void deleteBin(Bin bin) {
         long id = bin.getId();
-        requestRepository.deleteAllByBin(bin);
+        requestRepository.deleteAllByBinEfficient(bin.getId());
         binRepository.delete(bin);
     }
 
@@ -76,9 +76,15 @@ public class BinService {
         if (bin != null) {
             bin.setRequestCount(0);
             bin.getRequestMetric().getCounts().clear();
-            requestRepository.deleteAllByBin(bin);
+            deleteBinRequestsEfficient(bin.getId());
             binRepository.save(bin);
         }
+    }
+
+    private void deleteBinRequestsEfficient(long binId){
+        requestRepository.deleteHeadersForBin(binId);
+        requestRepository.deleteQueryParamsForBin(binId);
+        requestRepository.deleteAllByBinEfficient(binId);
     }
 
     private Pageable getPageable(Integer page, Integer size) {
