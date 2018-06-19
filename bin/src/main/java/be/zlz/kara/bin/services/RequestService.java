@@ -1,6 +1,5 @@
 package be.zlz.kara.bin.services;
 
-import be.zlz.kara.bin.services.ReplyService;
 import be.zlz.kara.bin.domain.Bin;
 import be.zlz.kara.bin.domain.BinaryRequest;
 import be.zlz.kara.bin.domain.Reply;
