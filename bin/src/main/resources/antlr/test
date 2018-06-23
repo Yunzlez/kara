@@ -1,3 +1,9 @@
-My Template is {{ting}}, look at this list item: {{i0}}
+My Template is ${ting}, look at this list item: ${i0}
 
-my objects' property is {{object.property}}
+my objects' property is ${object.property}
+
+I wanna use $!
+
+{
+    "isJson":"${isJson}"
+}
