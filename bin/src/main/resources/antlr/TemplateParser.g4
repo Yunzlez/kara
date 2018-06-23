@@ -1,6 +1,8 @@
 parser grammar TemplateParser;
 
-options {tokenVocab=TemplateLexer;}
+options {
+    tokenVocab=TemplateLexer;
+    }
 
 template
     : (TMP_TEXT | TMP_ESC | placeholder)* EOF

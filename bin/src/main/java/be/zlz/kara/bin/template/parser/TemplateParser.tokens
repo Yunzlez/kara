@@ -1,0 +1,14 @@
+OPEN_TMP=1
+TMP_ESC=2
+TMP_TEXT=3
+CLOSE_TMP=4
+DOT=5
+ID=6
+LETTER=7
+NUMBER=8
+DIGIT=9
+WS=10
+'${'=1
+'\\$'=2
+'}'=4
+'.'=5
