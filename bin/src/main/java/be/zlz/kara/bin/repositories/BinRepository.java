@@ -28,6 +28,6 @@ public interface BinRepository extends CrudRepository<Bin, Long> {
 
     List<Bin> getBinByLastRequestBefore(Date date);
 
-    @Query(value = "select sum(row_size) from (select ifnull(length(body), 0) as row_size from zlzbin.request where bin_id=:id ) as `size`;", nativeQuery = true)
+    @Query(value = "select sum(row_size) from (select ifnull(length(body), 0) as row_size from request where bin_id=:id ) as `size`;", nativeQuery = true)
     Long getBinSizeInBytes(@Param("id") Long id);
 }
