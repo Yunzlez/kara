@@ -6,14 +6,19 @@ info:
     name: MIT
 servers:
   - url: kara.rest/api/v1
+  - url: bin.dev.zlz.be/api/v1
 paths:
-  /pets:
+  /bins:
     get:
-      summary: List all pets
-      operationId: listPets
-      tags:
-        - pets
+      summary: List all available bins
       parameters:
+        - name: page
+          in: query
+          description: The page to retrieve
+          required: false
+          schema:
+            type: integer
+            format: int32
         - name: limit
           in: query
           description: How many items to return at one time (max 100)
@@ -23,62 +28,46 @@ paths:
             format: int32
       responses:
         200:
-          description: An paged array of pets
+          description: A paged array of bins
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/binList"
+    post:
+      summary: Create a bin
+      responses:
+        303:
+          description:
           headers:
-            x-next:
-              description: A link to the next page of responses
+            link:
+              description: link to the new bin
               schema:
                 type: string
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Pets"
-        default:
-          description: unexpected error
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
-    post:
-      summary: Create a pet
-      operationId: createPets
-      tags:
-        - pets
-      responses:
-        201:
-          description: Null response
-        default:
-          description: unexpected error
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
-  /pets/{petId}:
+  /bins/{binId}/logs:
     get:
-      summary: Info for a specific pet
-      operationId: showPetById
-      tags:
-        - pets
+      summary: retrieves the bin and its requests
       parameters:
-        - name: petId
-          in: path
-          required: true
-          description: The id of the pet to retrieve
+        - name: page
+          in: query
+          description: The page to retrieve
+          required: false
           schema:
-            type: string
+            type: integer
+            format: int32
+        - name: limit
+          in: query
+          description: How many items to return at one time (max 100)
+          required: false
+          schema:
+            type: integer
+            format: int32
       responses:
         200:
-          description: Expected response to a valid request
+          description: Bin information and content
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Pets"
-        default:
-          description: unexpected error
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
+                $ref: "#/components/schemas/BinContent"
 components:
   schemas:
     Pet:
