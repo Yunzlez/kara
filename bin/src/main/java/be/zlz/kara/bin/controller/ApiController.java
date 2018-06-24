@@ -6,6 +6,7 @@ import be.zlz.kara.bin.dto.BinListDto;
 import be.zlz.kara.bin.dto.RequestDto;
 import be.zlz.kara.bin.exceptions.ResourceNotFoundException;
 import be.zlz.kara.bin.services.BinService;
+import be.zlz.kara.bin.services.RequestService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,12 +26,15 @@ public class ApiController {
 
     private final BinService binService;
 
+    private final RequestService requestService;
+
     private final Logger logger;
 
     @Autowired
-    public ApiController(BinService binService) {
+    public ApiController(BinService binService, RequestService requestService) {
         logger = LoggerFactory.getLogger(ApiController.class);
         this.binService = binService;
+        this.requestService = requestService;
     }
 
     @GetMapping("/swagger")
@@ -76,6 +80,10 @@ public class ApiController {
                                            @RequestParam(name = "page", required = false, defaultValue = "0") Integer page,
                                            @RequestParam(name = "limit", required = false, defaultValue = "10") Integer limit,
                                            @RequestParam(name = "fields", required = false) String fields){
-        return Collections.emptyList();
+        Bin bin = binService.getByName(name);
+        if (bin == null) {
+            throw new ResourceNotFoundException("Could not find bin with name " + name);
+        }
+        return requestService.getDtoWithFields(bin, page, limit, fields);
     }
 }

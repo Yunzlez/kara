@@ -4,6 +4,7 @@ import be.zlz.kara.bin.domain.Bin;
 import be.zlz.kara.bin.domain.BinaryRequest;
 import be.zlz.kara.bin.domain.Reply;
 import be.zlz.kara.bin.domain.Request;
+import be.zlz.kara.bin.dto.RequestDto;
 import be.zlz.kara.bin.exceptions.BadRequestException;
 import be.zlz.kara.bin.exceptions.ResourceNotFoundException;
 import be.zlz.kara.bin.repositories.BinRepository;
@@ -22,21 +23,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.util.Pair;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.*;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.nio.charset.StandardCharsets;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.util.stream.Collectors;
 
 
 @Service
@@ -115,7 +110,7 @@ public class RequestService {
         } else return Pair.of(replyService.fromRequest(request), request);
     }
 
-    public Request createRequest(Map<String, String> headers, String body, String binName){
+    public Request createRequest(Map<String, String> headers, String body, String binName) {
         Request request = new Request();
         request.setMqtt(true);
         request.setBody(body);
@@ -125,7 +120,7 @@ public class RequestService {
 
         Bin bin = binRepository.getByName(binName);
 
-        if(bin == null){
+        if (bin == null) {
             logger.info("Got message for unknown bin {}", binName);
             return null;
         }
@@ -194,7 +189,7 @@ public class RequestService {
 
     private void updateMetrics(Bin bin, Request req) {
         String name;
-        if(req.isMqtt()){
+        if (req.isMqtt()) {
             name = "MQTT";
         } else {
             name = req.getMethod().name();
@@ -236,5 +231,47 @@ public class RequestService {
         reply.getHeaders().forEach(httpHeaders::add);
 
         return new ResponseEntity<>(jsonReply, httpHeaders, reply.getCode());
+    }
+
+    public List<RequestDto> getDtoWithFields(Bin bin, int page, int limit, String fields) {
+        List<Request> requests = getOrderedRequests(bin, page, limit).getContent();
+        if (fields == null || fields.isEmpty()) {
+            return requests.stream().map(request -> new RequestDto(
+                    request.getMethod(),
+                    request.getRequestTime(),
+                    request.getBody(),
+                    request.getHeaders(),
+                    request.getProtocol(),
+                    request.getQueryParams()
+            )).collect(Collectors.toList());
+        } else {
+            String[] fieldArr = fields.split(",");
+            Set<String> fieldSet = Arrays.stream(fieldArr).map(String::toLowerCase).collect(Collectors.toSet());
+            return buildCustomDtos(requests, fieldSet);
+        }
+    }
+
+    private List<RequestDto> buildCustomDtos(List<Request> requests, Set<String> fields) {
+        boolean method = fields.contains("method");
+        boolean requestTime = fields.contains("requesttime");
+        boolean body = fields.contains("body");
+        boolean headers = fields.contains("headers");
+        boolean protocol = fields.contains("protocol");
+        boolean queryParams = fields.contains("queryparams");
+
+        List<RequestDto> result = new ArrayList<>();
+        for (Request request : requests) {
+            result.add(
+              new RequestDto(
+                      method ? request.getMethod() : null,
+                      requestTime ? request.getRequestTime() : null,
+                      body ? request.getBody() : null,
+                      headers ? request.getHeaders() : null,
+                      protocol ? request.getProtocol() : null,
+                      queryParams ? request.getQueryParams() : null
+              )
+            );
+        }
+        return result;
     }
 }
