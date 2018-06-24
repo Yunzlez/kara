@@ -5,7 +5,7 @@ info:
   license:
     name: MIT
 servers:
-  - url: kara.rest/api/v1
+  - url: kara.rest/wapi/v1
   - url: bin.dev.zlz.be/api/v1
 paths:
   /bins:

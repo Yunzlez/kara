@@ -1,4 +1,4 @@
-// Generated from TemplateLexer.g4 by ANTLR 4.7.1
+// Generated from C:/JEE/Projects/zlzbin-j/bin/src/main/resources/antlr\TemplateLexer.g4 by ANTLR 4.7
 package be.zlz.kara.bin.template.parser;
 import org.antlr.v4.runtime.Lexer;
 import org.antlr.v4.runtime.CharStream;
@@ -11,7 +11,7 @@ import org.antlr.v4.runtime.misc.*;
 
 @SuppressWarnings({"all", "warnings", "unchecked", "unused", "cast"})
 public class TemplateLexer extends Lexer {
-	static { RuntimeMetaData.checkVersion("4.7.1", RuntimeMetaData.VERSION); }
+	static { RuntimeMetaData.checkVersion("4.7", RuntimeMetaData.VERSION); }
 
 	protected static final DFA[] _decisionToDFA;
 	protected static final PredictionContextCache _sharedContextCache =

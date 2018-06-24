@@ -12,9 +12,9 @@ placeholder
     : OPEN_TMP expr CLOSE_TMP
     ;
 
-expr: ID
-    | iter
-    | ID DOT ID
+expr: ID            #PlainPlaceholder
+    | iter          #IterPlaceholder
+    | ID DOT ID     #ObjectPlaceHolder
     ;
 
 iter: ID NUMBER

@@ -1,4 +1,4 @@
-// Generated from TemplateParser.g4 by ANTLR 4.7.1
+// Generated from C:/JEE/Projects/zlzbin-j/bin/src/main/resources/antlr\TemplateParser.g4 by ANTLR 4.7
 package be.zlz.kara.bin.template.parser;
 import org.antlr.v4.runtime.tree.AbstractParseTreeVisitor;
 
@@ -31,7 +31,21 @@ public class TemplateParserBaseVisitor<T> extends AbstractParseTreeVisitor<T> im
 	 * <p>The default implementation returns the result of calling
 	 * {@link #visitChildren} on {@code ctx}.</p>
 	 */
-	@Override public T visitExpr(TemplateParser.ExprContext ctx) { return visitChildren(ctx); }
+	@Override public T visitPlainPlaceholder(TemplateParser.PlainPlaceholderContext ctx) { return visitChildren(ctx); }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation returns the result of calling
+	 * {@link #visitChildren} on {@code ctx}.</p>
+	 */
+	@Override public T visitIterPlaceholder(TemplateParser.IterPlaceholderContext ctx) { return visitChildren(ctx); }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation returns the result of calling
+	 * {@link #visitChildren} on {@code ctx}.</p>
+	 */
+	@Override public T visitObjectPlaceHolder(TemplateParser.ObjectPlaceHolderContext ctx) { return visitChildren(ctx); }
 	/**
 	 * {@inheritDoc}
 	 *
