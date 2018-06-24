@@ -3,6 +3,8 @@ package be.zlz.kara.bin.controller;
 import be.zlz.kara.bin.domain.Bin;
 import be.zlz.kara.bin.domain.Request;
 import be.zlz.kara.bin.domain.RequestMetric;
+import be.zlz.kara.bin.dto.BinDto;
+import be.zlz.kara.bin.dto.RequestCountDto;
 import be.zlz.kara.bin.dto.SettingDTO;
 import be.zlz.kara.bin.exceptions.ResourceNotFoundException;
 import be.zlz.kara.bin.repositories.BinRepository;
@@ -58,15 +60,18 @@ public class BinController {
         return "redirect:/bin/" + name + "/log";
     }
 
-    //todo need a limit system & pagination system
     @GetMapping(value = "/bin/{uuid}/log", produces = "application/json")
     @ResponseBody
-    public List<Request> getLogForUuidAsJson(@PathVariable String uuid, @RequestParam(name = "page", required = false, defaultValue = "0") Integer page, @RequestParam(name = "limit", required = false, defaultValue = "10") Integer limit) {
-        if (binRepository.getByName(uuid) == null) {
+    public BinDto getLogForUuidAsJson(@PathVariable String uuid,
+                                      @RequestParam(name = "page", required = false, defaultValue = "0") Integer page,
+                                      @RequestParam(name = "limit", required = false, defaultValue = "10") Integer limit,
+                                      HttpServletRequest request) {
+        Bin bin = binRepository.getByName(uuid);
+        if (bin == null) {
             throw new ResourceNotFoundException("Could not find bin with name " + uuid);
         }
-        Page<Request> current = binService.getOrderedRequests(uuid, page, limit);
-        return current.getContent();
+
+        return binService.getPagedBinDto(bin, buildRequestUrl(request, uuid), page, limit);
     }
 
     @GetMapping(value = "/bin/{uuid}/log", produces = "text/html")
@@ -82,7 +87,7 @@ public class BinController {
         model.put("pageTitle", "Bin " + uuid);
         model.put("binName", uuid);
 
-        Page<Request> current = binService.getOrderedRequests(uuid, page, limit);
+        Page<Request> current = binService.getOrderedRequests(bin, page, limit);
         List<Request> requests = current.getContent();
 
         model.put("requests", requests);

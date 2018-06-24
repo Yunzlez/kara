@@ -2,7 +2,7 @@ My Template is ${ting}, look at this list item: ${i0}
 
 my objects' property is ${object.property}
 
-I wanna use $!
+I wanna use ${dol}!
 
 {
     "isJson":"${isJson}"

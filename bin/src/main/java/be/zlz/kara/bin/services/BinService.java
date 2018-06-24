@@ -2,6 +2,9 @@ package be.zlz.kara.bin.services;
 
 import be.zlz.kara.bin.domain.Bin;
 import be.zlz.kara.bin.domain.Request;
+import be.zlz.kara.bin.dto.BinDto;
+import be.zlz.kara.bin.dto.InboundDto;
+import be.zlz.kara.bin.dto.RequestCountDto;
 import be.zlz.kara.bin.dto.SettingDTO;
 import be.zlz.kara.bin.exceptions.ResourceNotFoundException;
 import be.zlz.kara.bin.repositories.BinRepository;
@@ -15,6 +18,10 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 @Service
 public class BinService {
@@ -34,8 +41,21 @@ public class BinService {
         this.binRepository = binRepository;
     }
 
-    public Page<Request> getOrderedRequests(String name, int page, int limit) {
-        return requestRepository.getByBinOrderByRequestTimeDesc(binRepository.getByName(name), getPageable(page, limit));
+    public Page<Request> getOrderedRequests(Bin bin, int page, int limit) {
+        return requestRepository.getByBinOrderByRequestTimeDesc(bin, getPageable(page, limit));
+    }
+
+    public BinDto getPagedBinDto(Bin bin, String requestUrl, int page, int limit) {
+        Page<Request> requests = getOrderedRequests(bin, page, limit);
+        return new BinDto(
+                bin.getName(),
+                new RequestCountDto((int)requests.getTotalElements(), bin.getRequestMetric().getCounts()),
+                new InboundDto(requestUrl, "tcp://kara.rest:1883", "/bin/"+ bin.getName()), //todo make variable MQTT url
+                requests.getContent(),
+                page,
+                limit,
+                requests.getTotalPages()
+        );
     }
 
     public void deleteBin(Bin bin) {
@@ -44,9 +64,9 @@ public class BinService {
         binRepository.delete(bin);
     }
 
-    public String getSize(Bin bin){
+    public String getSize(Bin bin) {
         Long val = binRepository.getBinSizeInBytes(bin.getId());
-        if(val == null){
+        if (val == null) {
             val = 0L;
         }
         return String.valueOf(autoScale(val));
@@ -90,7 +110,7 @@ public class BinService {
         }
     }
 
-    private void deleteBinRequestsEfficient(long binId){
+    private void deleteBinRequestsEfficient(long binId) {
         requestRepository.deleteHeadersForBin(binId);
         requestRepository.deleteQueryParamsForBin(binId);
         requestRepository.deleteAllByBinEfficient(binId);
