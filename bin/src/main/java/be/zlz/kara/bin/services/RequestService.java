@@ -9,6 +9,7 @@ import be.zlz.kara.bin.exceptions.ResourceNotFoundException;
 import be.zlz.kara.bin.repositories.BinRepository;
 import be.zlz.kara.bin.repositories.BinaryrequestRepository;
 import be.zlz.kara.bin.repositories.RequestRepository;
+import be.zlz.kara.bin.util.PagingUtils;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.smile.SmileFactory;
@@ -19,6 +20,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.Page;
 import org.springframework.data.util.Pair;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -33,6 +35,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.nio.charset.StandardCharsets;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 
@@ -70,6 +73,10 @@ public class RequestService {
         this.replyService = replyService;
         this.binaryrequestRepository = binaryrequestRepository;
         gson = new GsonBuilder().serializeNulls().excludeFieldsWithoutExposeAnnotation().create();
+    }
+
+    public Page<Request> getOrderedRequests(Bin bin, int page, int limit) {
+        return requestRepository.getByBinOrderByRequestTimeDesc(bin, PagingUtils.getPageable(page, limit));
     }
 
     public Pair<Reply, Request> createRequest(HttpServletRequest servletRequest, HttpEntity<String> body, String uuid, Map<String, String> headers) {

@@ -37,9 +37,9 @@ paths:
       summary: Create a bin
       responses:
         303:
-          description:
+          description: The bin was created and can be found at the URL specified
           headers:
-            link:
+            location:
               description: link to the new bin
               schema:
                 type: string
@@ -68,6 +68,37 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/BinContent"
+  /bins/{binId}/requests:
+    get:
+      summary: retrieves the requests for a bin
+      parameters:
+        - name: page
+          in: query
+          description: The page to retrieve
+          required: false
+          schema:
+            type: integer
+            format: int32
+        - name: limit
+          in: query
+          description: How many items to return at one time (max 100)
+          required: false
+          schema:
+            type: integer
+            format: int32
+        - name: fields
+          in: query
+          description: the fields of the requests to retrieve, comma separated. Returns all if not given.
+          required: false
+          schema:
+            type: string
+      responses:
+        200:
+          description: Requests
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RequestList"
 components:
   schemas:
     Pet:

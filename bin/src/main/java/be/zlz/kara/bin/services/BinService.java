@@ -2,13 +2,11 @@ package be.zlz.kara.bin.services;
 
 import be.zlz.kara.bin.domain.Bin;
 import be.zlz.kara.bin.domain.Request;
-import be.zlz.kara.bin.dto.BinDto;
-import be.zlz.kara.bin.dto.InboundDto;
-import be.zlz.kara.bin.dto.RequestCountDto;
-import be.zlz.kara.bin.dto.SettingDTO;
+import be.zlz.kara.bin.dto.*;
 import be.zlz.kara.bin.exceptions.ResourceNotFoundException;
 import be.zlz.kara.bin.repositories.BinRepository;
 import be.zlz.kara.bin.repositories.RequestRepository;
+import be.zlz.kara.bin.util.PagingUtils;
 import be.zlz.kara.bin.util.ReplyBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -18,10 +16,14 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.util.DefaultUriBuilderFactory;
+import org.springframework.web.util.UriBuilder;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @Service
 public class BinService {
@@ -30,31 +32,45 @@ public class BinService {
 
     private final BinRepository binRepository;
 
+    private final RequestService requestService;
+
     public static final String NOT_FOUND_MESSAGE = "Could not find bin with name ";
 
-    @Value("${max.page.size}")
-    private int maxPageSize;
-
     @Autowired
-    public BinService(RequestRepository requestRepository, BinRepository binRepository) {
+    public BinService(RequestRepository requestRepository, BinRepository binRepository, RequestService requestService) {
         this.requestRepository = requestRepository;
         this.binRepository = binRepository;
+        this.requestService = requestService;
     }
 
-    public Page<Request> getOrderedRequests(Bin bin, int page, int limit) {
-        return requestRepository.getByBinOrderByRequestTimeDesc(bin, getPageable(page, limit));
+    public Bin getByName(String name){
+        return binRepository.getByName(name);
+    }
+
+    public Bin save(Bin bin){
+        return binRepository.save(bin);
+    }
+
+    public List<BinListDto> listBins(int page, int limit) {
+        Page<Bin> bins = binRepository.findAll(PagingUtils.getPageable(page, limit));
+
+        return bins.stream().map(bin -> new BinListDto(
+                bin.getName(),
+                new RequestCountDto(bin.getRequestCount(), bin.getRequestMetric().getCounts())
+        )).collect(Collectors.toList());
     }
 
     public BinDto getPagedBinDto(Bin bin, String requestUrl, int page, int limit) {
-        Page<Request> requests = getOrderedRequests(bin, page, limit);
+        Page<Request> requests = requestService.getOrderedRequests(bin, page, limit);
         return new BinDto(
                 bin.getName(),
-                new RequestCountDto((int)requests.getTotalElements(), bin.getRequestMetric().getCounts()),
-                new InboundDto(requestUrl, "tcp://kara.rest:1883", "/bin/"+ bin.getName()), //todo make variable MQTT url
+                new RequestCountDto((int) requests.getTotalElements(), bin.getRequestMetric().getCounts()),
+                new InboundDto(requestUrl, "tcp://kara.rest:1883", "/bin/" + bin.getName()), //todo make variable MQTT url
                 requests.getContent(),
                 page,
                 limit,
-                requests.getTotalPages()
+                requests.getTotalPages(),
+                getSize(bin)
         );
     }
 
@@ -116,16 +132,6 @@ public class BinService {
         requestRepository.deleteAllByBinEfficient(binId);
     }
 
-    private Pageable getPageable(Integer page, Integer size) {
-        if (size == null || size > maxPageSize || size == 0) {
-            size = maxPageSize;
-        }
-        if (page == null) {
-            page = 0;
-        }
-        return PageRequest.of(page, size);
-    }
-
     public SettingDTO getSettings(String name) {
         Bin bin = binRepository.getByName(name);
         if (bin == null) {
@@ -140,6 +146,18 @@ public class BinService {
         settings.setCustomName(bin.getName());
         settings.setPermanent(bin.isPermanent());
         return settings;
+    }
+
+    public String buildRequestUrl(HttpServletRequest request, String uuid) {
+        UriBuilder builder = new DefaultUriBuilderFactory().builder()
+                .scheme(request.getScheme())
+                .host(request.getServerName());
+
+        if (request.getServerPort() != 80 && request.getServerPort() != 443) {
+            builder.port(request.getServerPort());
+        }
+        builder.path("/bin/" + uuid);
+        return builder.build().toASCIIString();
     }
 
     private String autoScale(long bytes) {

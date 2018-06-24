@@ -1,10 +1,12 @@
 package be.zlz.kara.bin.dto;
 
 import be.zlz.kara.bin.domain.Request;
+import com.fasterxml.jackson.annotation.JsonInclude;
 
 import java.util.Collections;
 import java.util.List;
 
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class BinDto {
 
     private String binName;
@@ -19,9 +21,11 @@ public class BinDto {
 
     private int totalPages;
 
+    private String totalBodySize;
+
     private List<Request> requests;
 
-    public BinDto(String binName, RequestCountDto requestCounts, InboundDto inbound, List<Request> requests, int page, int limit, int totalPages) {
+    public BinDto(String binName, RequestCountDto requestCounts, InboundDto inbound, List<Request> requests, int page, int limit, int totalPages, String totalBodySize) {
         this.binName = binName;
         this.requestCounts = requestCounts;
         this.inbound = inbound;
@@ -29,6 +33,7 @@ public class BinDto {
         this.page = page;
         this.limit = limit;
         this.totalPages = totalPages;
+        this.totalBodySize = totalBodySize;
     }
 
     public String getBinName() {
@@ -57,5 +62,9 @@ public class BinDto {
 
     public int getTotalPages() {
         return totalPages;
+    }
+
+    public String getTotalBodySize() {
+        return totalBodySize;
     }
 }

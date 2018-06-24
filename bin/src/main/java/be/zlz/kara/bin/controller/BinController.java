@@ -4,13 +4,12 @@ import be.zlz.kara.bin.domain.Bin;
 import be.zlz.kara.bin.domain.Request;
 import be.zlz.kara.bin.domain.RequestMetric;
 import be.zlz.kara.bin.dto.BinDto;
-import be.zlz.kara.bin.dto.RequestCountDto;
 import be.zlz.kara.bin.dto.SettingDTO;
 import be.zlz.kara.bin.exceptions.ResourceNotFoundException;
 import be.zlz.kara.bin.repositories.BinRepository;
 import be.zlz.kara.bin.repositories.RequestRepository;
 import be.zlz.kara.bin.services.BinService;
-import com.codahale.metrics.MetricRegistry;
+import be.zlz.kara.bin.services.RequestService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,8 +19,6 @@ import org.springframework.http.HttpMethod;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.util.DefaultUriBuilderFactory;
-import org.springframework.web.util.UriBuilder;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.List;
@@ -39,14 +36,17 @@ public class BinController {
 
     private final BinService binService;
 
+    private final RequestService requestService;
+
     private Logger logger;
 
     @Autowired
-    public BinController(BinRepository binRepository, RequestRepository requestRepository, BinService binService) {
+    public BinController(BinRepository binRepository, RequestRepository requestRepository, BinService binService, RequestService requestService) {
         logger = LoggerFactory.getLogger(this.getClass());
         this.binRepository = binRepository;
         this.requestRepository = requestRepository;
         this.binService = binService;
+        this.requestService = requestService;
     }
 
     @GetMapping("/bin/create")
@@ -71,7 +71,7 @@ public class BinController {
             throw new ResourceNotFoundException("Could not find bin with name " + uuid);
         }
 
-        return binService.getPagedBinDto(bin, buildRequestUrl(request, uuid), page, limit);
+        return binService.getPagedBinDto(bin, binService.buildRequestUrl(request, uuid), page, limit);
     }
 
     @GetMapping(value = "/bin/{uuid}/log", produces = "text/html")
@@ -87,7 +87,7 @@ public class BinController {
         model.put("pageTitle", "Bin " + uuid);
         model.put("binName", uuid);
 
-        Page<Request> current = binService.getOrderedRequests(bin, page, limit);
+        Page<Request> current = requestService.getOrderedRequests(bin, page, limit);
         List<Request> requests = current.getContent();
 
         model.put("requests", requests);
@@ -95,23 +95,11 @@ public class BinController {
         model.put("pageCount", current.getTotalPages());
         model.put("currentPage", current);
         model.put("currentLimit", limit);
-        model.put("requestUrl", buildRequestUrl(request, uuid));
+        model.put("requestUrl", binService.buildRequestUrl(request, uuid));
         model.put("binSize", binService.getSize(bin));
         setRequestCounts(bin, model);
 
         return "requestlog";
-    }
-
-    private String buildRequestUrl(HttpServletRequest request, String uuid) {
-        UriBuilder builder = new DefaultUriBuilderFactory().builder()
-                .scheme(request.getScheme())
-                .host(request.getServerName());
-
-        if (request.getServerPort() != 80 && request.getServerPort() != 443) {
-            builder.port(request.getServerPort());
-        }
-        builder.path("/bin/" + uuid);
-        return builder.build().toASCIIString();
     }
 
     @GetMapping(value = "/bin/{uuid}/log/settings", produces = "application/json")
