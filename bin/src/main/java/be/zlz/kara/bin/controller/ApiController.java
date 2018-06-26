@@ -38,7 +38,7 @@ public class ApiController {
     }
 
     @GetMapping("/swagger")
-    public String getSwagger(){
+    public String getSwagger() {
         return "Coming soon-ish";
     }
 
@@ -75,11 +75,20 @@ public class ApiController {
         return binService.getPagedBinDto(bin, binService.buildRequestUrl(request, uuid), page, limit);
     }
 
+    @DeleteMapping("/bins/{uuid}/logs")
+    public ResponseEntity<?> clearBin(@PathVariable String uuid) {
+        binService.clearBin(uuid);
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.add(HttpHeaders.LOCATION, "/api/v1/bins/" + uuid + "/logs");
+        return new ResponseEntity<>(headers, HttpStatus.SEE_OTHER);
+    }
+
     @GetMapping(value = "/bins/{name}/requests")
     public List<RequestDto> getRequestsFor(@PathVariable String name,
                                            @RequestParam(name = "page", required = false, defaultValue = "0") Integer page,
                                            @RequestParam(name = "limit", required = false, defaultValue = "10") Integer limit,
-                                           @RequestParam(name = "fields", required = false) String fields){
+                                           @RequestParam(name = "fields", required = false) String fields) {
         Bin bin = binService.getByName(name);
         if (bin == null) {
             throw new ResourceNotFoundException("Could not find bin with name " + name);
