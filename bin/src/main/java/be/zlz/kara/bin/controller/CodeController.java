@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 @Controller
 public class CodeController {
 
-    @RequestMapping(path = "/code/{code}", method = {RequestMethod.GET, RequestMethod.POST, RequestMethod.PUT, RequestMethod.DELETE, RequestMethod.PATCH})
+    @RequestMapping(path = {"/code/{code}", "/api/v1/code/{code}"}, method = {RequestMethod.GET, RequestMethod.POST, RequestMethod.PUT, RequestMethod.DELETE, RequestMethod.PATCH})
     public ResponseEntity<String> returnCode(@PathVariable("code") int code, @RequestBody(required = false) String response){
         ResponseEntity<String> resp;
         try{

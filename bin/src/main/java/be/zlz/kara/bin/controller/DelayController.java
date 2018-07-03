@@ -20,7 +20,7 @@ public class DelayController {
         this.delayService = delayService;
     }
 
-    @RequestMapping(path = "/delay/{ms}", method = {RequestMethod.GET, RequestMethod.POST, RequestMethod.PUT, RequestMethod.DELETE, RequestMethod.PATCH})
+    @RequestMapping(path = {"/delay/{ms}", "/api/v1/delay/{ms}"}, method = {RequestMethod.GET, RequestMethod.POST, RequestMethod.PUT, RequestMethod.DELETE, RequestMethod.PATCH})
     private ResponseEntity delay(@PathVariable("ms") int ms){
         try{
             if(!delayService.delay(ms)){
