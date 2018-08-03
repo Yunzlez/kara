@@ -81,14 +81,14 @@ paths:
             format: int32
         - name: limit
           in: query
-          description: How many items to return at one time (max 100)
+          description: How many items to return at one time (max 1000)
           required: false
           schema:
             type: integer
             format: int32
         - name: fields
           in: query
-          description: the fields of the requests to retrieve, comma separated. Returns all if not given.
+          description: the fields of the requests to retrieve, comma separated. Returns all if not given. One or more of [method,requesttime,body,headers,protocol,queryparams]
           required: false
           schema:
             type: string
