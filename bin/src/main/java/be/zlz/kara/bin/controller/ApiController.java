@@ -16,7 +16,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
-import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 
@@ -35,11 +34,6 @@ public class ApiController {
         logger = LoggerFactory.getLogger(ApiController.class);
         this.binService = binService;
         this.requestService = requestService;
-    }
-
-    @GetMapping("/swagger")
-    public String getSwagger() {
-        return "Coming soon-ish";
     }
 
     @GetMapping("/bins")
