@@ -25,7 +25,7 @@ public class SolrService {
     private static final Logger LOG = LoggerFactory.getLogger(SolrService.class);
 
     //@Value("${solr.endpoint}")
-    private String solrEndpoint = "http://localhost:8983/solr/zlzbin";
+    private String solrEndpoint = "http://localhost:8983/solr/karaa";
 
     private SolrClient solrClient;
 
