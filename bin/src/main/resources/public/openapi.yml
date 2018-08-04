@@ -16,7 +16,6 @@ tags:
 paths:
 #todo:
 # GET/POST/PUT/PATCH/DELETE /bins/{name}
-# DELETE /bins/{name}/logs
 # PUT /bins/{name}/settings <= needs impl
   /bins:
     get:
@@ -84,6 +83,19 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/bin"
+    delete:
+      tags:
+        - Bin Management
+      summary: Clears all requests from the bin
+      responses:
+        303:
+          description: The bin was cleared and can be found at the URL specified
+          headers:
+            location:
+              description: link to the bin
+              schema:
+                type: string
+
   /bins/{binId}/requests:
     get:
       tags:
