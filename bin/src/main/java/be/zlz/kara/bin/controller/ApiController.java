@@ -4,9 +4,11 @@ import be.zlz.kara.bin.domain.Bin;
 import be.zlz.kara.bin.dto.BinDto;
 import be.zlz.kara.bin.dto.BinListDto;
 import be.zlz.kara.bin.dto.RequestDto;
+import be.zlz.kara.bin.dto.SettingDTO;
 import be.zlz.kara.bin.exceptions.ResourceNotFoundException;
 import be.zlz.kara.bin.services.BinService;
 import be.zlz.kara.bin.services.RequestService;
+import org.apache.coyote.http2.Setting;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -75,6 +77,22 @@ public class ApiController {
 
         HttpHeaders headers = new HttpHeaders();
         headers.add(HttpHeaders.LOCATION, "/api/v1/bins/" + uuid + "/logs");
+        return new ResponseEntity<>(headers, HttpStatus.SEE_OTHER);
+    }
+
+    @GetMapping("/bins/{uuid}/settings")
+    public ResponseEntity<SettingDTO> getSettings(@PathVariable String uuid) {
+        return new ResponseEntity<>(binService.getSettings(uuid), HttpStatus.OK);
+    }
+
+    //todo test
+    //todo update SettingDTO to better fit json schema:
+    //use K/V mapping for header and cookies
+    @PutMapping("/bins/{uuid}/settings")
+    public ResponseEntity<?> updateSettings(@PathVariable String uuid, @RequestBody SettingDTO settings) {
+        String newName = binService.updateSettings(uuid, settings);
+        HttpHeaders headers = new HttpHeaders();
+        headers.add(HttpHeaders.LOCATION, "/api/v1/bins/" + newName + "/logs");
         return new ResponseEntity<>(headers, HttpStatus.SEE_OTHER);
     }
 

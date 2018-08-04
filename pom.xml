@@ -6,7 +6,7 @@
 
     <groupId>be.zlz</groupId>
     <artifactId>kara</artifactId>
-    <version>1.2.4</version>
+    <version>1.2.5</version>
     <modules>
         <module>bin</module>
         <module>harwriter</module>

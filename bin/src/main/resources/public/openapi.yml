@@ -62,6 +62,12 @@ paths:
         - Requests
       summary: Retrieves the bin and its requests
       parameters:
+        - name: binId
+          in: path
+          description: The name of the bin
+          required: true
+          schema:
+            type: string
         - name: page
           in: query
           description: The page to retrieve
@@ -87,6 +93,13 @@ paths:
       tags:
         - Bin Management
       summary: Clears all requests from the bin
+      parameters:
+        - name: binId
+          in: path
+          description: The name of the bin
+          required: true
+          schema:
+            type: string
       responses:
         303:
           description: The bin was cleared and can be found at the URL specified
@@ -102,6 +115,12 @@ paths:
         - Requests
       summary: Retrieves the requests for a bin
       parameters:
+        - name: binId
+          in: path
+          description: The name of the bin
+          required: true
+          schema:
+            type: string
         - name: page
           in: query
           description: The page to retrieve
@@ -131,6 +150,43 @@ paths:
                 type: array
                 items:
                   $ref: "#/components/schemas/request"
+  /bins/{binId}/settings:
+    get:
+      tags:
+        - Bin Management
+      summary: Retrieves the settings for a bin
+      parameters:
+        - name: binId
+          in: path
+          description: The name of the bin
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: The current settings
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/settings"
+    put:
+      tags:
+        - Bin Management
+      summary: Updates the settings for the bin
+      parameters:
+        - name: binId
+          in: path
+          description: The name of the bin
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: The current settings
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/settings"
 components:
   schemas:
     bin:
@@ -260,3 +316,47 @@ components:
           type: string
         mqttTopic:
           type: string
+    settings:
+      required:
+        - code
+        - mimeType
+        - body
+        - headerNames
+        - headerValues
+        - cookieNames
+        - cookieValues
+        - customName
+        - permanent
+      properties:
+        code:
+          type: integer
+          format: int32
+          description: The HTTP code to return when a request is sent
+        mimeType:
+          type: string
+          description: The mimeType to return
+        body:
+          type: string
+          description: The body to return
+        headerNames:
+          type: array
+          items:
+            type: string
+        headerValues:
+          type: array
+          items:
+            type: string
+        cookieNames:
+          type: array
+          items:
+            type: string
+        cookieValues:
+          type: array
+          items:
+            type: string
+        customName:
+          type: string
+          description: The name for the bin. Note that this affects the request URI, and the original request URI is invalid
+        permanent:
+          type: boolean
+          description: Whether the bin is permanent(Never deleted, but reduced capacity)
