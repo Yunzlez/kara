@@ -27,11 +27,16 @@ public class BinSettingsDto {
     }
 
     public BinSettingsDto(Bin bin) {
-        this.code = bin.getReply().getCode().value();
-        this.mimeType = bin.getReply().getMimeType();
-        this.body = bin.getReply().getBody();
-        this.headers = bin.getReply().getHeaders();
-        this.cookies = bin.getReply().getCookies();
+        if(bin.getReply() != null){
+            this.code = bin.getReply().getCode().value();
+            this.mimeType = bin.getReply().getMimeType();
+            this.body = bin.getReply().getBody();
+            this.headers = bin.getReply().getHeaders();
+            this.cookies = bin.getReply().getCookies();
+        } else {
+            this.headers = new HashMap<>();
+            this.cookies = new HashMap<>();
+        }
         this.customName = bin.getName();
         this.isPermanent = bin.isPermanent();
     }
