@@ -9,10 +9,7 @@ import be.zlz.kara.bin.repositories.RequestRepository;
 import be.zlz.kara.bin.util.PagingUtils;
 import be.zlz.kara.bin.util.ReplyBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -43,11 +40,11 @@ public class BinService {
         this.requestService = requestService;
     }
 
-    public Bin getByName(String name){
+    public Bin getByName(String name) {
         return binRepository.getByName(name);
     }
 
-    public Bin save(Bin bin){
+    public Bin save(Bin bin) {
         return binRepository.save(bin);
     }
 
@@ -90,6 +87,27 @@ public class BinService {
 
     @Transactional
     public String updateSettings(String name, SettingDTO settings) {
+        Map<String, String> headers = new HashMap<>();
+        Map<String, String> cookies = new HashMap<>();
+        for (int i = 0; i < settings.getCookieNames().size(); i++) {
+            cookies.put(settings.getCookieNames().get(i), settings.getCookieValues().get(i));
+        }
+        for (int i = 0; i < settings.getHeaderNames().size(); i++) {
+            headers.put(settings.getHeaderNames().get(i), settings.getHeaderValues().get(i));
+        }
+        return updateSettings(name, new BinSettingsDto(
+                settings.getCode(),
+                settings.getMimeType(),
+                settings.getBody(),
+                headers,
+                cookies,
+                settings.getCustomName(),
+                settings.isPermanent()
+        ));
+    }
+
+    @Transactional
+    public String updateSettings(String name, BinSettingsDto settings) {
         Bin bin = binRepository.getByName(name);
         ReplyBuilder replyBuilder = new ReplyBuilder();
         if (!(settings.getCode() == null || settings.getMimeType() == null || settings.getBody() == null)) {
@@ -146,6 +164,14 @@ public class BinService {
         settings.setCustomName(bin.getName());
         settings.setPermanent(bin.isPermanent());
         return settings;
+    }
+
+    public BinSettingsDto getApiBinSettings(String name) {
+        Bin bin = binRepository.getByName(name);
+        if (bin == null) {
+            throw new ResourceNotFoundException(NOT_FOUND_MESSAGE + name);
+        }
+        return new BinSettingsDto(bin);
     }
 
     public String buildRequestUrl(HttpServletRequest request, String uuid) {

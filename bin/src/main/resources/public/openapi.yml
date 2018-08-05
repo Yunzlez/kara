@@ -321,10 +321,8 @@ components:
         - code
         - mimeType
         - body
-        - headerNames
-        - headerValues
-        - cookieNames
-        - cookieValues
+        - headers
+        - cookies
         - customName
         - permanent
       properties:
@@ -338,22 +336,12 @@ components:
         body:
           type: string
           description: The body to return
-        headerNames:
-          type: array
-          items:
-            type: string
-        headerValues:
-          type: array
-          items:
-            type: string
-        cookieNames:
-          type: array
-          items:
-            type: string
-        cookieValues:
-          type: array
-          items:
-            type: string
+        headers:
+          type: object
+          additionalProperties: string
+        cookies:
+          type: object
+          additionalProperties: string
         customName:
           type: string
           description: The name for the bin. Note that this affects the request URI, and the original request URI is invalid
