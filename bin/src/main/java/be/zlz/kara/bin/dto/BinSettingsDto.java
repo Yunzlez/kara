@@ -45,8 +45,8 @@ public class BinSettingsDto {
         this.code = code;
         this.mimeType = mimeType;
         this.body = body;
-        this.headers = headers;
-        this.cookies = cookies;
+        this.headers = headers == null ? new HashMap<>() : headers;
+        this.cookies = cookies == null ? new HashMap<>() : cookies;
         this.customName = customName;
         this.isPermanent = isPermanent;
     }

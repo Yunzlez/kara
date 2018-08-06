@@ -89,11 +89,15 @@ public class BinService {
     public String updateSettings(String name, SettingDTO settings) {
         Map<String, String> headers = new HashMap<>();
         Map<String, String> cookies = new HashMap<>();
-        for (int i = 0; i < settings.getCookieNames().size(); i++) {
-            cookies.put(settings.getCookieNames().get(i), settings.getCookieValues().get(i));
+        if (settings.getCookieNames() != null){
+            for (int i = 0; i < settings.getCookieNames().size(); i++) {
+                cookies.put(settings.getCookieNames().get(i), settings.getCookieValues().get(i));
+            }
         }
-        for (int i = 0; i < settings.getHeaderNames().size(); i++) {
-            headers.put(settings.getHeaderNames().get(i), settings.getHeaderValues().get(i));
+        if (settings.getHeaderNames() != null){
+            for (int i = 0; i < settings.getHeaderNames().size(); i++) {
+                headers.put(settings.getHeaderNames().get(i), settings.getHeaderValues().get(i));
+            }
         }
         return updateSettings(name, new BinSettingsDto(
                 settings.getCode(),

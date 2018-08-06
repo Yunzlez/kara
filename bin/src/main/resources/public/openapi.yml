@@ -6,8 +6,8 @@ info:
     name: MIT
     #todo host MIT license somewhere
 servers:
-  - url: kara.rest/api/v1
-  - url: bin.dev.zlz.be/api/v1
+  - url: https://kara.rest/api/v1
+  - url: https://bin.dev.zlz.be/api/v1
 tags:
   - name: Bin Management
     description: Crud for bins
