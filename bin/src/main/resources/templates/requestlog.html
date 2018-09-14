@@ -27,7 +27,7 @@
         <div class="content">
             <div class="header">Request URL</div>
             <p><!--/*@thymesVar id="requestUrl" type="String"*/-->
-                <b>HTTP:</b> <a th:text="${requestUrl}" th:href="${requestUrl}"></a></p>
+                <b>HTTP:</b> <a id="reqUrl" th:text="${requestUrl}" th:href="${requestUrl}"></a> <button id="copyme" class="mini ui icon button blue" data-clipboard-target="#reqUrl"><i class="copy icon"></i></button></p>
             <p><b>MQTT:</b> <a href="tcp://kara.rest:1883">tcp://kara.rest:1883</a> - Topic /bin/<span th:text="${binName}"></span> </p>
         </div>
     </div>
@@ -172,5 +172,6 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/stomp.js/2.3.3/stomp.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/sockjs-client/1.1.4/sockjs.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/mustache.js/2.3.0/mustache.min.js"></script>
+<script th:src="@{/js/clipboard.min.js}" src="../public/js/clipboard.min.js"></script>
 <script th:src="@{/js/websockets.js}" src="../public/js/main.js"></script>
 </html>

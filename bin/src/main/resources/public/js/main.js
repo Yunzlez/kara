@@ -21,6 +21,9 @@ $("#emptybtn").click(function () {
 });
 
 $(document).ready(function () {
+    var copyMe = document.getElementById('copyme');
+    new ClipboardJS(copyMe);
+
     $("#requestdesc").hide();
 
 
