@@ -10,7 +10,6 @@ import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import java.util.concurrent.Semaphore;
 
 @Configuration
-@EnableWebMvc
 public class ApplicationConfig {
 
     @Value("${max.concurrent.delay}")
