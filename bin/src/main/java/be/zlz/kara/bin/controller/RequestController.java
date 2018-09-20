@@ -44,6 +44,7 @@ public class RequestController {
 
     }
 
+    @CrossOrigin
     @RequestMapping(value = {"/bin/{uuid}", "/api/v1/bins/{uuid}"}, method = {RequestMethod.GET, RequestMethod.POST, RequestMethod.PUT, RequestMethod.DELETE, RequestMethod.PATCH})
     public ResponseEntity<String> handleRequest(HttpServletRequest servletRequest,
                                                 HttpServletResponse response,
@@ -57,6 +58,7 @@ public class RequestController {
         return requestService.buildResponse(replyRequestPair.getFirst(), response);
     }
 
+    @CrossOrigin
     @RequestMapping(value = {"/bin/{uuid}/delay/{ms}", "/api/v1/bins/{uuid}/delay/{ms}"}, method = {RequestMethod.GET, RequestMethod.POST, RequestMethod.PUT, RequestMethod.DELETE, RequestMethod.PATCH})
     public ResponseEntity<String> handleRequestDelayed(HttpServletRequest servletRequest,
                                                        HttpServletResponse response,
