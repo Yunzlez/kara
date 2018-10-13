@@ -195,13 +195,6 @@ public class RequestService {
             name = req.getMethod().name();
         }
 
-/*        if (bin.getRequestMetric().getCounts().containsKey(name)) {
-            int cnt = bin.getRequestMetric().getCounts().get(name);
-            bin.getRequestMetric().getCounts().put(name, cnt + 1);
-        } else {
-            bin.getRequestMetric().getCounts().put(name, 1);
-        }*/
-
         binRepository.updateMetric(bin.getRequestMetric().getId(), name);
     }
 

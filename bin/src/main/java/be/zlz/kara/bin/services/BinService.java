@@ -117,7 +117,7 @@ public class BinService {
         if (!(settings.getCode() == null || settings.getMimeType() == null || settings.getBody() == null)) {
             bin.setReply(
                     replyBuilder.setCode(HttpStatus.valueOf(settings.getCode()))
-                            .setMimeType(settings.getMimeType())
+                            .setMimeType(isBlank(settings.getMimeType()) ? "text/plain" : settings.getMimeType())
                             .setBody(settings.getBody())
                             .setCustom(true)
                             .build()
@@ -188,6 +188,10 @@ public class BinService {
         }
         builder.path("/bin/" + uuid);
         return builder.build().toASCIIString();
+    }
+
+    private boolean isBlank(String val){
+        return val == null || val.isEmpty();
     }
 
     private String autoScale(long bytes) {

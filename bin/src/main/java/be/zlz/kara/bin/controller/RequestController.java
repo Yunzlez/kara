@@ -4,7 +4,6 @@ import be.zlz.kara.bin.domain.Reply;
 import be.zlz.kara.bin.domain.Request;
 import be.zlz.kara.bin.services.DelayService;
 import be.zlz.kara.bin.services.RequestService;
-import com.codahale.metrics.Meter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,16 +27,13 @@ public class RequestController {
 
     private SimpMessageSendingOperations messagingTemplate;
 
-    private final Meter requestMeter;
-
     private DelayService delayService;
 
     private Logger logger;
 
     @Autowired
-    public RequestController(RequestService requestService, SimpMessageSendingOperations messagingTemplate, DelayService delayService, Meter requestMeter) {
+    public RequestController(RequestService requestService, SimpMessageSendingOperations messagingTemplate, DelayService delayService) {
         this.requestService = requestService;
-        this.requestMeter = requestMeter;
         logger = LoggerFactory.getLogger(this.getClass());
         this.messagingTemplate = messagingTemplate;
         this.delayService = delayService;
@@ -54,7 +50,6 @@ public class RequestController {
     ) {
         Pair<Reply, Request> replyRequestPair = requestService.createRequest(servletRequest, body, uuid, headers);
         newRequest(replyRequestPair.getSecond(), uuid);
-        requestMeter.mark();
         return requestService.buildResponse(replyRequestPair.getFirst(), response);
     }
 
