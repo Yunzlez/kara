@@ -73,6 +73,8 @@ public class BinService {
 
     public void deleteBin(Bin bin) {
         long id = bin.getId();
+        requestRepository.deleteQueryParamsForBin(bin.getId());
+        requestRepository.deleteHeadersForBin(bin.getId());
         requestRepository.deleteAllByBinEfficient(bin.getId());
         binRepository.delete(bin);
     }

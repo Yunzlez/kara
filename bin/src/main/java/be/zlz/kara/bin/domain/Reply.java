@@ -1,39 +1,36 @@
 package be.zlz.kara.bin.domain;
 
-import com.google.gson.annotations.Expose;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import net.minidev.json.annotate.JsonIgnore;
 import org.springframework.http.HttpStatus;
 
 import javax.persistence.*;
 import java.util.Map;
 
 @Entity
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class Reply {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Expose(serialize = false)
+    @JsonIgnore
     private long id;
 
-    @Expose
     private HttpStatus code;
 
-    @Expose
     private String mimeType;
 
-    @Expose
     private String body;
 
     @ElementCollection(targetClass = String.class)
     @MapKeyClass(String.class)
-    @Expose
     private Map<String, String> cookies;
 
     @ElementCollection(targetClass = String.class)
     @MapKeyClass(String.class)
-    @Expose
     private Map<String, String> headers;
 
-    @Expose(serialize = false)
+    @JsonIgnore
     private boolean custom = false;
 
     public Reply() {

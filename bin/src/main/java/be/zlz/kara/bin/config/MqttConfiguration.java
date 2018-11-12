@@ -22,6 +22,9 @@ public class MqttConfiguration {
     @Value("${mqtt.clientid}")
     private String clientId;
 
+    @Value("${mqtt.enabled}")
+    private boolean mqttEnabled;
+
     private String topicName = "/bin/+";
 
     @Bean
@@ -32,13 +35,16 @@ public class MqttConfiguration {
 
     @Bean
     public MessageProducer inbound() {
-        MqttPahoMessageDrivenChannelAdapter adapter =
-                new MqttPahoMessageDrivenChannelAdapter(mqttUrl, clientId, topicName);
-        adapter.setCompletionTimeout(5000);
-        adapter.setConverter(new DefaultPahoMessageConverter());
-        adapter.setQos(1);
-        adapter.setOutputChannel(mqttInputChannel());
-        return adapter;
+        if (mqttEnabled){
+            MqttPahoMessageDrivenChannelAdapter adapter =
+                    new MqttPahoMessageDrivenChannelAdapter(mqttUrl, clientId, topicName);
+            adapter.setCompletionTimeout(5000);
+            adapter.setConverter(new DefaultPahoMessageConverter());
+            adapter.setQos(1);
+            adapter.setOutputChannel(mqttInputChannel());
+            return adapter;
+        }
+        return null;
     }
 
     @Bean

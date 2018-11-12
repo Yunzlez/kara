@@ -75,11 +75,9 @@ public class RequestController {
         }
     }
 
-    @SubscribeMapping("/topic/newrequests/{binName}")
+    @SubscribeMapping(value = {"/topic/newrequests/{binName}", "/api/v1/bins/{binName}/requests/ws"})
     public void newRequest(Request request, @DestinationVariable String binName) {
         logger.debug("Sending message for {}", binName);
         messagingTemplate.convertAndSend("/topic/newrequests/" + binName, request);
     }
-
-
 }

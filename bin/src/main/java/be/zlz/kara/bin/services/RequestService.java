@@ -14,8 +14,6 @@ import be.zlz.kara.bin.util.PagingUtils;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.smile.SmileFactory;
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import org.hibernate.exception.ConstraintViolationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -23,7 +21,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.util.Pair;
-import org.springframework.http.*;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import javax.servlet.http.Cookie;
@@ -45,9 +46,9 @@ public class RequestService {
 
     private final BinaryrequestRepository binaryrequestRepository;
 
-    private Logger logger;
+    private final Logger logger;
 
-    private Gson gson;
+    private static final ObjectMapper om = new ObjectMapper();
 
     private static ObjectMapper smileMapper = new ObjectMapper(new SmileFactory());
 
@@ -67,7 +68,6 @@ public class RequestService {
         this.requestRepository = requestRepository;
         this.replyService = replyService;
         this.binaryrequestRepository = binaryrequestRepository;
-        gson = new GsonBuilder().serializeNulls().excludeFieldsWithoutExposeAnnotation().create();
     }
 
     public Page<Request> getOrderedRequests(Bin bin, int page, int limit) {
@@ -107,7 +107,9 @@ public class RequestService {
         binRepository.save(bin);
         if (bin.getReply() != null) {
             return Pair.of(bin.getReply(), request);
-        } else return Pair.of(replyService.fromRequest(request), request);
+        } else {
+            return Pair.of(replyService.getDefaultReply(request), request);
+        }
     }
 
     public Request createRequest(Map<String, String> headers, String body, String binName) {
@@ -210,18 +212,15 @@ public class RequestService {
         reply.getHeaders().remove("content-length"); //calculated
 
         String jsonReply;
+        jsonReply = reply.getBody();
 
         if (reply.isCustom()) {
-            jsonReply = reply.getBody();
-        } else {
-            jsonReply = gson.toJson(reply);
+            reply.getHeaders().forEach(httpHeaders::add);
         }
 
         //calculate the content-length. java string is UTF-16 so convert to UTF8 and count
         byte[] stringbytes = jsonReply.getBytes(StandardCharsets.UTF_8);
         httpHeaders.setContentLength(stringbytes.length);
-
-        reply.getHeaders().forEach(httpHeaders::add);
 
         return new ResponseEntity<>(jsonReply, httpHeaders, reply.getCode());
     }
