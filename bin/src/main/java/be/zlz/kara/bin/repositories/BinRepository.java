@@ -18,8 +18,6 @@ public interface BinRepository extends CrudRepository<Bin, Long> {
 
     Bin getByName(String name);
 
-    List<Bin> getBinByLastRequestBeforeAndPermanentIsFalse(Date date);
-
     @Modifying
     @Transactional
     @Query(nativeQuery = true,

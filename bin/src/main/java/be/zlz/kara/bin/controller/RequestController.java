@@ -4,6 +4,7 @@ import be.zlz.kara.bin.domain.Reply;
 import be.zlz.kara.bin.domain.Request;
 import be.zlz.kara.bin.services.DelayService;
 import be.zlz.kara.bin.services.RequestService;
+import be.zlz.kara.bin.services.mqtt.MqttMessageHandlerService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,9 +33,12 @@ public class RequestController {
     private Logger logger;
 
     @Autowired
+    private MqttMessageHandlerService mqttService;
+
+    @Autowired
     public RequestController(RequestService requestService, SimpMessageSendingOperations messagingTemplate, DelayService delayService) {
         this.requestService = requestService;
-        logger = LoggerFactory.getLogger(this.getClass());
+        this.logger = LoggerFactory.getLogger(this.getClass());
         this.messagingTemplate = messagingTemplate;
         this.delayService = delayService;
 
@@ -44,7 +48,7 @@ public class RequestController {
     @RequestMapping(value = {"/bin/{uuid}", "/api/v1/bins/{uuid}"}, method = {RequestMethod.GET, RequestMethod.POST, RequestMethod.PUT, RequestMethod.DELETE, RequestMethod.PATCH})
     public ResponseEntity<String> handleRequest(HttpServletRequest servletRequest,
                                                 HttpServletResponse response,
-                                                HttpEntity<String> body,
+                                                HttpEntity<byte[]> body,
                                                 @PathVariable String uuid,
                                                 @RequestHeader Map<String, String> headers
     ) {
@@ -57,14 +61,14 @@ public class RequestController {
     @RequestMapping(value = {"/bin/{uuid}/delay/{ms}", "/api/v1/bins/{uuid}/delay/{ms}"}, method = {RequestMethod.GET, RequestMethod.POST, RequestMethod.PUT, RequestMethod.DELETE, RequestMethod.PATCH})
     public ResponseEntity<String> handleRequestDelayed(HttpServletRequest servletRequest,
                                                        HttpServletResponse response,
-                                                       HttpEntity<String> body,
+                                                       HttpEntity<byte[]> body,
                                                        @PathVariable String uuid,
                                                        @RequestHeader Map<String, String> headers,
                                                        @PathVariable int ms
     ) {
         try{
             if(!delayService.delay(ms)){
-                return new ResponseEntity<String>(
+                return new ResponseEntity<>(
                         "Cannot delay response at this time, please try again later",
                         HttpStatus.SERVICE_UNAVAILABLE
                 );
@@ -75,9 +79,20 @@ public class RequestController {
         }
     }
 
+    /**
+     * Send the given request to:
+     * - Websocket topic
+     * - MQTT topic
+     * @param request the request to send
+     * @param binName the name/identifier of the bin
+     */
     @SubscribeMapping(value = {"/topic/newrequests/{binName}", "/api/v1/bins/{binName}/requests/ws"})
     public void newRequest(Request request, @DestinationVariable String binName) {
         logger.debug("Sending message for {}", binName);
         messagingTemplate.convertAndSend("/topic/newrequests/" + binName, request);
+
+        if (request.getBody() != null && !"".equals(request.getBody())) {
+            mqttService.sendMessage(request.getBody(), binName);
+        }
     }
 }

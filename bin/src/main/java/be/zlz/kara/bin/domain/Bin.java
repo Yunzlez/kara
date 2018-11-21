@@ -3,8 +3,7 @@ package be.zlz.kara.bin.domain;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import javax.persistence.*;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 @Entity
 public class Bin {
@@ -35,7 +34,9 @@ public class Bin {
     @JsonIgnore
     private RequestMetric requestMetric;
 
-    private boolean permanent;
+    @ElementCollection(targetClass = String.class)
+    @MapKeyClass(String.class)
+    private Map<String, Boolean> config;
 
     private int requestCount;
 
@@ -45,11 +46,15 @@ public class Bin {
         this.lastRequest = this.creationDate;
         this.requestMetric = new RequestMetric(this);
         this.requestCount = 0;
+        this.config = new HashMap<>();
+        this.config.put(BinConfigKey.PERMANENT_KEY.getValue(), false);
     }
 
     public Bin() {
         this.creationDate = new Date();
         this.requestMetric = new RequestMetric(this);
+        this.config = new HashMap<>();
+        this.config.put(BinConfigKey.PERMANENT_KEY.getValue(), false);
     }
 
     public RequestMetric getRequestMetric() {
@@ -84,10 +89,6 @@ public class Bin {
         return creationDate;
     }
 
-    public void setCreationDate(Date creationDate) {
-        this.creationDate = creationDate;
-    }
-
     public Reply getReply() {
         return reply;
     }
@@ -105,11 +106,19 @@ public class Bin {
     }
 
     public boolean isPermanent() {
-        return permanent;
+        return config.get(BinConfigKey.PERMANENT_KEY.getValue());
     }
 
-    public void setPermanent(boolean permanent) {
-        this.permanent = permanent;
+    public void addConfigEntry(BinConfigKey key, boolean value) {
+        this.config.put(key.getValue(), value);
+    }
+
+    public boolean isEnabled(BinConfigKey setting){
+        return config.get(setting.getValue());
+    }
+
+    public Map<String, Boolean> getConfiguration(){
+        return Collections.unmodifiableMap(this.config);
     }
 
     public int getRequestCount() {

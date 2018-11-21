@@ -1,9 +1,6 @@
 package be.zlz.kara.bin.services;
 
-import be.zlz.kara.bin.domain.Bin;
-import be.zlz.kara.bin.domain.BinaryRequest;
-import be.zlz.kara.bin.domain.Reply;
-import be.zlz.kara.bin.domain.Request;
+import be.zlz.kara.bin.domain.*;
 import be.zlz.kara.bin.dto.RequestDto;
 import be.zlz.kara.bin.exceptions.BadRequestException;
 import be.zlz.kara.bin.exceptions.ResourceNotFoundException;
@@ -74,7 +71,7 @@ public class RequestService {
         return requestRepository.getByBinOrderByRequestTimeDesc(bin, PagingUtils.getPageable(page, limit));
     }
 
-    public Pair<Reply, Request> createRequest(HttpServletRequest servletRequest, HttpEntity<String> body, String uuid, Map<String, String> headers) {
+    public Pair<Reply, Request> createRequest(HttpServletRequest servletRequest, HttpEntity<byte[]> body, String uuid, Map<String, String> headers) {
         Request request = new Request();
 
         Bin bin = binRepository.getByName(uuid);
@@ -86,11 +83,12 @@ public class RequestService {
         request.setHeaders(headers);
         headers.remove("cookie"); //Cookie header is useless and breaks localhost because no dev app ever clears cookies and the header is a bazillion chars
 
-        if (logger.isDebugEnabled()) {
-            logger.debug("Headers = " + headers);
+        if (bin.isEnabled(BinConfigKey.BINARY_BODY)){
+            request.setBody(Base64.getEncoder().encodeToString(body.getBody()));
+        } else {
+            request.setBody(new String(body.getBody() == null ? new byte[0] :  body.getBody()));
         }
 
-        request.setBody(body.getBody());
         request.setMethod(servletRequest.getMethod());
         logger.debug("Method = " + servletRequest.getMethod());
 
@@ -138,7 +136,7 @@ public class RequestService {
         return requestRepository.save(request);
     }
 
-    private void validateRequest(HttpEntity<String> body, Bin bin) {
+    private void validateRequest(HttpEntity<byte[]> body, Bin bin) {
         if (bin == null) {
             throw new ResourceNotFoundException("No bin with that name exists");
         }
@@ -147,7 +145,7 @@ public class RequestService {
         } else if (bin.getRequestCount() >= maxRequests) {
             throw new BadRequestException("You reached the limit for this bin. Bins have a limit of " + maxRequests + " requests.");
         }
-        if (body.getBody() != null && body.getBody().length() > 100000) {
+        if (body.getBody() != null && body.getBody().length > 100000) {
             throw new BadRequestException("Body length is capped to 100000");
         }
     }

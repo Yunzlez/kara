@@ -1,6 +1,7 @@
 package be.zlz.kara.bin.services;
 
 import be.zlz.kara.bin.domain.Bin;
+import be.zlz.kara.bin.domain.BinConfigKey;
 import be.zlz.kara.bin.domain.Request;
 import be.zlz.kara.bin.dto.*;
 import be.zlz.kara.bin.exceptions.ResourceNotFoundException;
@@ -133,7 +134,7 @@ public class BinService {
         if (!bin.isPermanent() && settings.isPermanent()) {
             clearBin(name);
         }
-        bin.setPermanent(settings.isPermanent());
+        bin.addConfigEntry(BinConfigKey.PERMANENT_KEY, settings.isPermanent());
 
         binRepository.save(bin);
         return redirect;

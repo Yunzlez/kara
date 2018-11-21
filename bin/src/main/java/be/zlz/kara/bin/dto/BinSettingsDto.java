@@ -19,6 +19,8 @@ public class BinSettingsDto {
 
     private String customName;
 
+    //todo add map (keep permanent for backwards compat)
+
     private boolean isPermanent;
 
     public BinSettingsDto() {
