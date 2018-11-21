@@ -32,7 +32,7 @@ public class RequestController {
 
     private Logger logger;
 
-    @Autowired
+    @Autowired(required = false)
     private MqttMessageHandlerService mqttService;
 
     @Autowired
@@ -91,7 +91,7 @@ public class RequestController {
         logger.debug("Sending message for {}", binName);
         messagingTemplate.convertAndSend("/topic/newrequests/" + binName, request);
 
-        if (request.getBody() != null && !"".equals(request.getBody())) {
+        if (request.getBody() != null && !"".equals(request.getBody()) && mqttService != null) {
             mqttService.sendMessage(request.getBody(), binName);
         }
     }
