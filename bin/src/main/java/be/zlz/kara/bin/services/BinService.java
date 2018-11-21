@@ -10,6 +10,7 @@ import be.zlz.kara.bin.repositories.RequestRepository;
 import be.zlz.kara.bin.util.PagingUtils;
 import be.zlz.kara.bin.util.ReplyBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -33,6 +34,9 @@ public class BinService {
     private final RequestService requestService;
 
     public static final String NOT_FOUND_MESSAGE = "Could not find bin with name ";
+
+    @Value("${mqtt.broker.url}")
+    private static String mqttUrl;
 
     @Autowired
     public BinService(RequestRepository requestRepository, BinRepository binRepository, RequestService requestService) {
@@ -63,7 +67,7 @@ public class BinService {
         return new BinDto(
                 bin.getName(),
                 new RequestCountDto((int) requests.getTotalElements(), bin.getRequestMetric().getCounts()),
-                new InboundDto(requestUrl, "tcp://kara.rest:1883", "/bin/" + bin.getName()), //todo make variable MQTT url
+                new InboundDto(requestUrl, mqttUrl, "/bin/" + bin.getName()), //todo make variable MQTT url
                 requests.getContent(),
                 page,
                 limit,
@@ -92,12 +96,12 @@ public class BinService {
     public String updateSettings(String name, SettingDTO settings) {
         Map<String, String> headers = new HashMap<>();
         Map<String, String> cookies = new HashMap<>();
-        if (settings.getCookieNames() != null){
+        if (settings.getCookieNames() != null) {
             for (int i = 0; i < settings.getCookieNames().size(); i++) {
                 cookies.put(settings.getCookieNames().get(i), settings.getCookieValues().get(i));
             }
         }
-        if (settings.getHeaderNames() != null){
+        if (settings.getHeaderNames() != null) {
             for (int i = 0; i < settings.getHeaderNames().size(); i++) {
                 headers.put(settings.getHeaderNames().get(i), settings.getHeaderValues().get(i));
             }
@@ -109,6 +113,7 @@ public class BinService {
                 headers,
                 cookies,
                 settings.getCustomName(),
+                null, //todo
                 settings.isPermanent()
         ));
     }
@@ -193,7 +198,7 @@ public class BinService {
         return builder.build().toASCIIString();
     }
 
-    private boolean isBlank(String val){
+    private boolean isBlank(String val) {
         return val == null || val.isEmpty();
     }
 

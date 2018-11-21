@@ -19,17 +19,18 @@ public class BinSettingsDto {
 
     private String customName;
 
-    //todo add map (keep permanent for backwards compat)
+    private Map<String, Boolean> config;
 
     private boolean isPermanent;
 
     public BinSettingsDto() {
         this.headers = new HashMap<>();
         this.cookies = new HashMap<>();
+        this.config = new HashMap<>();
     }
 
     public BinSettingsDto(Bin bin) {
-        if(bin.getReply() != null){
+        if (bin.getReply() != null) {
             this.code = bin.getReply().getCode().value();
             this.mimeType = bin.getReply().getMimeType();
             this.body = bin.getReply().getBody();
@@ -41,14 +42,16 @@ public class BinSettingsDto {
         }
         this.customName = bin.getName();
         this.isPermanent = bin.isPermanent();
+        this.config = bin.getConfiguration();
     }
 
-    public BinSettingsDto(Integer code, String mimeType, String body, Map<String, String> headers, Map<String, String> cookies, String customName, boolean isPermanent) {
+    public BinSettingsDto(Integer code, String mimeType, String body, Map<String, String> headers, Map<String, String> cookies, String customName, Map<String, Boolean> config, boolean isPermanent) {
         this.code = code;
         this.mimeType = mimeType;
         this.body = body;
         this.headers = headers == null ? new HashMap<>() : headers;
         this.cookies = cookies == null ? new HashMap<>() : cookies;
+        this.config = config == null ? new HashMap<>() : config;
         this.customName = customName;
         this.isPermanent = isPermanent;
     }
@@ -65,10 +68,6 @@ public class BinSettingsDto {
         return mimeType;
     }
 
-    public void setMimeType(String mimeType) {
-        this.mimeType = mimeType;
-    }
-
     public String getBody() {
         return body;
     }
@@ -81,31 +80,15 @@ public class BinSettingsDto {
         return Collections.unmodifiableMap(headers);
     }
 
-    public void addHeader(String k, String v) {
-        this.headers.put(k, v);
-    }
-
-    public Map<String, String> getCookies() {
-        return Collections.unmodifiableMap(cookies);
-    }
-
-    public void addCookie(String k, String v) {
-        this.cookies.put(k, v);
-    }
-
     public String getCustomName() {
         return customName;
-    }
-
-    public void setCustomName(String customName) {
-        this.customName = customName;
     }
 
     public boolean isPermanent() {
         return isPermanent;
     }
 
-    public void setPermanent(boolean permanent) {
-        isPermanent = permanent;
+    public Map<String, Boolean> getConfig() {
+        return config;
     }
 }

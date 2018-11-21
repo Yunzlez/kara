@@ -13,8 +13,8 @@ import be.zlz.kara.bin.services.RequestService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpMethod;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
@@ -37,6 +37,9 @@ public class BinController {
     private final BinService binService;
 
     private final RequestService requestService;
+
+    @Value("${mqtt.broker.url}")
+    private static String mqttBroker;
 
     private Logger logger;
 
@@ -96,6 +99,7 @@ public class BinController {
         model.put("currentPage", current);
         model.put("currentLimit", limit);
         model.put("requestUrl", binService.buildRequestUrl(request, uuid));
+        model.put("mqttBroker", mqttBroker);
         model.put("binSize", binService.getSize(bin));
         setRequestCounts(bin, model);
 

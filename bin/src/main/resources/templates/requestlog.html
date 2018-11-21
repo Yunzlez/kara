@@ -27,8 +27,12 @@
         <div class="content">
             <div class="header">Request URL</div>
             <p><!--/*@thymesVar id="requestUrl" type="String"*/-->
-                <b>HTTP:</b> <a id="reqUrl" th:text="${requestUrl}" th:href="${requestUrl}"></a> <button id="copyme" class="mini ui icon button blue" data-clipboard-target="#reqUrl"><i class="copy icon"></i></button></p>
-            <p><b>MQTT:</b> <a href="tcp://kara.rest:1883">tcp://kara.rest:1883</a> - Topic /bin/<span th:text="${binName}"></span> </p>
+                <b>HTTP:</b> <a id="reqUrl" th:text="${requestUrl}" th:href="${requestUrl}"></a>
+                <button id="copyme" class="mini ui icon button blue" data-clipboard-target="#reqUrl"><i
+                        class="copy icon"></i></button>
+            </p>
+            <p><b>MQTT:</b> <a th:href="${mqttBroker}" th:text="${mqttBroker}">tcp://kara.rest:1883</a> - Topic
+                /bin/<span th:text="${binName}"></span></p>
         </div>
     </div>
     <div class="flexcontainer">
