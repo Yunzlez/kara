@@ -4,7 +4,7 @@ import be.zlz.kara.bin.domain.Reply;
 
 import java.util.List;
 
-public class SettingDTO {
+public class SettingViewModel {
 
     private Integer code;
 
@@ -25,17 +25,17 @@ public class SettingDTO {
 
     private boolean isPermanent;
 
-    public SettingDTO() {
+    public SettingViewModel() {
     }
 
-    public SettingDTO(Reply reply){
+    public SettingViewModel(Reply reply){
         this.code = reply.getCode().value();
         this.body = reply.getBody();
         this.mimeType = reply.getMimeType();
         isPermanent = false;
     }
 
-    public SettingDTO(int code, String mimeType, String body, String customName, boolean isPermanent) {
+    public SettingViewModel(int code, String mimeType, String body, String customName, boolean isPermanent) {
         this.code = code;
         this.mimeType = mimeType;
         this.body = body;

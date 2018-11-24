@@ -113,6 +113,10 @@ public class Bin {
         this.config.put(key.getValue(), value);
     }
 
+    public void addConfigEntries(Map<String, Boolean> entries) {
+        this.config.putAll(entries);
+    }
+
     public boolean isEnabled(BinConfigKey setting){
         return config.get(setting.getValue());
     }

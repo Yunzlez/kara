@@ -4,7 +4,7 @@ import be.zlz.kara.bin.domain.Bin;
 import be.zlz.kara.bin.domain.Request;
 import be.zlz.kara.bin.domain.RequestMetric;
 import be.zlz.kara.bin.dto.BinDto;
-import be.zlz.kara.bin.dto.SettingDTO;
+import be.zlz.kara.bin.dto.SettingViewModel;
 import be.zlz.kara.bin.exceptions.ResourceNotFoundException;
 import be.zlz.kara.bin.repositories.BinRepository;
 import be.zlz.kara.bin.repositories.RequestRepository;
@@ -116,7 +116,7 @@ public class BinController {
     }
 
     @PostMapping(value = "/bin/{uuid}/log/settings", produces = "application/json")
-    public String saveBinSetup(@PathVariable String uuid, @ModelAttribute SettingDTO settings, BindingResult bindingResult) {
+    public String saveBinSetup(@PathVariable String uuid, @ModelAttribute SettingViewModel settings) {
         String newName = binService.updateSettings(uuid, settings);
         return "redirect:/bin/" + newName + "/log";
     }

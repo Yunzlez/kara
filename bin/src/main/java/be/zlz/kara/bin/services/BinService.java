@@ -89,11 +89,11 @@ public class BinService {
         if (val == null) {
             val = 0L;
         }
-        return String.valueOf(autoScale(val));
+        return autoScale(val);
     }
 
     @Transactional
-    public String updateSettings(String name, SettingDTO settings) {
+    public String updateSettings(String name, SettingViewModel settings) {
         Map<String, String> headers = new HashMap<>();
         Map<String, String> cookies = new HashMap<>();
         if (settings.getCookieNames() != null) {
@@ -140,6 +140,7 @@ public class BinService {
             clearBin(name);
         }
         bin.addConfigEntry(BinConfigKey.PERMANENT_KEY, settings.isPermanent());
+        bin.addConfigEntries(settings.getConfig());
 
         binRepository.save(bin);
         return redirect;
@@ -162,16 +163,16 @@ public class BinService {
         requestRepository.deleteAllByBinEfficient(binId);
     }
 
-    public SettingDTO getSettings(String name) {
+    public SettingViewModel getSettings(String name) {
         Bin bin = binRepository.getByName(name);
         if (bin == null) {
             throw new ResourceNotFoundException(NOT_FOUND_MESSAGE + name);
         }
-        SettingDTO settings;
+        SettingViewModel settings;
         if (bin.getReply() != null) {
-            settings = new SettingDTO(bin.getReply());
+            settings = new SettingViewModel(bin.getReply());
         } else {
-            settings = new SettingDTO();
+            settings = new SettingViewModel();
         }
         settings.setCustomName(bin.getName());
         settings.setPermanent(bin.isPermanent());
