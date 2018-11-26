@@ -6,7 +6,7 @@ import java.util.List;
 
 public class SettingViewModel {
 
-    private Integer code;
+    private Integer code = 200;
 
     private String mimeType;
 

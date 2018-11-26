@@ -34,7 +34,7 @@ public class Bin {
     @JsonIgnore
     private RequestMetric requestMetric;
 
-    @ElementCollection(targetClass = String.class)
+    @ElementCollection(targetClass = Boolean.class)
     @MapKeyClass(String.class)
     private Map<String, Boolean> config;
 
@@ -118,7 +118,8 @@ public class Bin {
     }
 
     public boolean isEnabled(BinConfigKey setting){
-        return config.get(setting.getValue());
+        Boolean val = config.get(setting.getValue());
+        return val == null ? false : val;
     }
 
     public Map<String, Boolean> getConfiguration(){
