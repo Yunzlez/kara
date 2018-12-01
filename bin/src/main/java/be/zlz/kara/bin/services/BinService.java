@@ -9,6 +9,7 @@ import be.zlz.kara.bin.repositories.BinRepository;
 import be.zlz.kara.bin.repositories.RequestRepository;
 import be.zlz.kara.bin.util.PagingUtils;
 import be.zlz.kara.bin.util.ReplyBuilder;
+import be.zlz.kara.bin.util.SizeUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
@@ -19,9 +20,7 @@ import org.springframework.web.util.DefaultUriBuilderFactory;
 import org.springframework.web.util.UriBuilder;
 
 import javax.servlet.http.HttpServletRequest;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -84,12 +83,22 @@ public class BinService {
         binRepository.delete(bin);
     }
 
+    public void compactBin(Bin bin, int toSkip) {
+        Iterator<Request> requestIterator = requestRepository.findAllByBinOrderByRequestTime(bin);
+        for (int i = 0; i < toSkip; i++) {
+            requestIterator.next();
+        }
+        List<Long> ids = new ArrayList<>();
+        requestIterator.forEachRemaining(r -> ids.add(r.getId()));
+        requestRepository.clearBodies(ids);
+    }
+
     public String getSize(Bin bin) {
         Long val = binRepository.getBinSizeInBytes(bin.getId());
         if (val == null) {
             val = 0L;
         }
-        return autoScale(val);
+        return SizeUtil.autoScale(val);
     }
 
     @Transactional
@@ -201,16 +210,5 @@ public class BinService {
 
     private boolean isBlank(String val) {
         return val == null || val.isEmpty();
-    }
-
-    private String autoScale(long bytes) {
-        String[] prefix = {"B", "KB", "MB", "GB", "TB", "PB", "EB"};
-        double val = bytes;
-        int cnt = 0;
-        while (val > 1024) {
-            val = val / 1024.0;
-            cnt++;
-        }
-        return cnt <= prefix.length - 1 ? Math.round(val * 100.0) / 100.0 + prefix[cnt] : String.valueOf(bytes);
     }
 }

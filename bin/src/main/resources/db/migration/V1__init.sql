@@ -21,7 +21,6 @@ CREATE TABLE IF NOT EXISTS `kara`.`bin` (
   INDEX `FKoei190vbxjw4bpy5fjb6pyr5n` (`reply_id` ASC) ,
   INDEX `FKsuhjsedoxrvx2m0ogjaby2rs1` (`request_metric_id` ASC) )
   ENGINE = MyISAM
-  AUTO_INCREMENT = 287
   DEFAULT CHARACTER SET = latin1;
 
 
@@ -49,7 +48,6 @@ CREATE TABLE IF NOT EXISTS `kara`.`reply` (
   `mime_type` VARCHAR(255) NULL DEFAULT NULL,
   PRIMARY KEY (`id`))
   ENGINE = MyISAM
-  AUTO_INCREMENT = 17
   DEFAULT CHARACTER SET = latin1;
 
 
@@ -91,7 +89,6 @@ CREATE TABLE IF NOT EXISTS `kara`.`request` (
   PRIMARY KEY (`id`),
   INDEX `FK9acuxqw13ffbi1bqrs8axshga` (`bin_id` ASC) )
   ENGINE = MyISAM
-  AUTO_INCREMENT = 116503
   DEFAULT CHARACTER SET = latin1;
 
 
@@ -116,7 +113,6 @@ CREATE TABLE IF NOT EXISTS `kara`.`request_metric` (
   PRIMARY KEY (`id`),
   INDEX `FK1m4gb0ajjg5vqsw68yrgkro2n` (`bin_id` ASC) )
   ENGINE = MyISAM
-  AUTO_INCREMENT = 287
   DEFAULT CHARACTER SET = latin1;
 
 

@@ -39,7 +39,10 @@ public class BinController {
     private final RequestService requestService;
 
     @Value("${mqtt.broker.url}")
-    private static String mqttBroker;
+    private String mqttBroker;
+
+    @Value("${mqtt.enabled}")
+    private boolean mqttEnabled;
 
     private Logger logger;
 
@@ -99,6 +102,7 @@ public class BinController {
         model.put("currentPage", current);
         model.put("currentLimit", limit);
         model.put("requestUrl", binService.buildRequestUrl(request, uuid));
+        model.put("mqttEnabled", mqttEnabled);
         model.put("mqttBroker", mqttBroker);
         model.put("binSize", binService.getSize(bin));
         setRequestCounts(bin, model);

@@ -43,41 +43,32 @@ public class MqttConfiguration {
 
     @Bean
     public MessageProducer inbound() {
-        if (mqttEnabled) {
-            MqttPahoMessageDrivenChannelAdapter adapter =
-                    new MqttPahoMessageDrivenChannelAdapter(mqttUrl, clientId, topicName);
-            adapter.setCompletionTimeout(5000);
-            adapter.setConverter(new DefaultPahoMessageConverter());
-            adapter.setQos(1);
-            adapter.setOutputChannel(mqttInputChannel());
-            return adapter;
-        }
-        return null;
+        MqttPahoMessageDrivenChannelAdapter adapter =
+                new MqttPahoMessageDrivenChannelAdapter(mqttUrl, clientId, topicName);
+        adapter.setCompletionTimeout(5000);
+        adapter.setConverter(new DefaultPahoMessageConverter());
+        adapter.setQos(1);
+        adapter.setOutputChannel(mqttInputChannel());
+        return adapter;
     }
 
     @Bean
     public MqttPahoClientFactory mqttPahoClientFactory() {
-        if (mqttEnabled) {
-            DefaultMqttPahoClientFactory factory = new DefaultMqttPahoClientFactory();
-            MqttConnectOptions options = new MqttConnectOptions();
-            options.setServerURIs(new String[] { mqttUrl });
-            factory.setConnectionOptions(options);
-            return factory;
-        }
-        return null;
+        DefaultMqttPahoClientFactory factory = new DefaultMqttPahoClientFactory();
+        MqttConnectOptions options = new MqttConnectOptions();
+        options.setServerURIs(new String[]{mqttUrl});
+        factory.setConnectionOptions(options);
+        return factory;
     }
 
     @Bean
     @ServiceActivator(inputChannel = "mqttOutboundChannel")
     public MessageHandler outbound() {
-        if (mqttEnabled) {
-            MqttPahoMessageHandler messageHandler =
-                    new MqttPahoMessageHandler("kara-client", mqttPahoClientFactory());
-            messageHandler.setAsync(true);
-            messageHandler.setDefaultTopic("/bin/main");
-            return messageHandler;
-        }
-        return null;
+        MqttPahoMessageHandler messageHandler =
+                new MqttPahoMessageHandler("kara-client", mqttPahoClientFactory());
+        messageHandler.setAsync(true);
+        messageHandler.setDefaultTopic("/bin/main");
+        return messageHandler;
     }
 
     @Bean("mqttOutboundChannel")
