@@ -38,6 +38,11 @@ public class ApiController {
         this.requestService = requestService;
     }
 
+    @GetMapping("/500")
+    public void boom(){
+        throw new RuntimeException("Failed at something");
+    }
+
     @GetMapping("/bins")
     public List<BinListDto> getBins(@RequestParam(name = "page", required = false, defaultValue = "0") Integer page,
                                     @RequestParam(name = "limit", required = false, defaultValue = "10") Integer limit) {

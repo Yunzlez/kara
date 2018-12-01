@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <title>KARA</title>
+    <link rel="stylesheet" type="text/css" th:href="@{/css/semantic.min.css}" href="../public/css/semantic.min.css"/>
+    <link rel="stylesheet" type="text/css" th:href="@{/css/main.css}" href="../public/css/main.css"/>
+</head>
+<body id="darkbody">
+<div class="ui inverted vertical masthead center aligned segment fullscreendiv">
+    <div th:if="${notfound}" class="ui text container vcenter">
+        <img class="ui header" th:src="@{/img/404.svg}" src="../public/img/404.svg">
+        <h2>'<span th:text="${path}"></span>' is not something I know about 😣</h2>
+    </div>
+    <div th:if="${!notfound}" class="ui text container vcenter">
+        <img class="ui header" th:src="@{/img/500.svg}" src="../public/img/500.svg">
+        <h2>That wasn't supposed to happen...</h2>
+        <div class="ui inverted segment">
+            <div class="ui inverted accordion">
+                <div class="active title">
+                    <i class="dropdown icon"></i>
+                    Error handling request to <span th:text="${path}"></span>:
+                    <span th:text="${message}"></span>
+                </div>
+                <div class="content stacktrace">
+                    <p th:text="${stacktrace}"></p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+<script
+        src="https://code.jquery.com/jquery-3.2.1.min.js"
+        integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="
+        crossorigin="anonymous"></script>
+<script th:src="@{/js/semantic.min.js}" src="../public/js/semantic.min.js"></script>
+<script th:src="@{/js/main.js}" src="../public/js/main.js"></script>
+</html>

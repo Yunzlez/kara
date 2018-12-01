@@ -109,6 +109,14 @@
     width: 80%;
 }
 
+.stacktrace{
+    text-align: left !important;
+}
+
+#darkbody {
+    background: #1b1c1d;
+}
+
 @media (min-width: 992px) {
     .ellipsize {
         width: 700px;
