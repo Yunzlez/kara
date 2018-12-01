@@ -6,7 +6,7 @@ import java.util.List;
 
 public class SettingViewModel {
 
-    private Integer code = 200;
+    private Integer code;
 
     private String mimeType;
 
@@ -35,7 +35,7 @@ public class SettingViewModel {
         isPermanent = false;
     }
 
-    public SettingViewModel(int code, String mimeType, String body, String customName, boolean isPermanent) {
+    public SettingViewModel(Integer code, String mimeType, String body, String customName, boolean isPermanent) {
         this.code = code;
         this.mimeType = mimeType;
         this.body = body;
@@ -79,7 +79,7 @@ public class SettingViewModel {
         return code;
     }
 
-    public void setCode(int code) {
+    public void setCode(Integer code) {
         this.code = code;
     }
 

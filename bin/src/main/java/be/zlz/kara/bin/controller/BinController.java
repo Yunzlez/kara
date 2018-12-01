@@ -68,6 +68,7 @@ public class BinController {
 
     @GetMapping(value = "/bin/{uuid}/log", produces = "application/json")
     @ResponseBody
+    @Deprecated
     public BinDto getLogForUuidAsJson(@PathVariable String uuid,
                                       @RequestParam(name = "page", required = false, defaultValue = "0") Integer page,
                                       @RequestParam(name = "limit", required = false, defaultValue = "10") Integer limit,

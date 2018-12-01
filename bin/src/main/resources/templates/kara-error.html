@@ -9,23 +9,23 @@
 <body id="darkbody">
 <div class="ui inverted vertical masthead center aligned segment fullscreendiv">
     <div th:if="${notfound}" class="ui text container vcenter">
-        <img class="ui header" th:src="@{/img/404.svg}" src="../public/img/404.svg">
+        <img class="ui header" th:src="@{/img/404.svg}" src="../public/img/404.svg" alt="error code">
         <h2>'<span th:text="${path}"></span>' is not something I know about 😣</h2>
     </div>
     <div th:if="${!notfound}" class="ui text container vcenter">
-        <img class="ui header" th:src="@{/img/500.svg}" src="../public/img/500.svg">
+        <img class="ui header" th:src="@{/img/500.svg}" src="../public/img/500.svg" alt="error code">
         <h2>That wasn't supposed to happen...</h2>
-        <div class="ui inverted segment">
-            <div class="ui inverted accordion">
-                <div class="active title">
-                    <i class="dropdown icon"></i>
-                    Error handling request to <span th:text="${path}"></span>:
-                    <span th:text="${message}"></span>
-                </div>
-                <div class="content stacktrace">
-                    <p th:text="${stacktrace}"></p>
-                </div>
-            </div>
+    </div>
+</div>
+<div class="ui center aligned inverted segment" th:if="${!notfound}">
+    <div class="ui inverted accordion">
+        <div class="title">
+            <i class="dropdown icon"></i>
+            Error handling request to <span th:text="${path}"></span>:
+            <span th:text="${message}"></span>
+        </div>
+        <div class="content stacktrace">
+            <p th:utext="${#strings.replace( #strings.escapeXml( stacktrace ),T(java.lang.System).getProperty('line.separator'),'&lt;br /&gt;')}"></p>
         </div>
     </div>
 </div>
