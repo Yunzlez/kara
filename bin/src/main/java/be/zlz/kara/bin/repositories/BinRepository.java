@@ -7,7 +7,6 @@ import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.repository.query.Param;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Date;
 import java.util.List;
@@ -19,7 +18,6 @@ public interface BinRepository extends CrudRepository<Bin, Long> {
     Bin getByName(String name);
 
     @Modifying
-    @Transactional
     @Query(nativeQuery = true,
             value = "insert into request_metric_counts (request_metric_id, counts, counts_key) values (?1, 1, ?2) on duplicate key update counts = counts+1;")
     void updateMetric(long requestMetricId, String key);

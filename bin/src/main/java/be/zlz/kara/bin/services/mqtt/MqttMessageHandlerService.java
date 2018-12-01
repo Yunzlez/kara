@@ -8,14 +8,15 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.Primary;
 import org.springframework.integration.mqtt.support.MqttHeaders;
-import org.springframework.messaging.*;
-import org.springframework.messaging.support.GenericMessage;
+import org.springframework.messaging.Message;
+import org.springframework.messaging.MessageChannel;
+import org.springframework.messaging.MessageHandler;
+import org.springframework.messaging.MessagingException;
 import org.springframework.messaging.support.MessageBuilder;
-import org.springframework.stereotype.Service;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.Map;
 
 public class MqttMessageHandlerService implements MessageHandler {
 
@@ -48,7 +49,7 @@ public class MqttMessageHandlerService implements MessageHandler {
 
         LOG.debug("Building request");
         //todo proper b64 for binary messages
-        Request request = requestService.createRequest(headers, message.getPayload().toString(), binName);
+        Request request = requestService.createMqttRequest(headers, message.getPayload().toString(), binName);
         if (request == null) {
             return;
         }

@@ -27,6 +27,7 @@ import org.springframework.stereotype.Service;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.transaction.Transactional;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -71,6 +72,7 @@ public class RequestService {
         return requestRepository.getByBinOrderByRequestTimeDesc(bin, PagingUtils.getPageable(page, limit));
     }
 
+    @Transactional
     public Pair<Reply, Request> createRequest(HttpServletRequest servletRequest, HttpEntity<byte[]> body, String uuid, Map<String, String> headers) {
         Request request = new Request();
 
@@ -83,10 +85,10 @@ public class RequestService {
         request.setHeaders(headers);
         headers.remove("cookie"); //Cookie header is useless and breaks localhost because no dev app ever clears cookies and the header is a bazillion chars
 
-        if (bin.isEnabled(BinConfigKey.BINARY_BODY)){
+        if (bin.isEnabled(BinConfigKey.BINARY_BODY)) {
             request.setBody(Base64.getEncoder().encodeToString(body.getBody()));
         } else {
-            request.setBody(new String(body.getBody() == null ? new byte[0] :  body.getBody()));
+            request.setBody(new String(body.getBody() == null ? new byte[0] : body.getBody()));
         }
 
         request.setMethod(servletRequest.getMethod());
@@ -110,7 +112,8 @@ public class RequestService {
         }
     }
 
-    public Request createRequest(Map<String, String> headers, String body, String binName) {
+    @Transactional
+    public Request createMqttRequest(Map<String, String> headers, String body, String binName) {
         Request request = new Request();
         request.setMqtt(true);
         request.setBody(body);
@@ -252,14 +255,14 @@ public class RequestService {
         List<RequestDto> result = new ArrayList<>();
         for (Request request : requests) {
             result.add(
-              new RequestDto(
-                      method ? request.getMethod() : null,
-                      requestTime ? request.getRequestTime() : null,
-                      body ? request.getBody() : null,
-                      headers ? request.getHeaders() : null,
-                      protocol ? request.getProtocol() : null,
-                      queryParams ? request.getQueryParams() : null
-              )
+                    new RequestDto(
+                            method ? request.getMethod() : null,
+                            requestTime ? request.getRequestTime() : null,
+                            body ? request.getBody() : null,
+                            headers ? request.getHeaders() : null,
+                            protocol ? request.getProtocol() : null,
+                            queryParams ? request.getQueryParams() : null
+                    )
             );
         }
         return result;
