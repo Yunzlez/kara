@@ -58,12 +58,10 @@ public class MqttMessageHandlerService implements MessageHandler {
     }
 
     public void sendMessage(String message, String binName) {
-        if (mqttEnabled) {
-            mqttMessageChannel.send(
-                    MessageBuilder.withPayload(message)
-                            .setHeader(MqttHeaders.TOPIC, "/bin/" + binName + "/log")
-                            .build()
-            );
-        }
+        mqttMessageChannel.send(
+                MessageBuilder.withPayload(message)
+                        .setHeader(MqttHeaders.TOPIC, "/bin/" + binName + "/log")
+                        .build()
+        );
     }
 }

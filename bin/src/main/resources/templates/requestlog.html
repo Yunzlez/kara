@@ -31,8 +31,12 @@
                 <button id="copyme" class="mini ui icon button blue" data-clipboard-target="#reqUrl"><i
                         class="copy icon"></i></button>
             </p>
-            <p th:if="${mqttEnabled}"><b>MQTT:</b> <a th:href="${mqttBroker}" th:text="${mqttBroker}">tcp://kara.rest:1883</a> - Topic
-                /bin/<span th:text="${binName}"></span></p>
+            <p th:if="${mqttEnabled}">
+                <b>MQTT:</b>
+                <a th:href="${mqttBroker}" th:text="${mqttBroker}">tcp://kara.rest:1883</a>
+                <br/> Request Topic: /bin/<span th:text="${binName}"></span>
+                <br/> Response Topic: /bin/<span th:text="${binName}"></span>/log
+            </p>
         </div>
     </div>
     <div class="flexcontainer">
