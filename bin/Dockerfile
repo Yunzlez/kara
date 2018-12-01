@@ -5,7 +5,7 @@ FROM openjdk:8-jdk-alpine
 #ENV DATABASE_USR="kara"
 #ENV DATABASE_PWD="kara"
 
-COPY target/kara-bin-1.2.6.jar /opt/kara.jar
+COPY target/kara-bin-1.3.0.jar /opt/kara.jar
 
 EXPOSE 3400:3400
 

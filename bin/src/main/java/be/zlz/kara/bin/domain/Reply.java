@@ -1,7 +1,7 @@
 package be.zlz.kara.bin.domain;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
-import net.minidev.json.annotate.JsonIgnore;
 import org.springframework.http.HttpStatus;
 
 import javax.persistence.*;
