@@ -40,7 +40,7 @@ public class BinCleanupTask {
     @Value("${bin.max.size.permanent.bytes:50000000}")
     private long maxPermanentBinSize;
 
-    @Value("${bin.max.size.bytes:10000000}")
+    @Value("${bin.max.size.bytes:100000000}")
     private long maxBinSize;
 
     @Value("${bin.compaction.leave.count:100}")
@@ -55,7 +55,7 @@ public class BinCleanupTask {
         logger.info("Running cleanup task...");
         deleteExpiredBins();
         compactBins();
-        requestRepository.optimizeTable();
+        logger.info("Optimization results: {}", requestRepository.optimizeTable());
         logger.info("Cleanup completed");
     }
 
@@ -78,9 +78,10 @@ public class BinCleanupTask {
 
     private void compactBins(){
         Iterable<Bin> bins = binRepository.findAll();
-        while (bins.iterator().hasNext()) {
-            Bin current = bins.iterator().next();
-            long size = binRepository.getBinSizeInBytes(current.getId());
+
+        for (Bin current : bins) {
+            Long size = binRepository.getBinSizeInBytes(current.getId());
+            size = size == null ? 0 : size;
             logger.info("Bin {} is at {}", current.getName(), SizeUtil.autoScale(size));
             if (current.isPermanent()) {
                 compactIfExceeds(current, size, maxPermanentBinSize);
@@ -91,7 +92,7 @@ public class BinCleanupTask {
     }
 
     private void compactIfExceeds(Bin bin, long binSize, long maxSize) {
-        if(binSize > maxSize){
+        if(binSize < maxSize){
             logger.info("Bin {} does not exceed max size", bin.getName());
             return;
         }

@@ -10,9 +10,13 @@ import be.zlz.kara.bin.repositories.RequestRepository;
 import be.zlz.kara.bin.util.PagingUtils;
 import be.zlz.kara.bin.util.ReplyBuilder;
 import be.zlz.kara.bin.util.SizeUtil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -33,6 +37,8 @@ public class BinService {
     private final RequestService requestService;
 
     public static final String NOT_FOUND_MESSAGE = "Could not find bin with name ";
+
+    private static final Logger logger = LoggerFactory.getLogger(BinService.class);
 
     @Value("${mqtt.broker.url}")
     private static String mqttUrl;
@@ -83,13 +89,20 @@ public class BinService {
         binRepository.delete(bin);
     }
 
+    @Transactional
     public void compactBin(Bin bin, int toSkip) {
-        Iterator<Request> requestIterator = requestRepository.findAllByBinOrderByRequestTime(bin);
-        for (int i = 0; i < toSkip; i++) {
-            requestIterator.next();
-        }
+        PageRequest p = PageRequest.of(0, 100);
+        Page<Request> reqs = requestRepository.getByBinOrderByRequestTimeDesc(bin, p);
+
         List<Long> ids = new ArrayList<>();
-        requestIterator.forEachRemaining(r -> ids.add(r.getId()));
+        for (int i = 1; i < reqs.getTotalPages(); i++) {
+            Page<Request> current = requestRepository.getByBinOrderByRequestTimeDesc(bin, PageRequest.of(i, 100));
+            current.forEach(r -> ids.add(r.getId()));
+        }
+        if (ids.isEmpty()) {
+            logger.warn("Bin {} is too large but contains less than 101 entries, so will not be cleared", bin.getName());
+            return;
+        }
         requestRepository.clearBodies(ids);
     }
 

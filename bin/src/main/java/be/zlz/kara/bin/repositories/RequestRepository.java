@@ -30,15 +30,14 @@ public interface RequestRepository extends CrudRepository<Request, Long> {
             value = "delete from request_query_params where request_id in (select request.id from request where bin_id=?1);" )
     void deleteQueryParamsForBin(long binId);
 
+    @Modifying
     @Query("UPDATE Request r set r.body='Body truncated.' where r.id in :ids")
     void clearBodies(@Param(value = "ids") List<Long> ids);
-
-    Iterator<Request> findAllByBinOrderByRequestTime(Bin b);
 
     Page<Request> getByBinOrderByRequestTimeDesc(Bin bin, Pageable pageable);
 
     Request findTopByBinOrderByRequestTime(Bin bin);
 
-    @Query(value = "OPTIMIZE TABLE requests;", nativeQuery = true)
-    void optimizeTable();
+    @Query(value = "OPTIMIZE TABLE request;", nativeQuery = true)
+    String optimizeTable();
 }
