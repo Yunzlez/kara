@@ -32,7 +32,7 @@ public interface RequestRepository extends CrudRepository<Request, Long> {
 
     @Modifying
     @Query(nativeQuery = true,
-            value = "update request set body = 'Body truncated.' where id < (select id from (select id from request order by request_time desc limit 100, 1) as tmp) and bin_id=?1;")
+            value = "update request set body = 'Body truncated.' where id < (select id from (select id from request order by request_time desc limit 100, 1) as tmp) and bin_id=?1")
     void clearBodies(long binId);
 
     Page<Request> getByBinOrderByRequestTimeDesc(Bin bin, Pageable pageable);

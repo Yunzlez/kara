@@ -49,8 +49,8 @@ public class BinCleanupTask {
     public BinCleanupTask() {
         logger = LoggerFactory.getLogger(this.getClass());
     }
-
-    @Scheduled(cron = "0 0 * * * *")
+    
+    @Scheduled(fixedDelay = 3600000, initialDelay = 30000)
     public void cleanOldBins() {
         logger.info("Running cleanup task...");
         deleteExpiredBins();
