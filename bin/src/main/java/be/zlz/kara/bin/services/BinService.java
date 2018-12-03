@@ -90,20 +90,9 @@ public class BinService {
     }
 
     @Transactional
+    //todo implement toSkip
     public void compactBin(Bin bin, int toSkip) {
-        PageRequest p = PageRequest.of(0, 100);
-        Page<Request> reqs = requestRepository.getByBinOrderByRequestTimeDesc(bin, p);
-
-        List<Long> ids = new ArrayList<>();
-        for (int i = 1; i < reqs.getTotalPages(); i++) {
-            Page<Request> current = requestRepository.getByBinOrderByRequestTimeDesc(bin, PageRequest.of(i, 100));
-            current.forEach(r -> ids.add(r.getId()));
-        }
-        if (ids.isEmpty()) {
-            logger.warn("Bin {} is too large but contains less than 101 entries, so will not be cleared", bin.getName());
-            return;
-        }
-        requestRepository.clearBodies(ids);
+        requestRepository.clearBodies(bin.getId());
     }
 
     public String getSize(Bin bin) {
