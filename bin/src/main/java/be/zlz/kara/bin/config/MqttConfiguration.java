@@ -57,6 +57,7 @@ public class MqttConfiguration {
         DefaultMqttPahoClientFactory factory = new DefaultMqttPahoClientFactory();
         MqttConnectOptions options = new MqttConnectOptions();
         options.setServerURIs(new String[]{mqttUrl});
+        options.setMaxInflight(100);
         factory.setConnectionOptions(options);
         return factory;
     }

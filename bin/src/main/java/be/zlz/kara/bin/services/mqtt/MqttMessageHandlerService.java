@@ -21,6 +21,10 @@ import java.util.Map;
 public class MqttMessageHandlerService implements MessageHandler {
 
     private static final String MQTT_RECEIVED_TOPIC = "mqtt_receivedTopic";
+    //mandated by MQTT spec
+    private static final int MQTT_MAX_BODY = 65536;
+
+    private static final Logger logger = LoggerFactory.getLogger(MqttMessageHandlerService.class);
 
     @Autowired
     private RequestController requestController;
@@ -59,6 +63,11 @@ public class MqttMessageHandlerService implements MessageHandler {
     }
 
     public void sendMessage(String message, String binName) {
+        long length = message.length() * 2; //internally is a char array, with char being 2 bytes, x2 this value
+        if(length > MQTT_MAX_BODY){
+            logger.info("Skipping mqtt push for bin {} as the content exceeds the max length for MQTT messages", binName);
+            return;
+        }
         mqttMessageChannel.send(
                 MessageBuilder.withPayload(message)
                         .setHeader(MqttHeaders.TOPIC, "/bin/" + binName + "/log")
