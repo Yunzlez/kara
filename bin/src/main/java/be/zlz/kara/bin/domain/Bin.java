@@ -106,7 +106,8 @@ public class Bin {
     }
 
     public boolean isPermanent() {
-        return config.get(BinConfigKey.PERMANENT_KEY.getValue());
+        Boolean value = config.get(BinConfigKey.PERMANENT_KEY.getValue());
+        return value == null ? false : value;
     }
 
     public void addConfigEntry(BinConfigKey key, boolean value) {
