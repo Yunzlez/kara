@@ -68,10 +68,14 @@ public class MqttMessageHandlerService implements MessageHandler {
             logger.info("Skipping mqtt push for bin {} as the content exceeds the max length for MQTT messages", binName);
             return;
         }
-        mqttMessageChannel.send(
-                MessageBuilder.withPayload(message)
-                        .setHeader(MqttHeaders.TOPIC, "/bin/" + binName + "/log")
-                        .build()
-        );
+        try {
+            mqttMessageChannel.send(
+                    MessageBuilder.withPayload(message)
+                            .setHeader(MqttHeaders.TOPIC, "/bin/" + binName + "/log")
+                            .build()
+            );
+        } catch (Exception e) {
+            logger.error("Exception while sending message to MQTT", e);
+        }
     }
 }
