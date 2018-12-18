@@ -71,9 +71,11 @@ public class MqttMessageHandlerService implements MessageHandler {
         try {
             mqttMessageChannel.send(
                     MessageBuilder.withPayload(message)
-                            .setHeader(MqttHeaders.TOPIC, "/bin/" + binName + "/log")
+                            .setHeader(MqttHeaders.TOPIC, "/log/" + binName)
+                            .setHeader(MqttHeaders.QOS, 1)
                             .build()
             );
+            logger.debug("Pushed to MQTT");
         } catch (Exception e) {
             logger.error("Exception while sending message to MQTT", e);
         }

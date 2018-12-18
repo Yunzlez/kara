@@ -35,7 +35,7 @@
                 <b>MQTT:</b>
                 <a th:href="${mqttBroker}" th:text="${mqttBroker}">tcp://kara.rest:1883</a>
                 <br/> Request Topic: /bin/<span th:text="${binName}"></span>
-                <br/> Response Topic: /bin/<span th:text="${binName}"></span>/log
+                <br/> Response Topic: /log/<span th:text="${binName}"></span>
             </p>
         </div>
     </div>
