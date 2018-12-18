@@ -14,7 +14,7 @@ import java.util.List;
 
 public interface RequestRepository extends CrudRepository<Request, Long> {
 
-    void deleteAllByBin(Bin bin);
+    Page<Request> getByBinOrderByRequestTimeDesc(Bin bin, Pageable pageable);
 
     @Modifying
     @Query(nativeQuery = true, value = "delete from request where bin_id=?1")
@@ -35,10 +35,14 @@ public interface RequestRepository extends CrudRepository<Request, Long> {
             value = "update request set body = 'Body truncated.' where id < (select id from (select id from request order by request_time desc limit 100, 1) as tmp) and bin_id=?1")
     void clearBodies(long binId);
 
-    Page<Request> getByBinOrderByRequestTimeDesc(Bin bin, Pageable pageable);
-
-    Request findTopByBinOrderByRequestTime(Bin bin);
+    @Modifying
+    @Query(nativeQuery = true,
+            value = "delete rh from kara.request_headers rh left join kara.request r on r.id = rh.request_id where r.id IS NULL;")
+    void deleteRequestOrphans();
 
     @Query(value = "OPTIMIZE TABLE request;", nativeQuery = true)
-    String optimizeTable();
+    String optimizeRequestTable();
+
+    @Query(value = "OPTIMIZE TABLE request_headers;", nativeQuery = true)
+    String optimizeHeaderTable();
 }

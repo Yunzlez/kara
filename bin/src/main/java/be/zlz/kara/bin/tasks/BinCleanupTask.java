@@ -19,7 +19,6 @@ import java.time.LocalDate;
 import java.time.ZoneId;
 import java.time.temporal.ChronoUnit;
 import java.util.Date;
-import java.util.Iterator;
 import java.util.List;
 
 @Component
@@ -55,7 +54,10 @@ public class BinCleanupTask {
         logger.info("Running cleanup task...");
         deleteExpiredBins();
         compactBins();
-        logger.info("Optimization results: {}", requestRepository.optimizeTable());
+        logger.info("Cleaning orphans");
+        requestRepository.deleteRequestOrphans();
+        logger.info("Optimization results for Request table: {}", requestRepository.optimizeRequestTable());
+        logger.info("Optimization results for Header table: {}", requestRepository.optimizeHeaderTable());
         logger.info("Cleanup completed");
     }
 
@@ -67,7 +69,7 @@ public class BinCleanupTask {
             oldBins.stream()
                     .filter(b -> !b.isEnabled(BinConfigKey.PERMANENT_KEY)) //todo move back to query to filter out these
                     .forEach(bin -> {
-                        logger.info("Found bin " + bin.getId() + " with name " + bin.getName() + " and creationdate " + bin.getCreationDate().toString() + ". Deleting...");
+                        logger.info("Found expired bin " + bin.getId() + " with name " + bin.getName() + " and creationdate " + bin.getCreationDate().toString() + ". Deleting...");
                         binService.deleteBin(bin);
                     });
         }
