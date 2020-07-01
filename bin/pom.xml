@@ -16,7 +16,7 @@
         <version.spring.boot>2.1.6.RELEASE</version.spring.boot>
         <version.spring>5.1.8.RELEASE</version.spring>
         <version.spring.integration>5.1.6.RELEASE</version.spring.integration>
-        <version.log4j>2.11.1</version.log4j>
+        <version.log4j>2.13.3</version.log4j>
         <version.slf4j>1.7.25</version.slf4j>
     </properties>
 
