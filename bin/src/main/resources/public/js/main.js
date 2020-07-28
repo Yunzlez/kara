@@ -1,3 +1,4 @@
+//to be replaced in 1.7 with a real FE application
 $('.ui.accordion').accordion();
 
 $("#createbin").click(function () {
@@ -22,7 +23,9 @@ $("#emptybtn").click(function () {
 
 $(document).ready(function () {
     var copyMe = document.getElementById('copyme');
-    new ClipboardJS(copyMe);
+    if (copyMe != null) {
+        new ClipboardJS(copyMe);
+    }
 
     $("#requestdesc").hide();
 
@@ -82,6 +85,24 @@ $('.message .close')
             .transition('fade')
         ;
     });
+
+var body = $('body');
+var headerEntry = $('.header-entry')
+let curr = 0;
+$('#addHeader').click(() => {
+    let newEntry = headerEntry.clone()
+    let fields = newEntry.find('input')
+    console.log(fields)
+    fields[0].setAttribute('id', 'headerNames' + ++curr)
+    fields[0].setAttribute('name', 'headerNames[' + curr + ']')
+    fields[1].setAttribute('id', 'headerValues' + curr)
+    fields[1].setAttribute('name', 'headerValues[' + curr + ']')
+    newEntry.appendTo('.header-entries')
+})
+
+body.on('click','.remove-header', function () {
+    $(this).parent().parent().remove();
+});
 
 var code_defs = [
     {

@@ -2,7 +2,7 @@ package be.zlz.kara.bin.dto;
 
 import be.zlz.kara.bin.domain.Reply;
 
-import java.util.List;
+import java.util.*;
 
 public class SettingViewModel {
 
@@ -32,6 +32,14 @@ public class SettingViewModel {
         this.code = reply.getCode().value();
         this.body = reply.getBody();
         this.mimeType = reply.getMimeType();
+        if (reply.getHeaders() != null && !reply.getHeaders().isEmpty()) {
+            this.headerNames = new ArrayList<>();
+            this.headerValues = new ArrayList<>();
+            for (Map.Entry<String, String> header : reply.getHeaders().entrySet()) {
+                headerNames.add(header.getKey());
+                headerValues.add(header.getValue());
+            }
+        }
         isPermanent = false;
     }
 
@@ -57,6 +65,17 @@ public class SettingViewModel {
 
     public void setHeaderValues(List<String> headerValues) {
         this.headerValues = headerValues;
+    }
+
+    public Map<String, String> getHeaders() {
+        if (this.headerValues == null || this.headerNames == null) {
+            return null;
+        }
+        Map<String, String> headers = new HashMap<>();
+        for (int i = 0; i < this.headerNames.size(); i++) {
+            headers.put(headerNames.get(i), headerValues.get(i));
+        }
+        return Collections.unmodifiableMap(headers);
     }
 
     public List<String> getCookieNames() {

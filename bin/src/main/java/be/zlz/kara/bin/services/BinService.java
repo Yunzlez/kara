@@ -106,12 +106,6 @@ public class BinService {
     @Transactional
     public String updateSettings(String name, SettingViewModel settings) {
         Map<String, String> headers = new HashMap<>();
-        Map<String, String> cookies = new HashMap<>();
-        if (settings.getCookieNames() != null) {
-            for (int i = 0; i < settings.getCookieNames().size(); i++) {
-                cookies.put(settings.getCookieNames().get(i), settings.getCookieValues().get(i));
-            }
-        }
         if (settings.getHeaderNames() != null) {
             for (int i = 0; i < settings.getHeaderNames().size(); i++) {
                 headers.put(settings.getHeaderNames().get(i), settings.getHeaderValues().get(i));
@@ -122,7 +116,7 @@ public class BinService {
                 settings.getMimeType(),
                 settings.getBody(),
                 headers,
-                cookies,
+                new HashMap<>(), //todo remove
                 settings.getCustomName(),
                 null, //todo
                 settings.isPermanent()
@@ -132,16 +126,9 @@ public class BinService {
     @Transactional
     public String updateSettings(String name, BinSettingsDto settings) {
         Bin bin = binRepository.getByName(name);
-        ReplyBuilder replyBuilder = new ReplyBuilder();
-        if (!(settings.getCode() == null || settings.getMimeType() == null || settings.getBody() == null)) {
-            bin.setReply(
-                    replyBuilder.setCode(HttpStatus.valueOf(settings.getCode()))
-                            .setMimeType(isBlank(settings.getMimeType()) ? "text/plain" : settings.getMimeType())
-                            .setBody(settings.getBody())
-                            .setCustom(true)
-                            .build()
-            );
-        }
+
+        createReply(bin, settings);
+
         String redirect = name;
         if (settings.getCustomName() != null) {
             bin.setName(settings.getCustomName());
@@ -155,6 +142,23 @@ public class BinService {
 
         binRepository.save(bin);
         return redirect;
+    }
+
+    private void createReply(Bin bin, BinSettingsDto settings) {
+        if (settings.getCode() == null && settings.getMimeType() == null && settings.getBody() == null && settings.getHeaders() == null) {
+            return;
+        }
+        ReplyBuilder replyBuilder = new ReplyBuilder()
+                .setCode(HttpStatus.valueOf(settings.getCode() == null ? 200 : settings.getCode()))
+                .setBody(settings.getBody() == null ? "" : settings.getBody())
+                .setMimeType(isBlank(settings.getMimeType()) ? "text/plain" : settings.getMimeType())
+                .setCustom(true);
+
+        if (settings.getHeaders() != null) {
+            replyBuilder.addAllHeaders(settings.getHeaders());
+        }
+
+        bin.setReply(replyBuilder.build());
     }
 
     @Transactional
