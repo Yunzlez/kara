@@ -116,6 +116,19 @@
 #darkbody {
     background: #1b1c1d;
 }
+.footer-container {
+    width: 100vw;
+    height: 60px;
+    position: absolute;
+    bottom: 0;
+}
+.github-link img {
+    filter: invert(100%);
+    width: 30px;
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+}
 
 @media (min-width: 992px) {
     .ellipsize {

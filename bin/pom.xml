@@ -13,11 +13,15 @@
 
 
     <properties>
-        <version.spring.boot>2.1.6.RELEASE</version.spring.boot>
-        <version.spring>5.1.8.RELEASE</version.spring>
-        <version.spring.integration>5.1.6.RELEASE</version.spring.integration>
-        <version.log4j>2.11.1</version.log4j>
-        <version.slf4j>1.7.25</version.slf4j>
+        <version.spring.boot>2.3.2.RELEASE</version.spring.boot>
+        <version.spring>5.2.8.RELEASE</version.spring>
+        <version.spring.integration>5.3.2.RELEASE</version.spring.integration>
+        <version.log4j>2.13.3</version.log4j>
+        <version.slf4j>1.7.30</version.slf4j>
+        <version.jackson>2.11.1</version.jackson>
+        <version.guava>29.0-jre</version.guava>
+        <version.eclipse.paho>1.2.5</version.eclipse.paho>
+        <version.antlr4.runtime>4.8-1</version.antlr4.runtime>
     </properties>
 
     <dependencies>
@@ -104,37 +108,32 @@
         <dependency>
             <groupId>com.fasterxml.jackson.dataformat</groupId>
             <artifactId>jackson-dataformat-smile</artifactId>
-            <version>2.9.7</version>
+            <version>${version.jackson}</version>
         </dependency>
         <dependency>
             <groupId>com.google.guava</groupId>
             <artifactId>guava</artifactId>
-            <version>23.2-jre</version>
+            <version>${version.guava}</version>
         </dependency>
         <dependency>
             <groupId>org.eclipse.paho</groupId>
             <artifactId>org.eclipse.paho.client.mqttv3</artifactId>
-            <version>1.2.1</version>
+            <version>${version.eclipse.paho}</version>
         </dependency>
         <dependency>
             <groupId>org.antlr</groupId>
             <artifactId>antlr4-runtime</artifactId>
-            <version>4.7.1</version>
-        </dependency>
-        <dependency>
-            <groupId>io.micrometer</groupId>
-            <artifactId>micrometer-registry-prometheus</artifactId>
-            <version>1.1.1</version>
+            <version>${version.antlr4.runtime}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-compiler-plugin</artifactId>
-            <version>3.6.1</version>
+            <version>3.8.1</version>
         </dependency>
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
-            <version>4.12</version>
+            <version>4.13</version>
             <scope>test</scope>
         </dependency>
 
@@ -146,7 +145,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.6.1</version>
+                <version>3.8.1</version>
                 <configuration>
                     <source>11</source>
                     <target>11</target>
