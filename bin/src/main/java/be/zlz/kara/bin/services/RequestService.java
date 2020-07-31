@@ -1,14 +1,15 @@
 package be.zlz.kara.bin.services;
 
-import be.zlz.kara.bin.domain.*;
+import be.zlz.kara.bin.domain.Bin;
+import be.zlz.kara.bin.domain.BinConfigKey;
+import be.zlz.kara.bin.domain.Reply;
+import be.zlz.kara.bin.domain.Request;
 import be.zlz.kara.bin.dto.RequestDto;
 import be.zlz.kara.bin.exceptions.BadRequestException;
 import be.zlz.kara.bin.exceptions.ResourceNotFoundException;
 import be.zlz.kara.bin.repositories.BinRepository;
-import be.zlz.kara.bin.repositories.BinaryrequestRepository;
 import be.zlz.kara.bin.repositories.RequestRepository;
 import be.zlz.kara.bin.util.PagingUtils;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.smile.SmileFactory;
 import org.hibernate.exception.ConstraintViolationException;
@@ -36,19 +37,17 @@ import java.util.stream.Collectors;
 @Service
 public class RequestService {
 
-    private BinRepository binRepository;
+    private final BinRepository binRepository;
 
-    private RequestRepository requestRepository;
+    private final RequestRepository requestRepository;
 
-    private ReplyService replyService;
-
-    private final BinaryrequestRepository binaryrequestRepository;
+    private final ReplyService replyService;
 
     private final Logger logger;
 
     private static final ObjectMapper om = new ObjectMapper();
 
-    private static ObjectMapper smileMapper = new ObjectMapper(new SmileFactory());
+    private static final ObjectMapper smileMapper = new ObjectMapper(new SmileFactory());
 
     @Value("${store.request.binary}")
     private boolean storeBinaryRequests;
@@ -60,12 +59,11 @@ public class RequestService {
     private int maxRequests;
 
     @Autowired
-    public RequestService(BinRepository binRepository, RequestRepository requestRepository, ReplyService replyService, BinaryrequestRepository binaryrequestRepository) {
+    public RequestService(BinRepository binRepository, RequestRepository requestRepository, ReplyService replyService) {
         logger = LoggerFactory.getLogger(this.getClass());
         this.binRepository = binRepository;
         this.requestRepository = requestRepository;
         this.replyService = replyService;
-        this.binaryrequestRepository = binaryrequestRepository;
     }
 
     public Page<Request> getOrderedRequests(Bin bin, int page, int limit) {
@@ -154,22 +152,11 @@ public class RequestService {
     }
 
     private void storeRequest(Request request, Bin bin) {
-        if (storeBinaryRequests) {
-            BinaryRequest binaryRequest = new BinaryRequest();
-            binaryRequest.setBin(bin);
-            try {
-                binaryRequest.setBinaryRequest(smileMapper.writeValueAsBytes(request));
-                binaryrequestRepository.save(binaryRequest);
-            } catch (JsonProcessingException e) {
-                throw new BadRequestException("could not store binary request", e);
-            }
-        } else {
-            try {
-                requestRepository.save(request);
-            } catch (ConstraintViolationException cve) {
-                logger.warn("Constraint violation:", cve);
-                throw new BadRequestException(cve.getMessage());
-            }
+        try {
+            requestRepository.save(request);
+        } catch (ConstraintViolationException cve) {
+            logger.warn("Constraint violation:", cve);
+            throw new BadRequestException(cve.getMessage());
         }
     }
 

@@ -6,3 +6,6 @@
 - Cleaned up empty projects
 - Cleaned up dependencies
 - Upgraded spring boot to 2.3.x
+- Migrated to MySQL 8 
+- Migrated to Java 11
+- Migrated to InnoDB
