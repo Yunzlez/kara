@@ -39,10 +39,4 @@ public interface RequestRepository extends CrudRepository<Request, Long> {
     @Query(nativeQuery = true,
             value = "delete rh from kara.request_headers rh left join kara.request r on r.id = rh.request_id where r.id IS NULL;")
     void deleteRequestOrphans();
-
-    @Query(value = "OPTIMIZE TABLE request;", nativeQuery = true)
-    String optimizeRequestTable();
-
-    @Query(value = "OPTIMIZE TABLE request_headers;", nativeQuery = true)
-    String optimizeHeaderTable();
 }

@@ -1,5 +1,3 @@
-###Graph.js per bin
-
 ###Total bin stats: 
 * Total request count
     SELECT SUM(request_count) FROM zlzbin.bin;

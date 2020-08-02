@@ -23,6 +23,11 @@ I made this for me an my colleagues, tailored to our needs.
  * Support for something else than MySQL
  
 ## How to run
+You need:
+ * Java 11
+ * MySQL 8
+ 
+You do:
  * mvn package
  * just `java -jar kara-bin-1.3.0.jar`, although setting an XMX is a good idea. I found 128M to be a good value. I use:`java -Xmx128M -XX:+UseG1GC -XX:+UseStringDeduplication -XX:-TieredCompilation -jar kara-bin-1.3.0.jar -Dspring.profiles.active=remote`
  

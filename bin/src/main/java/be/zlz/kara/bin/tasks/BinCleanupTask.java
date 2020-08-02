@@ -25,7 +25,7 @@ import java.util.List;
 @Transactional(propagation = Propagation.REQUIRES_NEW)
 public class BinCleanupTask {
 
-    private Logger logger;
+    private final Logger logger;
 
     @Autowired
     private BinRepository binRepository;
@@ -56,8 +56,6 @@ public class BinCleanupTask {
         compactBins();
         logger.info("Cleaning orphans");
         requestRepository.deleteRequestOrphans();
-        logger.info("Optimization results for Request table: {}", requestRepository.optimizeRequestTable());
-        logger.info("Optimization results for Header table: {}", requestRepository.optimizeHeaderTable());
         logger.info("Cleanup completed");
     }
 
