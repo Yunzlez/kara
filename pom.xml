@@ -6,7 +6,7 @@
 
     <groupId>be.zlz</groupId>
     <artifactId>kara</artifactId>
-    <version>1.4.0</version>
+    <version>1.5.0</version>
     <modules>
         <module>bin</module>
     </modules>
