@@ -171,7 +171,7 @@ public class RequestService {
 
         for (String param : paramsWithNames) {
             String[] paramKeyValue = param.split("=");
-            ret.put(paramKeyValue[0], paramKeyValue[1]);
+            ret.put(paramKeyValue[0], paramKeyValue.length == 2 ? paramKeyValue[1] : "");
         }
 
         return ret;
