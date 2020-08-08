@@ -1,4 +1,4 @@
-package be.zlz.kara.bin.domain;
+package be.zlz.kara.bin.domain.enums;
 
 public enum BinConfigKey {
 

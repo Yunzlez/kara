@@ -1,7 +1,7 @@
 package be.zlz.kara.bin.services;
 
 import be.zlz.kara.bin.domain.Bin;
-import be.zlz.kara.bin.domain.BinConfigKey;
+import be.zlz.kara.bin.domain.enums.BinConfigKey;
 import be.zlz.kara.bin.domain.Request;
 import be.zlz.kara.bin.dto.*;
 import be.zlz.kara.bin.exceptions.ResourceNotFoundException;
@@ -15,8 +15,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

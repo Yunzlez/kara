@@ -1,0 +1,344 @@
+openapi: "3.0.0"
+info:
+  version: 1.1.0
+  title: KARA
+  license:
+    name: MIT
+    #todo host MIT license somewhere
+servers:
+  - url: https://kara.rest/api/v1.1.0
+tags:
+  - name: Bin Management
+    description: Crud & Settings for bins
+  - name: Requests
+    description: Crud for requests, and customizing fields included in response
+paths:
+  /bins:
+    get:
+      tags:
+        - Bin Management
+      summary: List all available bins
+      parameters:
+        - name: page
+          in: query
+          description: The page to retrieve
+          required: false
+          schema:
+            type: integer
+            format: int32
+        - name: limit
+          in: query
+          description: How many items to return at one time (max 1000)
+          required: false
+          schema:
+            type: integer
+            format: int32
+      responses:
+        200:
+          description: A paged array of bins
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/binList"
+    post:
+      tags:
+        - Bin Management
+      summary: Create a bin
+      responses:
+        303:
+          description: The bin was created and can be found at the URL specified
+          headers:
+            location:
+              description: link to the new bin
+              schema:
+                type: string
+  /bins/{binId}/logs:
+    get:
+      tags:
+        - Requests
+      summary: Retrieves the bin and its requests
+      parameters:
+        - name: binId
+          in: path
+          description: The name of the bin
+          required: true
+          schema:
+            type: string
+        - name: page
+          in: query
+          description: The page to retrieve
+          required: false
+          schema:
+            type: integer
+            format: int32
+        - name: limit
+          in: query
+          description: How many items to return at one time (max 100)
+          required: false
+          schema:
+            type: integer
+            format: int32
+      responses:
+        200:
+          description: Bin information and content
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/bin"
+    delete:
+      tags:
+        - Bin Management
+      summary: Clears all requests from the bin
+      parameters:
+        - name: binId
+          in: path
+          description: The name of the bin
+          required: true
+          schema:
+            type: string
+      responses:
+        303:
+          description: The bin was cleared and can be found at the URL specified
+          headers:
+            location:
+              description: link to the bin
+              schema:
+                type: string
+
+  /bins/{binId}/requests:
+    get:
+      tags:
+        - Requests
+      summary: Retrieves the requests for a bin
+      parameters:
+        - name: binId
+          in: path
+          description: The name of the bin
+          required: true
+          schema:
+            type: string
+        - name: page
+          in: query
+          description: The page to retrieve
+          required: false
+          schema:
+            type: integer
+            format: int32
+        - name: limit
+          in: query
+          description: How many items to return at one time (max 1000)
+          required: false
+          schema:
+            type: integer
+            format: int32
+        - name: fields
+          in: query
+          description: the fields of the requests to retrieve, comma separated. Returns all if not given. One or more of [method,requesttime,body,headers,protocol,queryparams]
+          required: false
+          schema:
+            type: string
+      responses:
+        200:
+          description: Requests
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/request"
+  /bins/{binId}/settings:
+    get:
+      tags:
+        - Bin Management
+      summary: Retrieves the settings for a bin
+      parameters:
+        - name: binId
+          in: path
+          description: The name of the bin
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: The current settings
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/settings"
+    put:
+      tags:
+        - Bin Management
+      summary: Updates the settings for the bin
+      parameters:
+        - name: binId
+          in: path
+          description: The name of the bin
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: The current settings
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/settings"
+components:
+  schemas:
+    bin:
+      required:
+        - binName
+        - requestCounts
+        - inbound
+        - page
+        - limit
+        - totalPages
+        - totalBodySize
+        - requests
+      properties:
+        binName:
+          type: string
+        requestCounts:
+          type: object
+          $ref: "#/components/schemas/metric"
+        inbound:
+          type: object
+          $ref: "#/components/schemas/inbound"
+        page:
+          type: integer
+          format: int32
+        limit:
+          type: integer
+          format: int32
+        totalPages:
+          type: integer
+          format: int32
+        totalBodySize:
+          type: string
+        requests:
+          type: array
+          items:
+            $ref: "#/components/schemas/request"
+    binListEntry:
+      required:
+        - binName
+        - requestCounts
+      properties:
+        binName:
+          type: string
+        requestCounts:
+          $ref: "#/components/schemas/metric"
+    metric:
+      required:
+        - total
+        - counts
+      properties:
+          total:
+            type: integer
+            format: int32
+          counts:
+            $ref: "#/components/schemas/count"
+    count:
+      properties:
+        GET:
+          type: integer
+          format: int32
+          optional: true
+        POST:
+          type: integer
+          format: int32
+          optional: true
+        DELETE:
+          type: integer
+          format: int32
+          optional: true
+        PUT:
+          type: integer
+          format: int32
+          optional: true
+        PATCH:
+          type: integer
+          format: int32
+          optional: true
+        MQTT:
+          type: integer
+          format: int32
+          optional: true
+    binList:
+      type: array
+      items:
+        $ref: "#/components/schemas/binListEntry"
+    request:
+      required:
+        - id
+        - method
+        - requestTime
+        - body
+        - headers
+        - protocol
+        - queryParams
+        - mqtt
+      properties:
+        id:
+          type: integer
+          format: int64
+        method:
+          type: string
+        requestTime:
+          type: string
+        body:
+          type: string
+        headers:
+          type: object
+          additionalProperties: string
+        protocol:
+          type: string
+        queryParams:
+          type: object
+          additionalProperties: string
+        mqtt:
+          type: boolean
+    inbound:
+      required:
+        - httpUrl
+        - mqttUrl
+        - mqttTopic
+      properties:
+        httpUrl:
+          type: string
+        mqttUrl:
+          type: string
+        mqttTopic:
+          type: string
+    settings:
+      required:
+        - code
+        - mimeType
+        - body
+        - headers
+        - cookies
+        - customName
+        - permanent
+      properties:
+        code:
+          type: integer
+          format: int32
+          description: The HTTP code to return when a request is sent
+        mimeType:
+          type: string
+          description: The mimeType to return
+        body:
+          type: string
+          description: The body to return
+        headers:
+          type: object
+          additionalProperties: string
+        cookies:
+          type: object
+          additionalProperties: string
+        customName:
+          type: string
+          description: The name for the bin. Note that this affects the request URI, and the original request URI is invalid
+        permanent:
+          type: boolean
+          description: Whether the bin is permanent(Never deleted, but reduced capacity)

@@ -1,4 +1,4 @@
-package be.zlz.kara.bin.controller;
+package be.zlz.kara.bin.controller.api.v1;
 
 import be.zlz.kara.bin.exceptions.ResourceNotFoundException;
 import org.springframework.http.HttpStatus;
