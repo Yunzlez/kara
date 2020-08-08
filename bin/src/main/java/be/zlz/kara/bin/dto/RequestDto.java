@@ -1,6 +1,5 @@
 package be.zlz.kara.bin.dto;
 
-import be.zlz.kara.bin.domain.Request;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import org.springframework.http.HttpMethod;
 

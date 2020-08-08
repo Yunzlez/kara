@@ -8,7 +8,7 @@ CREATE TABLE event(
     additional_data BLOB NULL DEFAULT NULL, -- Query params in HTTP
     content_type TEXT NULL DEFAULT NULL,
     event_time TEXT NULL DEFAULT NULL,
-    origin_ip TEXT NULL DEFAULT NULL,
+    origin TEXT NULL DEFAULT NULL,
     body_size INT NULL DEFAULT NULL,
     bin_id TEXT
 );

@@ -1,7 +1,7 @@
 package be.zlz.kara.bin.tasks;
 
 import be.zlz.kara.bin.domain.Bin;
-import be.zlz.kara.bin.domain.BinConfigKey;
+import be.zlz.kara.bin.domain.enums.BinConfigKey;
 import be.zlz.kara.bin.repositories.BinRepository;
 import be.zlz.kara.bin.repositories.RequestRepository;
 import be.zlz.kara.bin.services.BinService;

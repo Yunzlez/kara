@@ -1,6 +1,7 @@
 package be.zlz.kara.bin.domain;
 
 import be.zlz.kara.bin.domain.converter.MapToSmileConverter;
+import be.zlz.kara.bin.domain.enums.Source;
 import org.springframework.http.HttpMethod;
 
 import javax.persistence.*;
@@ -33,7 +34,7 @@ public class Event {
 
     private LocalDateTime eventTime;
 
-    private String originIp;
+    private String origin;
 
     private long bodySize;
 
@@ -44,7 +45,7 @@ public class Event {
 
     }
 
-    public Event(String id, byte[] body, HttpMethod method, Source source, String location, Map<String, String> metadata, Map<String, String> additionalData, String contentType, LocalDateTime eventTime, String originIp, long bodySize, Bin bin) {
+    public Event(String id, byte[] body, HttpMethod method, Source source, String location, Map<String, String> metadata, Map<String, String> additionalData, String contentType, LocalDateTime eventTime, String origin, long bodySize, Bin bin) {
         this.id = id;
         this.body = body;
         this.method = method;
@@ -54,7 +55,7 @@ public class Event {
         this.additionalData = additionalData;
         this.contentType = contentType;
         this.eventTime = eventTime;
-        this.originIp = originIp;
+        this.origin = origin;
         this.bodySize = bodySize;
         this.bin = bin;
     }
@@ -95,8 +96,8 @@ public class Event {
         return eventTime;
     }
 
-    public String getOriginIp() {
-        return originIp;
+    public String getOrigin() {
+        return origin;
     }
 
     public long getBodySize() {

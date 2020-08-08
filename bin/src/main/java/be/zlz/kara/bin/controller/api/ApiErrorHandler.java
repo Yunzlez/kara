@@ -1,4 +1,4 @@
-package be.zlz.kara.bin.controller;
+package be.zlz.kara.bin.controller.api;
 
 import be.zlz.kara.bin.dto.ErrorDTO;
 import be.zlz.kara.bin.exceptions.BadRequestException;
