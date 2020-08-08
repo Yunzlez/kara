@@ -12,3 +12,5 @@ CREATE TABLE event(
     body_size INT NULL DEFAULT NULL,
     bin_id TEXT
 );
+
+DROP TABLE binary_request;
