@@ -1,8 +1,7 @@
 package be.zlz.kara.bin.services.webhook;
 
 public enum WebhookMode {
-    PROXY,
+    PROXY, //pass-through
     INFO, //send request information
-    RESPONSE,
     CUSTOM
 }

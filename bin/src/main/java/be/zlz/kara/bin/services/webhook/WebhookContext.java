@@ -12,16 +12,19 @@ public class WebhookContext {
 
     private WebhookAuthentication authentication;
 
-    private WebhookMode mode;
+    private byte[] data;
 
     private HttpMethod method;
 
-    public WebhookContext(String destination, Map<String, String> headers, WebhookAuthentication authentication, WebhookMode mode, HttpMethod method) {
+    private boolean transparent;
+
+    public WebhookContext(String destination, Map<String, String> headers, WebhookAuthentication authentication, byte[] data, HttpMethod method, boolean transparent) {
         this.destination = destination;
         this.headers = headers;
         this.authentication = authentication;
-        this.mode = mode;
+        this.data = data;
         this.method = method;
+        this.transparent = transparent;
     }
 
     public String getDestination() {
@@ -36,11 +39,15 @@ public class WebhookContext {
         return authentication;
     }
 
-    public WebhookMode getMode() {
-        return mode;
+    public byte[] getData() {
+        return data;
     }
 
     public HttpMethod getMethod() {
         return method;
+    }
+
+    public boolean isTransparent() {
+        return transparent;
     }
 }
