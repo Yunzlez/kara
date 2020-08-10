@@ -8,57 +8,43 @@ import javax.persistence.*
 
 
 @Entity
-class Event {
+open class Event {
 
     @Id
-    var id: String? = null
-        private set
+    open var id: String? = null
 
-    lateinit var body: ByteArray
-        private set
+    open lateinit var body: ByteArray
 
     @Enumerated(EnumType.STRING)
-    var method: HttpMethod? = null
-        private set
+    open var method: HttpMethod? = null
 
     @Enumerated(EnumType.STRING)
-    var source: Source? = null
-        private set
+    open var source: Source? = null
 
-    var location: String? = null
-        private set
+    open var location: String? = null
 
     @Convert(converter = MapToSmileConverter::class)
-    var metadata: Map<String, String>? = null
-        private set
-
+    open  var metadata: Map<String, String>? = null
     @Convert(converter = MapToSmileConverter::class)
     @Column(name = "additional_data")
-    var additionalData: Map<String, String>? = null
-        private set
+    open var additionalData: Map<String, String>? = null
 
     @Column(name = "content_type")
-    var contentType: String? = null
-        private set
+    open var contentType: String? = null
 
     @Column(name = "event_time")
-    var eventTime: LocalDateTime? = null
-        private set
+    open var eventTime: LocalDateTime? = null
 
-    var origin: String? = null
-        private set
+    open var origin: String? = null
 
     @Column(name = "body_size")
-    var bodySize: Long = 0
-        private set
+    open var bodySize: Long = 0
 
     @Column(name = "protocol_version")
-    var protocolVersion: String? = null
-        private set
+    open var protocolVersion: String? = null
 
     @ManyToOne
-    var bin: Bin? = null
-        private set
+    open var bin: Bin? = null
 
     protected constructor()
 

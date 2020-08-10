@@ -1,5 +1,5 @@
 CREATE TABLE event(
-    id TEXT PRIMARY KEY,
+    id VARCHAR(36) PRIMARY KEY,
     body LONGBLOB NULL DEFAULT NULL,
     method TEXT NULL DEFAULT NULL,
     source TEXT NULL DEFAULT NULL,
@@ -11,7 +11,7 @@ CREATE TABLE event(
     origin TEXT NULL DEFAULT NULL,
     body_size INT NULL DEFAULT NULL,
     protocol_version TEXT NULL DEFAULT NULL,
-    bin_id LONG NOT NULL
+    bin_id BIGINT(20) NOT NULL
 );
 
 CREATE INDEX idx_bin_id on event(bin_id);

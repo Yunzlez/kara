@@ -1,9 +1,8 @@
 package db.migration;
 
-import be.zlz.kara.bin.domain.Event;
-import be.zlz.kara.bin.domain.Request;
 import be.zlz.kara.bin.domain.converter.MapToSmileConverter;
 import be.zlz.kara.bin.domain.enums.Source;
+import org.flywaydb.core.api.migration.BaseJavaMigration;
 import org.flywaydb.core.api.migration.Context;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -13,18 +12,17 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.time.LocalDateTime;
-import java.time.ZoneId;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
-public class V4_0_1_MigrateRequests {
+public class V5_0_1__MigrateRequests extends BaseJavaMigration {
 
-    private static final Logger LOG = LoggerFactory.getLogger(V4_0_1_MigrateRequests.class);
+    private static final Logger LOG = LoggerFactory.getLogger(V5_0_1__MigrateRequests.class);
 
     public void migrate(Context context) throws Exception {
-        try (Connection connection = context.getConnection()){
+        Connection connection = context.getConnection();
+        try {
             ResultSet rs = connection.prepareStatement("select * from request;").executeQuery();
             PreparedStatement getHeaders = connection.prepareStatement("select * from request_headers where request_id=?");
             PreparedStatement getParams = connection.prepareStatement("select * from request_query_params where request_id=?");
@@ -48,7 +46,7 @@ public class V4_0_1_MigrateRequests {
                 Map<String, String> qps = toQPMap(qpRs);
 
                 insertEvent.setString(1, UUID.randomUUID().toString());
-                insertEvent.setBytes(2, body);
+                insertEvent.setBytes(2, body.length == 0 ? null : body);
                 insertEvent.setString(3, mapMethod(rs.getInt("method")).name());
                 insertEvent.setString(4, isMqtt ? Source.MQTT.name() : Source.HTTP.name());
                 insertEvent.setString(5, null);
@@ -62,7 +60,7 @@ public class V4_0_1_MigrateRequests {
                 insertEvent.setLong(13, rs.getLong("bin_id"));
 
                 insertEvent.addBatch();
-                if (++i % 100 == 0 || rs.isLast()) {
+                if (++i % 100 == 0 || rs.isLast() || rs.isAfterLast()) {
                     LOG.info("processed {} events", i);
                     insertEvent.executeBatch();
                 }

@@ -5,6 +5,6 @@ import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 
 @CrossOrigin
-@RestController
+@RestController("Api_v11_Controller")
 @RequestMapping("/api/v1.1.0")
 class ApiController {}
