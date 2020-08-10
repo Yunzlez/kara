@@ -45,7 +45,7 @@ public class V4_0_1_MigrateRequests {
 
                 getParams.setLong(1, rs.getLong("id"));
                 ResultSet qpRs = getParams.executeQuery();
-                Map<String, String> qps = toHeadersMap(qpRs);
+                Map<String, String> qps = toQPMap(qpRs);
 
                 insertEvent.setString(1, UUID.randomUUID().toString());
                 insertEvent.setBytes(2, body);
@@ -93,24 +93,5 @@ public class V4_0_1_MigrateRequests {
             return null;
         }
         return HttpMethod.values()[method];
-    }
-
-    private Event toEvent(Request request) {
-
-        return new Event(
-                UUID.randomUUID().toString(),
-                body,
-                request.getMethod(),
-                request.isMqtt() ? Source.MQTT : Source.HTTP,
-                "",
-                request.getHeaders(),
-                request.getQueryParams(),
-                request.isMqtt() ? null : request.getHeaders().get("Content-Type"),
-                LocalDateTime.ofInstant(request.getRequestTime().toInstant(), ZoneId.systemDefault()),
-                request.isMqtt() ? null : request.getHeaders().get("x-real-ip"),
-                body.length,
-                request.getProtocol(),
-                request.getBin()
-        );
     }
 }
