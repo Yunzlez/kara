@@ -87,6 +87,10 @@ public class Request {
         return method;
     }
 
+    public void setMethod(HttpMethod method) {
+        this.method = method;
+    }
+
     public void setMethod(String method) {
         switch (method) {
             case "GET":

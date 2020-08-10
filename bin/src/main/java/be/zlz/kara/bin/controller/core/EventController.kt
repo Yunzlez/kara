@@ -12,7 +12,7 @@ import javax.servlet.http.HttpServletResponse
 class EventController {
 
 
-    @RequestMapping(value = ["/{id}"], method = [RequestMethod.GET, RequestMethod.POST, RequestMethod.PUT, RequestMethod.DELETE, RequestMethod.PATCH])
+    @RequestMapping(value = ["/{id}/**"], method = [RequestMethod.GET, RequestMethod.POST, RequestMethod.PUT, RequestMethod.DELETE, RequestMethod.PATCH])
     fun handleRequest(servletRequest: HttpServletRequest,
                       response: HttpServletResponse,
                       body: HttpEntity<ByteArray>,
@@ -22,6 +22,6 @@ class EventController {
         //Pair<Reply, Request> replyRequestPair = requestService.createRequest(servletRequest, body, uuid, headers);
         //newRequest(replyRequestPair.getSecond(), uuid);
         //return requestService.buildResponse(replyRequestPair.getFirst(), response);
-        return ResponseEntity.noContent().build();
+        return ResponseEntity.noContent().build()
     }
 }

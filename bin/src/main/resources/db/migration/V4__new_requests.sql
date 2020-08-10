@@ -10,7 +10,10 @@ CREATE TABLE event(
     event_time TEXT NULL DEFAULT NULL,
     origin TEXT NULL DEFAULT NULL,
     body_size INT NULL DEFAULT NULL,
-    bin_id TEXT
+    protocol_version TEXT NULL DEFAULT NULL,
+    bin_id LONG NOT NULL
 );
+
+CREATE INDEX idx_bin_id on event(bin_id);
 
 DROP TABLE binary_request;
