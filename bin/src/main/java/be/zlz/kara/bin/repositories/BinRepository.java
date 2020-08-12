@@ -10,12 +10,15 @@ import org.springframework.data.repository.query.Param;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 
 public interface BinRepository extends CrudRepository<Bin, Long> {
 
     Page<Bin> findAll(Pageable pageable);
 
     Bin getByName(String name);
+
+    Optional<Bin> findBinByName(String name);
 
     @Modifying
     @Query(nativeQuery = true,

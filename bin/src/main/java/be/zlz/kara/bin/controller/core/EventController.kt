@@ -1,5 +1,6 @@
 package be.zlz.kara.bin.controller.core
 
+import be.zlz.kara.bin.services.EventService
 import org.springframework.http.HttpEntity
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
@@ -9,7 +10,9 @@ import javax.servlet.http.HttpServletResponse
 @CrossOrigin
 @RestController
 @RequestMapping("/in")
-class EventController {
+class EventController(
+        private val eventService: EventService
+) {
 
 
     @RequestMapping(value = ["/{id}/**"], method = [RequestMethod.GET, RequestMethod.POST, RequestMethod.PUT, RequestMethod.DELETE, RequestMethod.PATCH])
@@ -18,10 +21,7 @@ class EventController {
                       body: HttpEntity<ByteArray>,
                       @PathVariable id: String,
                       @RequestHeader headers: Map<String, String>
-    ): ResponseEntity<ByteArray> {
-        //Pair<Reply, Request> replyRequestPair = requestService.createRequest(servletRequest, body, uuid, headers);
-        //newRequest(replyRequestPair.getSecond(), uuid);
-        //return requestService.buildResponse(replyRequestPair.getFirst(), response);
-        return ResponseEntity.noContent().build()
+    ): ResponseEntity<String> {
+        return eventService.logHttpEvent(id, headers, body, servletRequest, response)
     }
 }
