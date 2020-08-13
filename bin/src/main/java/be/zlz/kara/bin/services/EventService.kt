@@ -63,16 +63,16 @@ open class EventService(
         reply.headers.remove("Content-Type")
         reply.headers.remove("Content-Length")
 
-        val headers = HttpHeaders()
-        headers.contentType = MediaType.parseMediaType(reply.mimeType)
+        val responseHeaders = HttpHeaders()
+        responseHeaders.contentType = MediaType.parseMediaType(reply.mimeType)
 
         if (reply.isCustom) {
-            reply.headers.forEach(headers::add)
+            reply.headers.forEach(responseHeaders::add)
         }
 
-        headers.contentLength = reply.body.toByteArray(Charsets.UTF_8).size.toLong()
+        responseHeaders.contentLength = reply.body.toByteArray(Charsets.UTF_8).size.toLong()
 
-        return ResponseEntity.status(reply.code).headers(headers).body(reply.body)
+        return ResponseEntity.status(reply.code).headers(responseHeaders).body(reply.body)
     }
 
     open fun logMqttEvent() {
