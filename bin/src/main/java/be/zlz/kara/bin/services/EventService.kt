@@ -89,8 +89,8 @@ open class EventService(
         binRepository.updateMetric(bin.requestMetric.id, name)
     }
 
-    private fun parseParams(queryString: String): Map<String, String>? {
-        if (StringUtils.isEmpty(queryString)) {
+    private fun parseParams(queryString: String?): Map<String, String>? {
+        if (queryString == null || StringUtils.isEmpty(queryString)) {
             return null
         }
 

@@ -13,9 +13,9 @@ import javax.persistence.Converter
 @Converter
 class MapToSmileConverter : AttributeConverter<Map<String, String>, ByteArray> {
 
-    override fun convertToDatabaseColumn(map: Map<String, String>): ByteArray? {
+    override fun convertToDatabaseColumn(map: Map<String, String>?): ByteArray? {
         return try {
-            if (map.isEmpty()) {
+            if (map == null || map.isEmpty()) {
                 return null
             }
             om.writeValueAsBytes(map)
