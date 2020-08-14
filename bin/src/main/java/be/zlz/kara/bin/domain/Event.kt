@@ -34,7 +34,7 @@ open class Event {
     open var contentType: String? = null
 
     @Column(name = "event_time")
-    open var eventTime: LocalDateTime? = null
+    open lateinit var eventTime: LocalDateTime
 
     open var origin: String? = null
 
@@ -49,7 +49,7 @@ open class Event {
 
     protected constructor()
 
-    constructor(id: String?, body: ByteArray?, method: HttpMethod?, source: Source?, location: String?, metadata: Map<String, String>?, additionalData: Map<String, String>?, contentType: String?, eventTime: LocalDateTime?, origin: String?, bodySize: Long, protocolVersion: String?, bin: Bin?) {
+    constructor(id: String?, body: ByteArray?, method: HttpMethod?, source: Source?, location: String?, metadata: Map<String, String>?, additionalData: Map<String, String>?, contentType: String?, eventTime: LocalDateTime, origin: String?, bodySize: Long, protocolVersion: String?, bin: Bin?) {
         this.id = id
         this.body = body
         this.method = method

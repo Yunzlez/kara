@@ -1,9 +1,11 @@
 package be.zlz.kara.bin.services;
 
 import be.zlz.kara.bin.domain.Bin;
+import be.zlz.kara.bin.domain.Event;
 import be.zlz.kara.bin.domain.enums.BinConfigKey;
 import be.zlz.kara.bin.domain.Reply;
 import be.zlz.kara.bin.domain.Request;
+import be.zlz.kara.bin.domain.enums.Source;
 import be.zlz.kara.bin.dto.RequestDto;
 import be.zlz.kara.bin.exceptions.BadRequestException;
 import be.zlz.kara.bin.exceptions.ResourceNotFoundException;
@@ -18,6 +20,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.util.Pair;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -28,8 +31,10 @@ import org.springframework.stereotype.Service;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.sound.midi.spi.SoundbankReader;
 import javax.transaction.Transactional;
 import java.nio.charset.StandardCharsets;
+import java.time.ZoneOffset;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -39,18 +44,11 @@ public class RequestServiceImpl implements RequestService {
 
     private final BinRepository binRepository;
 
-    private final RequestRepository requestRepository;
+    private final EventService eventService;
 
     private final ReplyService replyService;
 
     private final Logger logger;
-
-    private static final ObjectMapper om = new ObjectMapper();
-
-    private static final ObjectMapper smileMapper = new ObjectMapper(new SmileFactory());
-
-    @Value("${store.request.binary}")
-    private boolean storeBinaryRequests;
 
     @Value("${permanent.bin.max.count}")
     private int maxRequestsForPermanentBin;
@@ -59,85 +57,61 @@ public class RequestServiceImpl implements RequestService {
     private int maxRequests;
 
     @Autowired
-    public RequestServiceImpl(BinRepository binRepository, RequestRepository requestRepository, ReplyService replyService) {
+    public RequestServiceImpl(BinRepository binRepository, RequestRepository requestRepository, EventService eventService, ReplyService replyService) {
+        this.eventService = eventService;
         logger = LoggerFactory.getLogger(this.getClass());
         this.binRepository = binRepository;
-        this.requestRepository = requestRepository;
         this.replyService = replyService;
     }
 
     @Override
     public Page<Request> getOrderedRequests(Bin bin, int page, int limit) {
-        return requestRepository.getByBinOrderByRequestTimeDesc(bin, PagingUtils.getPageable(page, limit));
+        return fromEventPage(eventService.getOrderedRequests(bin, page, limit));
     }
 
     @Override
-    @Transactional
     public Pair<Reply, Request> createRequest(HttpServletRequest servletRequest, HttpEntity<byte[]> body, String uuid, Map<String, String> headers) {
-        Request request = new Request();
-
         Bin bin = binRepository.getByName(uuid);
-
         validateRequest(body, bin);
 
-        request.setBin(bin);
+        Event event = eventService.logHttpEvent(bin, headers, body, servletRequest);
 
-        request.setHeaders(headers);
-        headers.remove("cookie"); //Cookie header is useless and breaks localhost because no dev app ever clears cookies and the header is a bazillion chars
+        Request req = toRequest(event);
 
-        if (bin.isEnabled(BinConfigKey.BINARY_BODY)) {
-            request.setBody(Base64.getEncoder().encodeToString(body.getBody()));
-        } else {
-            request.setBody(new String(body.getBody() == null ? new byte[0] : body.getBody()));
-        }
-
-        request.setMethod(servletRequest.getMethod());
-        logger.debug("Method = " + servletRequest.getMethod());
-
-        request.setProtocol(servletRequest.getProtocol());
-
-        logger.debug(servletRequest.getQueryString());
-        request.setQueryParams(extractQueryParams(servletRequest.getQueryString()));
-
-        storeRequest(request, bin);
-
-        bin.setLastRequest(new Date());
-        bin.setRequestCount(bin.getRequestCount() + 1);
-        updateMetrics(bin, request);
-        binRepository.save(bin);
         if (bin.getReply() != null) {
-            return Pair.of(bin.getReply(), request);
+            return Pair.of(bin.getReply(), req);
         } else {
-            return Pair.of(replyService.getDefaultReply(request), request);
+            return Pair.of(replyService.getDefaultReply(req), req);
         }
     }
 
     @Override
     @Transactional
     public Request createMqttRequest(Map<String, String> headers, String body, String binName) {
-        Request request = new Request();
-        request.setMqtt(true);
-        request.setBody(body);
-        request.setHeaders(headers);
-        request.setRequestTime(new Date());
-        request.setProtocol("MQTT");
+        Event event = eventService.logMqttEvent(headers, body.getBytes(StandardCharsets.UTF_8), binName, null, null, null);
+        return event == null ? null : toRequest(event);
+    }
 
-        Bin bin = binRepository.getByName(binName);
+    private Page<Request> fromEventPage(Page<Event> events) {
+        List<Request> requests = events.getContent().stream()
+                .map(this::toRequest)
+                .collect(Collectors.toList());
 
-        if (bin == null) {
-            logger.info("Got message for unknown bin {}", binName);
-            return null;
-        }
+        return new PageImpl<>(requests, events.getPageable(), events.getTotalElements());
+    }
 
-        request.setBin(bin);
-
-        bin.setLastRequest(new Date());
-        bin.setRequestCount(bin.getRequestCount() + 1);
-        updateMetrics(bin, request);
-
-        binRepository.save(bin);
-
-        return requestRepository.save(request);
+    private Request toRequest(Event event) {
+        return new Request(
+                0L,
+                event.getMethod(),
+                Date.from(event.getEventTime().toInstant(ZoneOffset.UTC)),
+                event.getBody() == null ? null : new String(event.getBody(), StandardCharsets.UTF_8),
+                event.getAdditionalData(),
+                event.getProtocolVersion(),
+                event.getAdditionalData(),
+                event.getBin(),
+                event.getSource() == Source.MQTT
+        );
     }
 
     private void validateRequest(HttpEntity<byte[]> body, Bin bin) {
@@ -152,43 +126,6 @@ public class RequestServiceImpl implements RequestService {
         if (body.getBody() != null && body.getBody().length > 100000) {
             throw new BadRequestException("Body length is capped to 100000 bytes");
         }
-    }
-
-    private void storeRequest(Request request, Bin bin) {
-        try {
-            requestRepository.save(request);
-        } catch (ConstraintViolationException cve) {
-            logger.warn("Constraint violation:", cve);
-            throw new BadRequestException(cve.getMessage());
-        }
-    }
-
-    private Map<String, String> extractQueryParams(String queryString) {
-        if (queryString == null || "".equals(queryString)) {
-            return null;
-        }
-
-        Map<String, String> ret = new HashMap<>();
-
-        String[] paramsWithNames = queryString.split("&");
-
-        for (String param : paramsWithNames) {
-            String[] paramKeyValue = param.split("=");
-            ret.put(paramKeyValue[0], paramKeyValue[1]);
-        }
-
-        return ret;
-    }
-
-    private void updateMetrics(Bin bin, Request req) {
-        String name;
-        if (req.isMqtt()) {
-            name = "MQTT";
-        } else {
-            name = req.getMethod().name();
-        }
-
-        binRepository.updateMetric(bin.getRequestMetric().getId(), name);
     }
 
     @Override

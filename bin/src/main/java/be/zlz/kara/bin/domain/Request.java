@@ -53,6 +53,18 @@ public class Request {
         queryParams = new HashMap<>();
     }
 
+    public Request(long id, HttpMethod method, Date requestTime, String body, Map<String, String> headers, String protocol, Map<String, String> queryParams, Bin bin, boolean mqtt) {
+        this.id = id;
+        this.method = method;
+        this.requestTime = requestTime;
+        this.body = body;
+        this.headers = headers;
+        this.protocol = protocol;
+        this.queryParams = queryParams;
+        this.bin = bin;
+        this.mqtt = mqtt;
+    }
+
     public Request() {
         queryParams = new HashMap<>();
 
