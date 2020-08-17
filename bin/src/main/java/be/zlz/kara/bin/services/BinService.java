@@ -6,7 +6,6 @@ import be.zlz.kara.bin.domain.Request;
 import be.zlz.kara.bin.dto.*;
 import be.zlz.kara.bin.exceptions.ResourceNotFoundException;
 import be.zlz.kara.bin.repositories.BinRepository;
-import be.zlz.kara.bin.repositories.RequestRepository;
 import be.zlz.kara.bin.util.PagingUtils;
 import be.zlz.kara.bin.util.ReplyBuilder;
 import be.zlz.kara.bin.util.SizeUtil;

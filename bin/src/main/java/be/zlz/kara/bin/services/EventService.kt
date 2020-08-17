@@ -79,7 +79,7 @@ open class EventService(
                 servletRequest.servletPath,
                 headers,
                 parseParams(servletRequest.queryString),
-                headers["Content-Type"],
+                headers["content-type"],
                 LocalDateTime.now(),
                 headers["x-real-ip"],
                 if (body.body == null) 0 else body.body.size.toLong(),

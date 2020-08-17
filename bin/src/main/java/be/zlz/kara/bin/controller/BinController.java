@@ -7,7 +7,6 @@ import be.zlz.kara.bin.dto.BinDto;
 import be.zlz.kara.bin.dto.SettingViewModel;
 import be.zlz.kara.bin.exceptions.ResourceNotFoundException;
 import be.zlz.kara.bin.repositories.BinRepository;
-import be.zlz.kara.bin.repositories.RequestRepository;
 import be.zlz.kara.bin.services.BinService;
 import be.zlz.kara.bin.services.RequestService;
 import org.slf4j.Logger;
@@ -17,7 +16,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpMethod;
 import org.springframework.stereotype.Controller;
-import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
@@ -32,8 +30,6 @@ public class BinController {
 
     private final BinRepository binRepository;
 
-    private final RequestRepository requestRepository;
-
     private final BinService binService;
 
     private final RequestService requestService;
@@ -47,10 +43,9 @@ public class BinController {
     private Logger logger;
 
     @Autowired
-    public BinController(BinRepository binRepository, RequestRepository requestRepository, BinService binService, RequestService requestService) {
+    public BinController(BinRepository binRepository,  BinService binService, RequestService requestService) {
         logger = LoggerFactory.getLogger(this.getClass());
         this.binRepository = binRepository;
-        this.requestRepository = requestRepository;
         this.binService = binService;
         this.requestService = requestService;
     }
