@@ -2,7 +2,6 @@ package be.zlz.kara.bin.services;
 
 import be.zlz.kara.bin.domain.Bin;
 import be.zlz.kara.bin.domain.Event;
-import be.zlz.kara.bin.domain.enums.BinConfigKey;
 import be.zlz.kara.bin.domain.Reply;
 import be.zlz.kara.bin.domain.Request;
 import be.zlz.kara.bin.domain.enums.Source;
@@ -10,11 +9,6 @@ import be.zlz.kara.bin.dto.RequestDto;
 import be.zlz.kara.bin.exceptions.BadRequestException;
 import be.zlz.kara.bin.exceptions.ResourceNotFoundException;
 import be.zlz.kara.bin.repositories.BinRepository;
-import be.zlz.kara.bin.repositories.RequestRepository;
-import be.zlz.kara.bin.util.PagingUtils;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.dataformat.smile.SmileFactory;
-import org.hibernate.exception.ConstraintViolationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,7 +25,6 @@ import org.springframework.stereotype.Service;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.sound.midi.spi.SoundbankReader;
 import javax.transaction.Transactional;
 import java.nio.charset.StandardCharsets;
 import java.time.ZoneOffset;
@@ -57,7 +50,7 @@ public class RequestServiceImpl implements RequestService {
     private int maxRequests;
 
     @Autowired
-    public RequestServiceImpl(BinRepository binRepository, RequestRepository requestRepository, EventService eventService, ReplyService replyService) {
+    public RequestServiceImpl(BinRepository binRepository, EventService eventService, ReplyService replyService) {
         this.eventService = eventService;
         logger = LoggerFactory.getLogger(this.getClass());
         this.binRepository = binRepository;
@@ -106,7 +99,7 @@ public class RequestServiceImpl implements RequestService {
                 event.getMethod(),
                 Date.from(event.getEventTime().toInstant(ZoneOffset.UTC)),
                 event.getBody() == null ? null : new String(event.getBody(), StandardCharsets.UTF_8),
-                event.getAdditionalData(),
+                event.getMetadata(),
                 event.getProtocolVersion(),
                 event.getAdditionalData(),
                 event.getBin(),

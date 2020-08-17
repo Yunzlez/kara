@@ -28,7 +28,7 @@ import java.util.stream.Collectors;
 @Service
 public class BinService {
 
-    private final RequestRepository requestRepository;
+    private final EventService eventService;
 
     private final BinRepository binRepository;
 
@@ -42,8 +42,8 @@ public class BinService {
     private static String mqttUrl;
 
     @Autowired
-    public BinService(RequestRepository requestRepository, BinRepository binRepository, RequestService requestService) {
-        this.requestRepository = requestRepository;
+    public BinService(EventService eventService, BinRepository binRepository, RequestService requestService) {
+        this.eventService = eventService;
         this.binRepository = binRepository;
         this.requestService = requestService;
     }
@@ -80,17 +80,15 @@ public class BinService {
     }
 
     public void deleteBin(Bin bin) {
-        long id = bin.getId();
-        requestRepository.deleteQueryParamsForBin(bin.getId());
-        requestRepository.deleteHeadersForBin(bin.getId());
-        requestRepository.deleteAllByBinEfficient(bin.getId());
+        eventService.deleteEventsForBin(bin);
         binRepository.delete(bin);
     }
 
     @Transactional
     //todo implement toSkip
     public void compactBin(Bin bin, int toSkip) {
-        requestRepository.clearBodies(bin.getId());
+        //requestRepository.clearBodies(bin.getId());
+        //todo impl for events
     }
 
     public String getSize(Bin bin) {
@@ -165,15 +163,9 @@ public class BinService {
         if (bin != null) {
             bin.setRequestCount(0);
             bin.getRequestMetric().getCounts().clear();
-            deleteBinRequestsEfficient(bin.getId());
+            eventService.deleteEventsForBin(bin);
             binRepository.save(bin);
         }
-    }
-
-    private void deleteBinRequestsEfficient(long binId) {
-        requestRepository.deleteHeadersForBin(binId);
-        requestRepository.deleteQueryParamsForBin(binId);
-        requestRepository.deleteAllByBinEfficient(binId);
     }
 
     public SettingViewModel getSettings(String name) {

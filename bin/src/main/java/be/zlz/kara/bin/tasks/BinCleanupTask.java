@@ -54,8 +54,6 @@ public class BinCleanupTask {
         logger.info("Running cleanup task...");
         deleteExpiredBins();
         compactBins();
-        logger.info("Cleaning orphans");
-        requestRepository.deleteRequestOrphans();
         logger.info("Cleanup completed");
     }
 

@@ -69,6 +69,7 @@ open class EventService(
         return ResponseEntity.status(reply.code).headers(responseHeaders).body(reply.body)
     }
 
+    @Transactional
     open fun logHttpEvent(bin: Bin, headers: Map<String, String>, body: HttpEntity<ByteArray>, servletRequest: HttpServletRequest): Event {
         val event = Event(
                 UUID.randomUUID().toString(),
@@ -140,6 +141,10 @@ open class EventService(
 
     open fun getOrderedRequests(bin: Bin, page: Int, limit: Int): Page<Event> {
         return eventRepository.getByBinOrderByEventTimeDesc(bin, PagingUtils.getPageable(page, limit))
+    }
+
+    open fun deleteEventsForBin(bin: Bin) {
+        eventRepository.deleteAllByBinNative(bin.id)
     }
 
     private fun parseParams(queryString: String?): Map<String, String>? {
