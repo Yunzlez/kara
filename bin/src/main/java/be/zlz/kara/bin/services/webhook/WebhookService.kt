@@ -2,6 +2,10 @@ package be.zlz.kara.bin.services.webhook
 
 import be.zlz.kara.bin.config.logger
 import be.zlz.kara.bin.domain.Reply
+import be.zlz.kara.bin.dto.ErrorDTO
+import be.zlz.kara.bin.util.KARA_UA
+import be.zlz.kara.bin.util.KARA_VERSION_STRING
+import com.fasterxml.jackson.databind.ObjectMapper
 import com.google.common.cache.Cache
 import com.google.common.util.concurrent.RateLimiter
 import org.apache.logging.log4j.util.Strings
@@ -21,7 +25,6 @@ import java.time.temporal.ChronoUnit
 import java.util.*
 import java.util.concurrent.TimeUnit
 import kotlin.collections.HashMap
-import kotlin.collections.HashSet
 
 
 @Service
@@ -36,7 +39,7 @@ class WebhookService(private val ratelimiterCache: Cache<Long, RateLimiter>) {
             .build()
 
     companion object {
-        private const val KARA_UA = "kara-webhook"
+        private val om = ObjectMapper()
         private val HEADER_WHITELIST = hashSetOf(
                 "authorization",
                 "accept",
@@ -61,6 +64,7 @@ class WebhookService(private val ratelimiterCache: Cache<Long, RateLimiter>) {
     fun runWebhook(context: WebhookContext): Optional<Reply> {
         var rateLimiter = ratelimiterCache.getIfPresent(context.binId)
         if (rateLimiter == null) {
+            log.debug("Creating new rate limiter for {}", context.binId)
             rateLimiter = RateLimiter.create(2.0) //todo from config (using factory)
             ratelimiterCache.put(context.binId, rateLimiter!!)
         }
@@ -72,13 +76,14 @@ class WebhookService(private val ratelimiterCache: Cache<Long, RateLimiter>) {
 
         for ((key, value) in context.headers) {
             if (HEADER_WHITELIST.contains(key.toLowerCase())) {
+                log.debug("Addding header: {}: {}", key, value)
                 requestBuilder.header(key, value)
             }
         }
 
         requestBuilder.header("User-Agent", KARA_UA)
         if (context.isTransparent) {
-            requestBuilder.header("Via", KARA_UA)
+            requestBuilder.header("Via", KARA_VERSION_STRING)
         }
         when (context.method) {
             HttpMethod.GET -> requestBuilder.GET()
@@ -107,9 +112,9 @@ class WebhookService(private val ratelimiterCache: Cache<Long, RateLimiter>) {
                 return Optional.of(Reply(
                         HttpStatus.BAD_GATEWAY,
                         MediaType.APPLICATION_JSON_VALUE,
-                        "",
+                        om.writeValueAsString(ErrorDTO(HttpStatus.BAD_GATEWAY.value().toString(), "I/O error while contacting backend")),
                         emptyMap(),
-                        emptyMap(), //todo
+                        emptyMap(), //todo add some headers?
                         true
                 ))
             }
