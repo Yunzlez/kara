@@ -1,11 +1,14 @@
-package be.zlz.kara.bin.services.webhook
+package be.zlz.kara.bin.modules.webhook
 
 import be.zlz.kara.bin.config.logger
+import be.zlz.kara.bin.domain.Event
 import be.zlz.kara.bin.domain.Reply
 import be.zlz.kara.bin.dto.ErrorDTO
+import be.zlz.kara.bin.modules.KaraModule
 import be.zlz.kara.bin.util.KARA_UA
 import be.zlz.kara.bin.util.KARA_VERSION_STRING
 import com.fasterxml.jackson.databind.ObjectMapper
+import com.fasterxml.jackson.module.kotlin.readValue
 import com.google.common.cache.Cache
 import com.google.common.util.concurrent.RateLimiter
 import org.apache.logging.log4j.util.Strings
@@ -29,7 +32,7 @@ import kotlin.collections.HashMap
 
 @Service
 @Suppress("UnstableApiUsage")
-class WebhookService(private val ratelimiterCache: Cache<Long, RateLimiter>) {
+class Webhook(private val ratelimiterCache: Cache<Long, RateLimiter>): KaraModule("webhook") {
 
     private val log by logger()
 
@@ -56,12 +59,22 @@ class WebhookService(private val ratelimiterCache: Cache<Long, RateLimiter>) {
         )
     }
 
+    override fun handleEventSync(config: String, event: Event): Reply? {
+        return execute(config) //todo use Event
+    }
+
+    override fun handleEventAsync(config: String, event: Event) {
+        execute(config)
+    }
+
     //todo max response size (limiting stream)
     //todo timeouts
     //todo via for webhooks that proxy original call
     //todo limit header size
     //todo handle failures: Transparent => reply with failure, otherwise ignore & store last failure
-    fun runWebhook(context: WebhookContext): Optional<Reply> {
+    private fun execute(config: String): Reply? {
+        val context = om.readValue<WebhookContext>(config)
+
         var rateLimiter = ratelimiterCache.getIfPresent(context.binId)
         if (rateLimiter == null) {
             log.debug("Creating new rate limiter for {}", context.binId)
@@ -69,7 +82,7 @@ class WebhookService(private val ratelimiterCache: Cache<Long, RateLimiter>) {
             ratelimiterCache.put(context.binId, rateLimiter!!)
         }
         if (!rateLimiter.tryAcquire(250, TimeUnit.MILLISECONDS)) {
-            return Optional.empty()
+            return null
         }
 
         val requestBuilder = HttpRequest.newBuilder()
@@ -95,30 +108,30 @@ class WebhookService(private val ratelimiterCache: Cache<Long, RateLimiter>) {
             requestBuilder.uri(URI(context.destination))
             requestBuilder.timeout(Duration.of(3, ChronoUnit.SECONDS))
             val response = client.send(requestBuilder.build(), HttpResponse.BodyHandlers.ofByteArray())
-            return Optional.of(Reply(
+            return Reply(
                     HttpStatus.valueOf(response.statusCode()),
                     response.headers().firstValue("content-type").orElse(""),
                     String(response.body()),
                     emptyMap(),
                     convertHeaders(response.headers()),
                     true
-            ))
+            )
         } catch (e: URISyntaxException) {
             log.debug("Failed to parse webhook URI: ", e)
-            return Optional.empty()
+            return null
         } catch (e: IOException) {
             log.debug("Failed to make HTTP call to webhook target", e)
             if (context.isTransparent) {
-                return Optional.of(Reply(
+                return Reply(
                         HttpStatus.BAD_GATEWAY,
                         MediaType.APPLICATION_JSON_VALUE,
                         om.writeValueAsString(ErrorDTO(HttpStatus.BAD_GATEWAY.value().toString(), "I/O error while contacting backend")),
                         emptyMap(),
                         emptyMap(), //todo add some headers?
                         true
-                ))
+                )
             }
-            return Optional.empty()
+            return null
         }
     }
 

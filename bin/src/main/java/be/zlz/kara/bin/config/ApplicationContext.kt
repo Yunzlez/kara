@@ -1,5 +1,6 @@
 package be.zlz.kara.bin.config
 
+import be.zlz.kara.bin.modules.KaraModule
 import com.google.common.cache.Cache
 import com.google.common.cache.CacheBuilder
 import com.google.common.cache.CacheLoader
@@ -35,5 +36,10 @@ open class ApplicationContext {
                         return RateLimiter.create(2.0)
                     }
                 })
+    }
+
+    @Bean("moduleMap")
+    open fun createModuleMap(modules: List<KaraModule>): Map<String, KaraModule> {
+        return modules.associateBy({it.key}, {it})
     }
 }

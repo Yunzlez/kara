@@ -1,4 +1,4 @@
-package be.zlz.kara.bin.services.webhook
+package be.zlz.kara.bin.modules.webhook
 
 enum class WebhookMode {
     PROXY,  //pass-through

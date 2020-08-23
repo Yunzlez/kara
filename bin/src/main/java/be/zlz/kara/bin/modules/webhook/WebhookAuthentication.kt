@@ -1,4 +1,4 @@
-package be.zlz.kara.bin.services.webhook
+package be.zlz.kara.bin.modules.webhook
 
 import be.zlz.kara.bin.domain.enums.AuthenticationType
 

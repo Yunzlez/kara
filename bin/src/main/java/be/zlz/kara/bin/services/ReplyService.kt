@@ -17,7 +17,7 @@ class ReplyService {
 
     private val om = ObjectMapper()
 
-    private val logger = LoggerFactory.getLogger(ReplyService::class.java)
+    private val logger by logger()
 
     fun getDefaultReply(request: Request): Reply {
         val replyBuilder = ReplyBuilder()
