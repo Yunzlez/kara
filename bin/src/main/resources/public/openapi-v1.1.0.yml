@@ -4,14 +4,13 @@ info:
   title: KARA
   license:
     name: MIT
-    #todo host MIT license somewhere
 servers:
   - url: https://kara.rest/api/v1.1.0
 tags:
   - name: Bin Management
     description: Crud & Settings for bins
-  - name: Requests
-    description: Crud for requests, and customizing fields included in response
+  - name: Events
+    description: Crud for events, and customizing fields included in response
 paths:
   /bins:
     get:
@@ -52,101 +51,7 @@ paths:
               description: link to the new bin
               schema:
                 type: string
-  /bins/{binId}/logs:
-    get:
-      tags:
-        - Requests
-      summary: Retrieves the bin and its requests
-      parameters:
-        - name: binId
-          in: path
-          description: The name of the bin
-          required: true
-          schema:
-            type: string
-        - name: page
-          in: query
-          description: The page to retrieve
-          required: false
-          schema:
-            type: integer
-            format: int32
-        - name: limit
-          in: query
-          description: How many items to return at one time (max 100)
-          required: false
-          schema:
-            type: integer
-            format: int32
-      responses:
-        200:
-          description: Bin information and content
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/bin"
-    delete:
-      tags:
-        - Bin Management
-      summary: Clears all requests from the bin
-      parameters:
-        - name: binId
-          in: path
-          description: The name of the bin
-          required: true
-          schema:
-            type: string
-      responses:
-        303:
-          description: The bin was cleared and can be found at the URL specified
-          headers:
-            location:
-              description: link to the bin
-              schema:
-                type: string
-
-  /bins/{binId}/requests:
-    get:
-      tags:
-        - Requests
-      summary: Retrieves the requests for a bin
-      parameters:
-        - name: binId
-          in: path
-          description: The name of the bin
-          required: true
-          schema:
-            type: string
-        - name: page
-          in: query
-          description: The page to retrieve
-          required: false
-          schema:
-            type: integer
-            format: int32
-        - name: limit
-          in: query
-          description: How many items to return at one time (max 1000)
-          required: false
-          schema:
-            type: integer
-            format: int32
-        - name: fields
-          in: query
-          description: the fields of the requests to retrieve, comma separated. Returns all if not given. One or more of [method,requesttime,body,headers,protocol,queryparams]
-          required: false
-          schema:
-            type: string
-      responses:
-        200:
-          description: Requests
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: "#/components/schemas/request"
-  /bins/{binId}/settings:
+  /bins/{binId}:
     get:
       tags:
         - Bin Management
@@ -176,6 +81,12 @@ paths:
           required: true
           schema:
             type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/binSettings'
       responses:
         200:
           description: The current settings
@@ -183,7 +94,123 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/settings"
+    delete:
+      tags:
+        - Bin Management
+      summary: Deletes an (empty) bin
+      parameters:
+        - name: binId
+          in: path
+          description: The name of the bin
+          required: true
+          schema:
+            type: string
+      responses:
+        204:
+          description: The bin has been deleted successfully
+        400:
+          description: The bin was not empty and could not be deleted
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/error'
+  /bins/{binId}/events:
+    get:
+      tags:
+        - Events
+      summary: Retrieves the events for a bin
+      parameters:
+        - $ref: '#/components/parameters/binId'
+        - $ref: '#/components/parameters/page'
+        - $ref: '#/components/parameters/limit'
+        - name: fields
+          in: query
+          description: the fields of the requests to retrieve, comma separated. Returns all if not given. One or more of [method,requesttime,body,headers,protocol,queryparams]
+          required: false
+          schema:
+            type: string
+      responses:
+        200:
+          description: Requests
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/request"
+    delete:
+      tags:
+        - Events
+      summary: Clears all events from the bin
+      parameters:
+        - $ref: '#/components/parameters/binId'
+      responses:
+        303:
+          description: The bin was cleared and can be found at the URL specified
+          headers:
+            location:
+              description: link to the bin
+              schema:
+                type: string
+  /bins/{binId}/events/{eventId}:
+    get:
+      tags:
+        - Events
+      summary: retrieves a specific event
+      parameters:
+        - $ref: '#/components/parameters/binId'
+        - $ref: '#/components/parameters/eventId'
+      responses:
+        200:
+          description: Retrieval successful
+        404:
+          description: No such event/bin could be found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/error'
+    delete:
+      tags:
+        - Events
+      summary: deletes a specific event
+      parameters:
+        - $ref: '#/components/parameters/binId'
+        - $ref: '#/components/parameters/eventId'
+      responses:
+        204:
+          description: event deleted successfully
 components:
+  parameters:
+    binId:
+      name: binId
+      in: path
+      description: The name of the bin
+      required: true
+      schema:
+        type: string
+    eventId:
+      name: eventId
+      in: path
+      description: the id of the event
+      required: true
+      schema:
+        type: string
+    page:
+      name: page
+      in: query
+      description: The page to retrieve
+      required: false
+      schema:
+        type: integer
+        format: int32
+    limit:
+      name: limit
+      in: query
+      description: How many items to return at one time (max 1000)
+      required: false
+      schema:
+        type: integer
+        format: int32
   schemas:
     bin:
       required:
@@ -219,6 +246,20 @@ components:
           type: array
           items:
             $ref: "#/components/schemas/request"
+        settings:
+          type: object
+          $ref: "#/components/schemas/settings"
+    binSettings:
+      type: object
+      properties:
+        name:
+          type: string
+        response:
+          type: object
+          $ref: '#/components/schemas/customReply'
+        webhook:
+          type: object
+          $ref: '#/components/schemas/webhookSettings'
     binListEntry:
       required:
         - binName
@@ -228,46 +269,58 @@ components:
           type: string
         requestCounts:
           $ref: "#/components/schemas/metric"
+    pageMeta:
+      type: object
+      properties:
+        page:
+          type: number
+        totalItems:
+          type: number
+        totalPages:
+          type: number
+        nextPage:
+          type: string
+        previousPage:
+          type: string
     metric:
       required:
         - total
         - counts
       properties:
-          total:
-            type: integer
-            format: int32
-          counts:
-            $ref: "#/components/schemas/count"
+        total:
+          type: integer
+          format: int32
+        counts:
+          $ref: "#/components/schemas/count"
     count:
       properties:
         GET:
           type: integer
           format: int32
-          optional: true
         POST:
           type: integer
           format: int32
-          optional: true
         DELETE:
           type: integer
           format: int32
-          optional: true
         PUT:
           type: integer
           format: int32
-          optional: true
         PATCH:
           type: integer
           format: int32
-          optional: true
         MQTT:
           type: integer
           format: int32
-          optional: true
     binList:
-      type: array
-      items:
-        $ref: "#/components/schemas/binListEntry"
+      type: object
+      properties:
+        meta:
+          $ref: "#/components/schemas/pageMeta"
+        items:
+          type: array
+          items:
+            $ref: "#/components/schemas/binListEntry"
     request:
       required:
         - id
@@ -290,12 +343,10 @@ components:
           type: string
         headers:
           type: object
-          additionalProperties: string
         protocol:
           type: string
         queryParams:
           type: object
-          additionalProperties: string
         mqtt:
           type: boolean
     inbound:
@@ -320,25 +371,76 @@ components:
         - customName
         - permanent
       properties:
+        reply:
+          type: object
+          $ref: '#/components/schemas/customReply'
+        webhook:
+          type: object
+          $ref: '#/components/schemas/webhookSettings'
+        name:
+          type: string
+          description: The name for the bin. Note that this affects the request URI, and the original request URI is invalid
+        isPermanent:
+          type: boolean
+          description: Whether the bin is permanent(Never deleted, but reduced capacity)
+    customReply:
+      properties:
         code:
           type: integer
           format: int32
           description: The HTTP code to return when a request is sent
-        mimeType:
+        contentType:
           type: string
-          description: The mimeType to return
         body:
           type: string
-          description: The body to return
         headers:
           type: object
-          additionalProperties: string
-        cookies:
-          type: object
-          additionalProperties: string
-        customName:
+          description: Key/value representation of the headers
+        responseType:
           type: string
-          description: The name for the bin. Note that this affects the request URI, and the original request URI is invalid
-        permanent:
-          type: boolean
-          description: Whether the bin is permanent(Never deleted, but reduced capacity)
+          enum:
+            - "TEXT"
+            - "BINARY"
+          description: What to consider the body as - if set to BINARY, the body is expected to be Base64 encoded
+        responseOrigin:
+          type: string
+          enum:
+            - "DEFAULT"
+            - "WEBHOOK"
+          description: Where to get the response content. DEFAULT if not given, which will just return the reply as set up. WEBHOOK will return the response of the webhook that is set up for this bin (if available)
+    webhookSettings:
+      type: object
+      properties:
+        destination:
+          type: string
+          description: The destination URL
+        method:
+          type: string
+          enum:
+            - "GET"
+            - "POST"
+            - "PUT"
+            - "DELETE"
+        body:
+          type: string
+          description: "the body to POST/PUT"
+        bodyType:
+          type: string
+          enum:
+            - "TEXT"
+            - "BINARY"
+          description: What to consider the body as - if set to BINARY, the body is expected to be Base64 encoded
+        mode:
+          type: string
+          enum:
+            - "PROXY"
+            - "INFO"
+            - "CUSTOM"
+          description: The mode in which to use the webhook. PROXY acts as a proxy, passing on the incoming request. INFO forwards the incoming events' information (only POST/PUT). CUSTOM sends the custom response set up
+    error:
+      properties:
+        code:
+          type: number
+          description: The HTTP error code
+        message:
+          type: string

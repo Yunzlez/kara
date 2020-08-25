@@ -15,5 +15,9 @@ public class StaticController {
     public String apiSpec() {
         return "api";
     }
-    //todo nicer error pages
+
+    @GetMapping("/api/v1.1.0/swagger")
+    public String apiV11Spec() {
+        return "apiv11";
+    }
 }

@@ -9,8 +9,6 @@ import be.zlz.kara.bin.exceptions.ResourceNotFoundException
 import be.zlz.kara.bin.repositories.BinRepository
 import be.zlz.kara.bin.repositories.EventRepository
 import be.zlz.kara.bin.util.PagingUtils
-import org.slf4j.Logger
-import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.data.domain.Page
 import org.springframework.http.*
@@ -26,7 +24,8 @@ import javax.transaction.Transactional
 open class EventService(
         private val binRepository: BinRepository,
         private val eventRepository: EventRepository,
-        private val replyService: ReplyService
+        private val replyService: ReplyService,
+        private val moduleService: ModuleService
 ) {
 
     private val log by logger()
@@ -48,7 +47,8 @@ open class EventService(
 
        val event = logHttpEvent(bin, headers, body, servletRequest)
 
-        val reply = if (bin.reply == null) {
+        val reply = moduleService.handleModulesForBin(bin, event)?:
+        if (bin.reply == null) {
             replyService.getDefaultReply(event)
         } else {
             bin.reply
@@ -121,6 +121,8 @@ open class EventService(
         )
 
         eventRepository.save(event)
+
+        moduleService.handleModulesForBin(bin, event)
 
         bin.lastRequest = Date()
         bin.requestCount++
