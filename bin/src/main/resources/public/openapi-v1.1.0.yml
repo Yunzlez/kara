@@ -4,6 +4,7 @@ info:
   title: KARA
   license:
     name: MIT
+    #todo host MIT license somewhere
 servers:
   - url: https://kara.rest/api/v1.1.0
 tags:
@@ -437,6 +438,31 @@ components:
             - "INFO"
             - "CUSTOM"
           description: The mode in which to use the webhook. PROXY acts as a proxy, passing on the incoming request. INFO forwards the incoming events' information (only POST/PUT). CUSTOM sends the custom response set up
+        auth:
+          type: object
+          properties:
+            type:
+              type: string
+              enum:
+                - "BASIC"
+                - "TOKEN"
+                - "OAUTH"
+            username:
+              type: string
+            password:
+              type: string
+            token:
+              type: string
+            clientId:
+              type: string
+            secret:
+              type: string
+            grantType:
+              type: string
+              enum:
+                - "PASSWORD"
+                - "IMPLICIT"
+                - "CLIENT_CREDENTIALS"
     error:
       properties:
         code:

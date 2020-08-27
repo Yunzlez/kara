@@ -14,6 +14,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -57,7 +58,22 @@ public class BinService {
 
     public List<BinListDto> listBins(int page, int limit) {
         Page<Bin> bins = binRepository.findAll(PagingUtils.getPageable(page, limit));
+        return toBinListDto(bins);
+    }
 
+    public PagedList<BinListDto> pagedBinList(int page, int limit) {
+        Page<Bin> bins = binRepository.findAll(PagingUtils.getPageable(page, limit));
+        PageMeta pageMeta = PagingUtils.createPageMeta(
+                page,
+                bins.getTotalElements(),
+                bins.getTotalPages(),
+                "/bins",
+                limit
+        );
+        return new PagedList<>(toBinListDto(bins), pageMeta);
+    }
+
+    private List<BinListDto> toBinListDto(Page<Bin> bins) {
         return bins.stream().map(bin -> new BinListDto(
                 bin.getName(),
                 new RequestCountDto(bin.getRequestCount(), bin.getRequestMetric().getCounts())

@@ -2,17 +2,17 @@ package be.zlz.kara.bin.dto;
 
 public class PageMeta {
 
-    private int page;
+    private final int page;
 
-    private int totalItems;
+    private final long totalItems;
 
-    private int totalPages;
+    private final int totalPages;
 
-    private String nextPage;
+    private final String nextPage;
 
-    private String previousPage;
+    private final String previousPage;
 
-    public PageMeta(int page, int totalItems, int totalPages, String nextPage, String previousPage) {
+    public PageMeta(int page, long totalItems, int totalPages, String nextPage, String previousPage) {
         this.page = page;
         this.totalItems = totalItems;
         this.totalPages = totalPages;
@@ -24,7 +24,7 @@ public class PageMeta {
         return page;
     }
 
-    public int getTotalItems() {
+    public long getTotalItems() {
         return totalItems;
     }
 
