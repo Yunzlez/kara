@@ -132,13 +132,13 @@ paths:
             type: string
       responses:
         200:
-          description: Requests
+          description: Sucessfully retrieved events
           content:
             application/json:
               schema:
                 type: array
                 items:
-                  $ref: "#/components/schemas/request"
+                  $ref: "#/components/schemas/eventList"
     delete:
       tags:
         - Events
@@ -222,7 +222,7 @@ components:
         - limit
         - totalPages
         - totalBodySize
-        - requests
+        - events
       properties:
         binName:
           type: string
@@ -243,10 +243,10 @@ components:
           format: int32
         totalBodySize:
           type: string
-        requests:
+        events:
           type: array
           items:
-            $ref: "#/components/schemas/request"
+            $ref: "#/components/schemas/event"
         settings:
           type: object
           $ref: "#/components/schemas/settings"
@@ -322,34 +322,48 @@ components:
           type: array
           items:
             $ref: "#/components/schemas/binListEntry"
-    request:
-      required:
-        - id
-        - method
-        - requestTime
-        - body
-        - headers
-        - protocol
-        - queryParams
-        - mqtt
+    event:
       properties:
         id:
-          type: integer
-          format: int64
+          type: string
         method:
           type: string
-        requestTime:
+        source:
           type: string
+          description: Source of the event (MQTT/HTTP/...)
+        location:
+          type: string
+          description: Location specifier; Path for HTTP, topic for MQTT
+        metadata:
+          type: object
+          description: Key/value of the events' metadata - headers for HTTP/MQTT
+        additionalData:
+          type: object
+          description: Additional key/value data, such as query params in HTTP
+        contentType:
+          type: string
+          description: Type of data the body contains
+        eventTime:
+          type: string
+        origin:
+          type: string
+          description: originator of the request, such as the source IP for HTTP or the MQTT clientId
+        bodySize:
+          type: number
+          format: int64
+          description: The size of the body in bytes
+        protocolVersion:
+          type: string
+          description: Version string of the protocol that this event originates from
         body:
           type: string
-        headers:
-          type: object
-        protocol:
-          type: string
-        queryParams:
-          type: object
-        mqtt:
-          type: boolean
+    eventList:
+      type: object
+      properties:
+        meta:
+          $ref: '#/components/schemas/pageMeta'
+        items:
+          $ref: '#/components/schemas/event'
     inbound:
       required:
         - httpUrl

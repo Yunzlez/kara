@@ -24,7 +24,7 @@ open class Event {
     open var location: String? = null
 
     @Convert(converter = MapToSmileConverter::class)
-    open  var metadata: Map<String, String>? = null
+    open var metadata: Map<String, String>? = null
 
     @Convert(converter = MapToSmileConverter::class)
     @Column(name = "additional_data")

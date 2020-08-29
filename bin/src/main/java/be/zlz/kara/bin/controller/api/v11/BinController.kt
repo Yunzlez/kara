@@ -39,7 +39,17 @@ open class BinController(
     }
 
     @GetMapping("/{name}")
-    open fun getBin(@PathVariable("name") name: String): BinSettingsDto? {
-        return null
+    open fun getBin(@PathVariable("name") name: String): ResponseEntity<BinSettingsDto> {
+        return ResponseEntity.noContent().build()
+    }
+
+    @PutMapping("/{name}")
+    open fun updateBinSettings(@PathVariable("name") name: String, @RequestBody updated: BinSettingsDto): ResponseEntity<BinSettingsDto> {
+        return ResponseEntity.noContent().build()
+    }
+
+    @DeleteMapping("/{name}")
+    open fun deleteBin(@PathVariable("name") name: String) {
+
     }
 }
