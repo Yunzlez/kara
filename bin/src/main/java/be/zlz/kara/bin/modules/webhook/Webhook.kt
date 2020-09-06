@@ -25,7 +25,6 @@ import java.net.http.HttpRequest
 import java.net.http.HttpResponse
 import java.time.Duration
 import java.time.temporal.ChronoUnit
-import java.util.*
 import java.util.concurrent.TimeUnit
 import kotlin.collections.HashMap
 
@@ -69,11 +68,12 @@ class Webhook(private val ratelimiterCache: Cache<Long, RateLimiter>): KaraModul
 
     //todo max response size (limiting stream)
     //todo timeouts
-    //todo via for webhooks that proxy original call
+    //todo set via header for webhooks that proxy original call
     //todo limit header size
     //todo handle failures: Transparent => reply with failure, otherwise ignore & store last failure
+    //todo suspend bins that fail too much, unsuspend after x time
     private fun execute(config: String): Reply? {
-        val context = om.readValue<WebhookContext>(config)
+        val context = om.readValue<WebhookSettings>(config)
 
         var rateLimiter = ratelimiterCache.getIfPresent(context.binId)
         if (rateLimiter == null) {

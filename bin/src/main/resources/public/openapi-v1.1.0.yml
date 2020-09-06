@@ -257,7 +257,7 @@ components:
           type: string
         response:
           type: object
-          $ref: '#/components/schemas/customReply'
+          $ref: '#/components/schemas/customResponse'
         webhook:
           type: object
           $ref: '#/components/schemas/webhookSettings'
@@ -386,9 +386,9 @@ components:
         - customName
         - permanent
       properties:
-        reply:
+        response:
           type: object
-          $ref: '#/components/schemas/customReply'
+          $ref: '#/components/schemas/customResponse'
         webhook:
           type: object
           $ref: '#/components/schemas/webhookSettings'
@@ -398,7 +398,7 @@ components:
         isPermanent:
           type: boolean
           description: Whether the bin is permanent(Never deleted, but reduced capacity)
-    customReply:
+    customResponse:
       properties:
         code:
           type: integer
@@ -421,8 +421,9 @@ components:
           type: string
           enum:
             - "DEFAULT"
+            - "CUSTOM"
             - "WEBHOOK"
-          description: Where to get the response content. DEFAULT if not given, which will just return the reply as set up. WEBHOOK will return the response of the webhook that is set up for this bin (if available)
+          description: Where to get the response content. DEFAULT if not given, which will just return the json representation of the request. CUSTOM will return the response as it was set up. WEBHOOK will return the response of the webhook that is set up for this bin (if available)
     webhookSettings:
       type: object
       properties:

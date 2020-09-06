@@ -4,10 +4,10 @@ import be.zlz.kara.bin.domain.Bin;
 import be.zlz.kara.bin.domain.enums.BinConfigKey;
 import be.zlz.kara.bin.repositories.BinRepository;
 import be.zlz.kara.bin.services.BinService;
+import be.zlz.kara.bin.services.EventService;
 import be.zlz.kara.bin.util.SizeUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
@@ -26,11 +26,11 @@ public class BinCleanupTask {
 
     private final Logger logger;
 
-    @Autowired
-    private BinRepository binRepository;
+    private final BinRepository binRepository;
 
-    @Autowired
-    private BinService binService;
+    private final BinService binService;
+
+    private final EventService eventService;
 
     @Value("${bin.max.size.permanent.bytes:50000000}")
     private long maxPermanentBinSize;
@@ -41,8 +41,11 @@ public class BinCleanupTask {
     @Value("${bin.compaction.leave.count:100}")
     private int compactTo;
 
-    public BinCleanupTask() {
+    public BinCleanupTask(BinRepository binRepository, BinService binService, EventService eventService) {
+        this.eventService = eventService;
         logger = LoggerFactory.getLogger(this.getClass());
+        this.binRepository = binRepository;
+        this.binService = binService;
     }
     
     @Scheduled(fixedDelay = 3600000, initialDelay = 30000)
@@ -91,7 +94,7 @@ public class BinCleanupTask {
             return;
         }
         logger.info("Compacting bin {} as it exceeds max size of {}", bin.getName(), SizeUtil.autoScale(maxSize));
-        binService.compactBin(bin, compactTo);
+        eventService.compactEventsInBin(bin, compactTo);
     }
 
 }
