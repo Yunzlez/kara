@@ -1,9 +1,12 @@
 package be.zlz.kara.bin.services;
 
 import be.zlz.kara.bin.domain.Bin;
+import be.zlz.kara.bin.domain.Response;
 import be.zlz.kara.bin.domain.enums.BinConfigKey;
 import be.zlz.kara.bin.domain.Request;
+import be.zlz.kara.bin.domain.enums.Interpretation;
 import be.zlz.kara.bin.dto.*;
+import be.zlz.kara.bin.dto.v11.ResponseOrigin;
 import be.zlz.kara.bin.exceptions.ResourceNotFoundException;
 import be.zlz.kara.bin.repositories.BinRepository;
 import be.zlz.kara.bin.util.PagingUtils;
@@ -213,6 +216,13 @@ public class BinServiceImpl implements BinService {
             replyBuilder.addAllHeaders(settings.getHeaders());
         }
 
-        bin.setReply(replyBuilder.build());
+        bin.setResponse(new Response(
+                HttpStatus.valueOf(settings.getCode() == null ? 200 : settings.getCode()),
+                isBlank(settings.getMimeType()) ? "text/plain" : settings.getMimeType(),
+                settings.getBody() == null ? null : settings.getBody().getBytes(),
+                settings.getHeaders() != null ? settings.getHeaders() : Collections.emptyMap(),
+                Interpretation.TEXT,
+                ResponseOrigin.CUSTOM
+        ));
     }
 }

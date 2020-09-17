@@ -25,7 +25,7 @@ CREATE TABLE response
     body            LONGBLOB NULL DEFAULT NULL,
     headers         BLOB     NULL DEFAULT NULL,
     response_type   TEXT     NOT NULL,
-    respomse_origin TEXT     NOT NULL
+    response_origin TEXT     NOT NULL
 );
 
 DROP TABLE binary_request;

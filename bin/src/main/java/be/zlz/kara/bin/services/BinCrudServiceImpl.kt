@@ -1,5 +1,6 @@
 package be.zlz.kara.bin.services
 
+import be.zlz.kara.bin.config.logger
 import be.zlz.kara.bin.domain.Bin
 import be.zlz.kara.bin.dto.BinListDto
 import be.zlz.kara.bin.dto.PagedList
@@ -30,7 +31,7 @@ class BinCrudServiceImpl(
         return name
     }
 
-    override fun pagedBinList(page: Int, limit: Int): PagedList<BinListDto> {
+    override fun pagedBinList(page: Int, limit: Int): PagedList<BinListDto?> {
         val bins: Page<Bin> = binRepository.findAll(PagingUtils.getPageable(page, limit))
         val pageMeta = PagingUtils.createPageMeta(
                 page,
@@ -54,13 +55,20 @@ class BinCrudServiceImpl(
     }
 
     override fun getBinSettings(binName: String): BinSettingsDto {
-        val bin = binRepository.findBinByName(binName)
-        if (bin.isEmpty) {
+        val binOptional = binRepository.findBinByName(binName)
+        if (binOptional.isEmpty) {
             throw ResourceNotFoundException("No bin with name $binName exists")
         }
-        // - create new response object & table
+        val bin = binOptional.get()
+        BinSettingsDto(
+                bin.name,
+                bin.isPermanent,
+        )
+        // - Replace Reply with Response
+        //   - In bin
         // - update webhook settings
         // - update response settings
+        // - WS endpoints in openapi def
         TODO()
     }
 

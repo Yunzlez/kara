@@ -1,5 +1,6 @@
 package be.zlz.kara.bin.controller.api.v11
 
+import be.zlz.kara.bin.config.logger
 import be.zlz.kara.bin.dto.BinListDto
 import be.zlz.kara.bin.dto.PagedList
 import be.zlz.kara.bin.dto.v11.BinSettingsDto
@@ -19,7 +20,7 @@ open class BinController(
     val logger by logger()
 
     @GetMapping
-    open fun getBins(@RequestParam("page") page: Int, @RequestParam("limit") limit: Int): PagedList<BinListDto> {
+    open fun getBins(@RequestParam("page") page: Int, @RequestParam("limit") limit: Int): PagedList<BinListDto?> {
         return binService.pagedBinList(page, limit)
     }
 

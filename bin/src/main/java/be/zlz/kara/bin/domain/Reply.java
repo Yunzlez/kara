@@ -1,10 +1,14 @@
 package be.zlz.kara.bin.domain;
 
+import be.zlz.kara.bin.domain.enums.Interpretation;
+import be.zlz.kara.bin.dto.v11.ResponseOrigin;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import org.springframework.http.HttpStatus;
 
 import javax.persistence.*;
+import java.util.Base64;
+import java.util.HashMap;
 import java.util.Map;
 
 @Entity
@@ -43,6 +47,17 @@ public class Reply {
         this.cookies = cookies;
         this.headers = headers;
         this.custom = custom;
+    }
+
+    public Reply(Response response) {
+        this.code = response.getCode();
+        this.mimeType = response.getContentType();
+        if (response.getBody() != null) {
+            this.body = response.getResponseType() == Interpretation.TEXT ? new String(response.getBody()) : Base64.getEncoder().encodeToString(response.getBody());
+        }
+        this.cookies = new HashMap<>();
+        this.headers = response.getHeaders();
+        this.custom = response.getResponseOrigin() != ResponseOrigin.DEFAULT;
     }
 
     public HttpStatus getCode() {

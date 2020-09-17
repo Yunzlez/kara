@@ -1,4 +1,4 @@
-package be.zlz.kara.bin.dto.v11
+package be.zlz.kara.bin.domain.enums
 
 enum class Interpretation {
     TEXT,

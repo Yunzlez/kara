@@ -39,7 +39,7 @@ public class RequestServiceImpl implements RequestService {
 
     private final EventService eventService;
 
-    private final ReplyService replyService;
+    private final ResponseService responseService;
 
     private final Logger logger;
 
@@ -50,11 +50,11 @@ public class RequestServiceImpl implements RequestService {
     private int maxRequests;
 
     @Autowired
-    public RequestServiceImpl(BinRepository binRepository, EventService eventService, ReplyService replyService) {
+    public RequestServiceImpl(BinRepository binRepository, EventService eventService, ResponseService responseService) {
         this.eventService = eventService;
         logger = LoggerFactory.getLogger(this.getClass());
         this.binRepository = binRepository;
-        this.replyService = replyService;
+        this.responseService = responseService;
     }
 
     @Override
@@ -74,7 +74,7 @@ public class RequestServiceImpl implements RequestService {
         if (bin.getReply() != null) {
             return Pair.of(bin.getReply(), req);
         } else {
-            return Pair.of(replyService.getDefaultReply(req), req);
+            return Pair.of(responseService.getDefaultResponse(req), req);
         }
     }
 

@@ -3,7 +3,10 @@ package be.zlz.kara.bin.modules.webhook
 import be.zlz.kara.bin.config.logger
 import be.zlz.kara.bin.domain.Event
 import be.zlz.kara.bin.domain.Reply
+import be.zlz.kara.bin.domain.Response
+import be.zlz.kara.bin.domain.enums.Interpretation
 import be.zlz.kara.bin.dto.ErrorDTO
+import be.zlz.kara.bin.dto.v11.ResponseOrigin
 import be.zlz.kara.bin.modules.KaraModule
 import be.zlz.kara.bin.util.KARA_UA
 import be.zlz.kara.bin.util.KARA_VERSION_STRING
@@ -58,7 +61,7 @@ class Webhook(private val ratelimiterCache: Cache<Long, RateLimiter>): KaraModul
         )
     }
 
-    override fun handleEventSync(config: String, event: Event): Reply? {
+    override fun handleEventSync(config: String, event: Event): Response? {
         return execute(config) //todo use Event
     }
 
@@ -72,7 +75,7 @@ class Webhook(private val ratelimiterCache: Cache<Long, RateLimiter>): KaraModul
     //todo limit header size
     //todo handle failures: Transparent => reply with failure, otherwise ignore & store last failure
     //todo suspend bins that fail too much, unsuspend after x time
-    private fun execute(config: String): Reply? {
+    private fun execute(config: String): Response? {
         val context = om.readValue<WebhookSettings>(config)
 
         var rateLimiter = ratelimiterCache.getIfPresent(context.binId)
@@ -108,13 +111,13 @@ class Webhook(private val ratelimiterCache: Cache<Long, RateLimiter>): KaraModul
             requestBuilder.uri(URI(context.destination))
             requestBuilder.timeout(Duration.of(3, ChronoUnit.SECONDS))
             val response = client.send(requestBuilder.build(), HttpResponse.BodyHandlers.ofByteArray())
-            return Reply(
+            return Response(
                     HttpStatus.valueOf(response.statusCode()),
                     response.headers().firstValue("content-type").orElse(""),
-                    String(response.body()),
-                    emptyMap(),
+                    response.body(),
                     convertHeaders(response.headers()),
-                    true
+                    Interpretation.TEXT,
+                    ResponseOrigin.WEBHOOK
             )
         } catch (e: URISyntaxException) {
             log.debug("Failed to parse webhook URI: ", e)
@@ -122,13 +125,13 @@ class Webhook(private val ratelimiterCache: Cache<Long, RateLimiter>): KaraModul
         } catch (e: IOException) {
             log.debug("Failed to make HTTP call to webhook target", e)
             if (context.isTransparent) {
-                return Reply(
+                return Response(
                         HttpStatus.BAD_GATEWAY,
                         MediaType.APPLICATION_JSON_VALUE,
-                        om.writeValueAsString(ErrorDTO(HttpStatus.BAD_GATEWAY.value().toString(), "I/O error while contacting backend")),
-                        emptyMap(),
-                        emptyMap(), //todo add some headers?
-                        true
+                        om.writeValueAsBytes(ErrorDTO(HttpStatus.BAD_GATEWAY.value().toString(), "I/O error while contacting backend")),
+                        emptyMap(), //todo headers?
+                        Interpretation.TEXT,
+                        ResponseOrigin.WEBHOOK
                 )
             }
             return null

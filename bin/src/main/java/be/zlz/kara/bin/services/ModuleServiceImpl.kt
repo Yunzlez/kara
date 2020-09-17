@@ -1,10 +1,7 @@
 package be.zlz.kara.bin.services
 
 import be.zlz.kara.bin.config.logger
-import be.zlz.kara.bin.domain.Bin
-import be.zlz.kara.bin.domain.Event
-import be.zlz.kara.bin.domain.ModuleConfig
-import be.zlz.kara.bin.domain.Reply
+import be.zlz.kara.bin.domain.*
 import be.zlz.kara.bin.modules.KaraModule
 import be.zlz.kara.bin.repositories.ModuleConfigRepository
 import be.zlz.kara.bin.repositories.ModuleEventRepository
@@ -26,7 +23,7 @@ class ModuleServiceImpl(
 
     val log by logger()
 
-    override fun handleModulesForBin(bin: Bin, event: Event): Reply? {
+    override fun handleModulesForBin(bin: Bin, event: Event): Response? {
         val moduleConfigs = moduleConfigCache.getIfPresent(bin.id)
         if (moduleConfigs == null || moduleConfigs.isEmpty()) {
             return null

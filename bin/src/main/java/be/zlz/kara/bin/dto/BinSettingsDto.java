@@ -1,7 +1,10 @@
 package be.zlz.kara.bin.dto;
 
 import be.zlz.kara.bin.domain.Bin;
+import be.zlz.kara.bin.domain.Response;
+import be.zlz.kara.bin.domain.enums.Interpretation;
 
+import java.util.Base64;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -13,13 +16,13 @@ public class BinSettingsDto {
 
     private String body;
 
-    private Map<String, String> headers;
+    private final Map<String, String> headers;
 
-    private Map<String, String> cookies;
+    private final Map<String, String> cookies;
 
     private String customName;
 
-    private Map<String, Boolean> config;
+    private final Map<String, Boolean> config;
 
     private boolean isPermanent;
 
@@ -30,16 +33,18 @@ public class BinSettingsDto {
     }
 
     public BinSettingsDto(Bin bin) {
-        if (bin.getReply() != null) {
-            this.code = bin.getReply().getCode().value();
-            this.mimeType = bin.getReply().getMimeType();
-            this.body = bin.getReply().getBody();
-            this.headers = bin.getReply().getHeaders();
-            this.cookies = bin.getReply().getCookies();
+        Response res = bin.getResponse();
+        if (res != null) {
+            this.code = res.getCode().value();
+            this.mimeType = res.getContentType();
+            if (res.getBody() != null) {
+                this.body = res.getResponseType() == Interpretation.TEXT ? new String(res.getBody()) : Base64.getEncoder().encodeToString(res.getBody());
+            }
+            this.headers = res.getHeaders();
         } else {
             this.headers = new HashMap<>();
-            this.cookies = new HashMap<>();
         }
+        this.cookies = new HashMap<>();
         this.customName = bin.getName();
         this.isPermanent = bin.isPermanent();
         this.config = bin.getConfiguration();

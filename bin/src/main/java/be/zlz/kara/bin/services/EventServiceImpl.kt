@@ -3,7 +3,9 @@ package be.zlz.kara.bin.services
 import be.zlz.kara.bin.config.logger
 import be.zlz.kara.bin.domain.Bin
 import be.zlz.kara.bin.domain.Event
+import be.zlz.kara.bin.domain.enums.Interpretation
 import be.zlz.kara.bin.domain.enums.Source
+import be.zlz.kara.bin.dto.v11.ResponseOrigin
 import be.zlz.kara.bin.exceptions.BadRequestException
 import be.zlz.kara.bin.exceptions.ResourceNotFoundException
 import be.zlz.kara.bin.repositories.BinRepository
@@ -24,7 +26,7 @@ import javax.transaction.Transactional
 open class EventServiceImpl(
         private val binRepository: BinRepository,
         private val eventRepository: EventRepository,
-        private val replyService: ReplyService,
+        private val responseService: ResponseService,
         private val moduleService: ModuleService
 ) : EventService {
 
@@ -48,25 +50,29 @@ open class EventServiceImpl(
        val event = logHttpEvent(bin, headers, body, servletRequest)
 
         val reply = moduleService.handleModulesForBin(bin, event)?:
-        if (bin.reply == null) {
-            replyService.getDefaultReply(event)
+        if (bin.response == null) {
+            responseService.getDefaultResponse(event)
         } else {
-            bin.reply
+            bin.response
         }
-
-        reply.headers.remove("Content-Type")
-        reply.headers.remove("Content-Length")
 
         val responseHeaders = HttpHeaders()
-        responseHeaders.contentType = MediaType.parseMediaType(reply.mimeType)
 
-        if (reply.isCustom) {
-            reply.headers.forEach(responseHeaders::add)
+        if (reply.responseOrigin != ResponseOrigin.DEFAULT) {
+            reply.headers?.forEach {
+                responseHeaders.add(it.key, it.value)
+            }
         }
 
-        responseHeaders.contentLength = reply.body.toByteArray(Charsets.UTF_8).size.toLong()
+        responseHeaders.contentType = MediaType.parseMediaType(reply.contentType!!)
+        responseHeaders.contentLength = reply.body?.size?.toLong() ?: 0
 
-        return ResponseEntity.status(reply.code).headers(responseHeaders).body(reply.body)
+        val bodyStr = if (reply.responseType == Interpretation.BINARY) {
+            Base64.getEncoder().encodeToString(reply.body)
+        } else {
+            String(reply.body!!)
+        }
+        return ResponseEntity.status(reply.code).headers(responseHeaders).body(bodyStr)
     }
 
     @Transactional

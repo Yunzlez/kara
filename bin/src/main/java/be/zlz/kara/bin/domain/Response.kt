@@ -1,7 +1,7 @@
 package be.zlz.kara.bin.domain
 
 import be.zlz.kara.bin.domain.converter.MapToSmileConverter
-import be.zlz.kara.bin.domain.enums.ContentType
+import be.zlz.kara.bin.domain.enums.Interpretation
 import be.zlz.kara.bin.dto.v11.ResponseOrigin
 import org.springframework.http.HttpStatus
 import javax.persistence.*
@@ -13,7 +13,7 @@ open class Response {
     open var id: Long? = null
 
     @Enumerated(EnumType.STRING)
-    open var code: HttpStatus? = null
+    open lateinit var code: HttpStatus
 
     @Column(name = "content_type")
     open var contentType: String? = null
@@ -24,7 +24,7 @@ open class Response {
     open var headers: Map<String, String>? = null
 
     @Column(name = "content_type")
-    open var responseType: ContentType? = null
+    open var responseType: Interpretation? = null
 
     @Column(name = "response_origin")
     @Enumerated(EnumType.STRING)
@@ -32,8 +32,7 @@ open class Response {
 
     protected constructor()
 
-    constructor(id: Long, code: HttpStatus, contentType: String, body: ByteArray?, headers: Map<String, String>, responseType: ContentType, responseOrigin: ResponseOrigin) {
-        this.id = id
+    constructor(code: HttpStatus, contentType: String, body: ByteArray?, headers: Map<String, String>, responseType: Interpretation, responseOrigin: ResponseOrigin) {
         this.code = code
         this.contentType = contentType
         this.body = body

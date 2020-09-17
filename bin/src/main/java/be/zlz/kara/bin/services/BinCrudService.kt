@@ -8,7 +8,7 @@ interface BinCrudService {
 
     fun createBin(): String
 
-    fun pagedBinList(page: Int, limit: Int): PagedList<BinListDto>
+    fun pagedBinList(page: Int, limit: Int): PagedList<BinListDto?>
 
     fun deleteBinIfEmpty(binName: String)
 

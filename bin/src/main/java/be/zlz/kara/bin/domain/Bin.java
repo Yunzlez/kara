@@ -17,7 +17,7 @@ public class Bin {
     private String name;
 
     @Temporal(TemporalType.DATE)
-    private Date creationDate;
+    private final Date creationDate;
 
     @Temporal(TemporalType.DATE)
     private Date lastRequest;
@@ -26,7 +26,7 @@ public class Bin {
     private List<Request> requests;
 
     @OneToOne(cascade = CascadeType.ALL)
-    private Reply reply;
+    private Response response;
 
     @OneToOne(cascade = CascadeType.ALL)
     @JsonIgnore
@@ -34,7 +34,7 @@ public class Bin {
 
     @ElementCollection(targetClass = Boolean.class)
     @MapKeyClass(String.class)
-    private Map<String, Boolean> config;
+    private final Map<String, Boolean> config;
 
     private int requestCount;
 
@@ -83,12 +83,16 @@ public class Bin {
         return creationDate;
     }
 
-    public Reply getReply() {
-        return reply;
+    public Response getResponse() {
+        return response;
     }
 
-    public void setReply(Reply reply) {
-        this.reply = reply;
+    public Reply getReply() {
+        return new Reply(response);
+    }
+
+    public void setResponse(Response response) {
+        this.response = response;
     }
 
     public Date getLastRequest() {
@@ -101,7 +105,7 @@ public class Bin {
 
     public boolean isPermanent() {
         Boolean value = config.get(BinConfigKey.PERMANENT_KEY.getValue());
-        return value == null ? false : value;
+        return value != null && value;
     }
 
     public void addConfigEntry(BinConfigKey key, boolean value) {
@@ -114,7 +118,7 @@ public class Bin {
 
     public boolean isEnabled(BinConfigKey setting){
         Boolean val = config.get(setting.getValue());
-        return val == null ? false : val;
+        return val != null && val;
     }
 
     public Map<String, Boolean> getConfiguration(){
