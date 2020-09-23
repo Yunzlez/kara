@@ -2,7 +2,6 @@ package be.zlz.kara.bin.modules.webhook
 
 import be.zlz.kara.bin.config.logger
 import be.zlz.kara.bin.domain.Event
-import be.zlz.kara.bin.domain.Reply
 import be.zlz.kara.bin.domain.Response
 import be.zlz.kara.bin.domain.enums.Interpretation
 import be.zlz.kara.bin.dto.ErrorDTO
@@ -10,7 +9,6 @@ import be.zlz.kara.bin.dto.v11.ResponseOrigin
 import be.zlz.kara.bin.modules.KaraModule
 import be.zlz.kara.bin.util.KARA_UA
 import be.zlz.kara.bin.util.KARA_VERSION_STRING
-import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
 import com.google.common.cache.Cache
 import com.google.common.util.concurrent.RateLimiter
@@ -34,7 +32,7 @@ import kotlin.collections.HashMap
 
 @Service
 @Suppress("UnstableApiUsage")
-class Webhook(private val ratelimiterCache: Cache<Long, RateLimiter>): KaraModule("webhook") {
+class Webhook(private val ratelimiterCache: Cache<Long, RateLimiter>): KaraModule(WEBHOOK_NAME) {
 
     private val log by logger()
 
@@ -44,7 +42,7 @@ class Webhook(private val ratelimiterCache: Cache<Long, RateLimiter>): KaraModul
             .build()
 
     companion object {
-        private val om = ObjectMapper()
+        val WEBHOOK_NAME = "webhook"
         private val HEADER_WHITELIST = hashSetOf(
                 "authorization",
                 "accept",
@@ -98,7 +96,7 @@ class Webhook(private val ratelimiterCache: Cache<Long, RateLimiter>): KaraModul
         }
 
         requestBuilder.header("User-Agent", KARA_UA)
-        if (context.isTransparent) {
+        if (context.mode == WebhookMode.PROXY) {
             requestBuilder.header("Via", KARA_VERSION_STRING)
         }
         when (context.method) {
@@ -124,7 +122,7 @@ class Webhook(private val ratelimiterCache: Cache<Long, RateLimiter>): KaraModul
             return null
         } catch (e: IOException) {
             log.debug("Failed to make HTTP call to webhook target", e)
-            if (context.isTransparent) {
+            if (context.mode == WebhookMode.PROXY) {
                 return Response(
                         HttpStatus.BAD_GATEWAY,
                         MediaType.APPLICATION_JSON_VALUE,

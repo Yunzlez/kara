@@ -46,4 +46,7 @@ class ModuleServiceImpl(
         return syncModuleData.config?.let { module.handleEventSync(it, event) }
     }
 
+    override fun retrieveModuleConfig(bin: Bin, moduleKey: String): ModuleConfig? {
+        return moduleConfigRepository.getModuleConfigByBinIdAndModuleKey(bin.id, moduleKey).orElse(null)
+    }
 }

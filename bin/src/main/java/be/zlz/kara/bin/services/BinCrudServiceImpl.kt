@@ -6,10 +6,16 @@ import be.zlz.kara.bin.dto.BinListDto
 import be.zlz.kara.bin.dto.PagedList
 import be.zlz.kara.bin.dto.RequestCountDto
 import be.zlz.kara.bin.dto.v11.BinSettingsDto
+import be.zlz.kara.bin.dto.v11.ResponseSettingsDto
+import be.zlz.kara.bin.dto.v11.WebhookSettingsDto
 import be.zlz.kara.bin.exceptions.BadRequestException
 import be.zlz.kara.bin.exceptions.ResourceNotFoundException
+import be.zlz.kara.bin.modules.webhook.Webhook
+import be.zlz.kara.bin.modules.webhook.WebhookSettings
 import be.zlz.kara.bin.repositories.BinRepository
 import be.zlz.kara.bin.util.PagingUtils
+import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
+import com.fasterxml.jackson.module.kotlin.readValue
 import org.springframework.data.domain.Page
 import org.springframework.stereotype.Service
 import java.util.*
@@ -17,10 +23,15 @@ import java.util.stream.Collectors
 
 @Service
 class BinCrudServiceImpl(
-        private val binRepository: BinRepository
+        private val binRepository: BinRepository,
+        private val moduleService: ModuleService
 ): BinCrudService {
 
     val logger by logger()
+
+    companion object {
+        private val om = jacksonObjectMapper()
+    }
 
     override fun createBin(): String {
         val name = UUID.randomUUID().toString()
@@ -60,16 +71,23 @@ class BinCrudServiceImpl(
             throw ResourceNotFoundException("No bin with name $binName exists")
         }
         val bin = binOptional.get()
-        BinSettingsDto(
+
+        val webhookConfig = moduleService.retrieveModuleConfig(bin, Webhook.WEBHOOK_NAME)
+        var webhooksettings: WebhookSettings? = null
+        if (webhookConfig?.config != null) {
+            webhooksettings = om.readValue<WebhookSettings>(webhookConfig.config!!)
+        }
+
+        return BinSettingsDto(
                 bin.name,
                 bin.isPermanent,
+                ResponseSettingsDto(bin.response),
+                if (webhooksettings == null) null else WebhookSettingsDto(webhooksettings)
         )
-        // - Replace Reply with Response
-        //   - In bin
+
         // - update webhook settings
         // - update response settings
         // - WS endpoints in openapi def
-        TODO()
     }
 
     override fun updateSettings(name: String, updated: BinSettingsDto): BinSettingsDto {

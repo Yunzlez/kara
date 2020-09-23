@@ -115,6 +115,16 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/error'
+  /bins/{binId}/subscribe:
+    get:
+      tags:
+        - Bin Management
+      summary: Subscribe to incoming events via Websockets
+      parameters:
+        - $ref: '#/components/parameters/binId'
+      responses:
+        200:
+          description: TODO
   /bins/{binId}/events:
     get:
       tags:

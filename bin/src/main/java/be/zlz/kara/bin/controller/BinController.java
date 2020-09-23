@@ -23,7 +23,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
-import static be.zlz.kara.bin.services.BinService.NOT_FOUND_MESSAGE;
+import static be.zlz.kara.bin.services.BinServiceImpl.NOT_FOUND_MESSAGE;
 
 @Controller
 public class BinController {
@@ -40,7 +40,7 @@ public class BinController {
     @Value("${mqtt.enabled}")
     private boolean mqttEnabled;
 
-    private Logger logger;
+    private final Logger logger;
 
     @Autowired
     public BinController(BinRepository binRepository,  BinService binService, RequestService requestService) {
