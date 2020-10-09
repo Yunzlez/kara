@@ -15,7 +15,7 @@ class EventController(
 ) {
 
 
-    @RequestMapping(value = ["/{id}/**"], method = [RequestMethod.GET, RequestMethod.POST, RequestMethod.PUT, RequestMethod.DELETE, RequestMethod.PATCH])
+    @RequestMapping(value = ["/{id}/**"], method = [RequestMethod.GET, RequestMethod.POST, RequestMethod.PUT, RequestMethod.DELETE, RequestMethod.PATCH, RequestMethod.HEAD])
     fun handleRequest(servletRequest: HttpServletRequest,
                       response: HttpServletResponse,
                       body: HttpEntity<ByteArray>,
