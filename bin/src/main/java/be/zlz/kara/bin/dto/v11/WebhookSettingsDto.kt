@@ -15,15 +15,5 @@ data class WebhookSettingsDto(
         var mode: WebhookMode?,
         var auth: WebhookAuthentication?
 ) {
-    constructor(settings: WebhookSettings) {
-        destination = settings.destination
-        method = settings.method
-        if (body != null) {
-            body = if (settings.bodyType == Interpretation.TEXT) settings.data!!.toString(Charsets.UTF_8) else Base64.getEncoder().encodeToString(settings.data)
-        }
-        bodyType = settings.bodyType
-        mode = settings.mode
-        auth = settings.authentication
-    }
 
 }
