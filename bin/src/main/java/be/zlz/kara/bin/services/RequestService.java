@@ -71,7 +71,7 @@ public class RequestService {
     }
 
     @Transactional
-    public Pair<Reply, Request> createRequest(HttpServletRequest servletRequest, HttpEntity<byte[]> body, String uuid, Map<String, String> headers) {
+    public synchronized Pair<Reply, Request> createRequest(HttpServletRequest servletRequest, HttpEntity<byte[]> body, String uuid, Map<String, String> headers) {
         Request request = new Request();
 
         Bin bin = binRepository.getByName(uuid);
